@@ -1,0 +1,67 @@
+src/evaluate.py
+  s_1b978492e82476::t_05d30f99f9102b 1-62,64-91,93-150,152-220
+  s_1b978492e82476::t_5fddbae2f9f04f 63,92
+  s_1b978492e82476::t_35df56768b93b0 151
+docs/competition-brief.md
+  s_1b978492e82476::t_a3ba8a70fba148 1-96
+src/agents/__init__.py
+  s_1b978492e82476::t_40813134a8bd5a 1,4,9
+  s_1b978492e82476::t_3440096ae1b7ed 2,6,8
+  s_1b978492e82476::t_d3efec06099250 3,7
+.gitignore
+  s_1b978492e82476::t_ffd65008133117 21
+src/metrics.py
+  s_1b978492e82476::t_bb6c8b583c6cc6 1-143
+CLAUDE.md
+  s_1b978492e82476::t_1cbe7713a5f19f 1-7
+src/agents/base.py
+  s_1b978492e82476::t_2f0e26f4e232e7 1-3,6-29
+tests/test_evaluate.py
+  s_1b978492e82476::t_e78d7c61e4d27c 1-12
+docs/experiments.md
+  s_1b978492e82476::t_6164b88709b5a2 19-20
+  s_1b978492e82476::t_54f991ca723750 1-18,21-52
+src/agents/stochastic_goose.py
+  s_1b978492e82476::t_d3442d2217d3b4 1-3,6-97
+tests/test_agents.py
+  s_1b978492e82476::t_01302fb072b46e 3,5,25-45,50-54
+  s_1b978492e82476::t_2bf55c1fdc92e3 1-2,4,7-24
+  s_1b978492e82476::t_227b8a44fe6bfd 46-49
+  s_1b978492e82476::t_632ef746814d9a 6,55-75
+src/config.py
+  s_1b978492e82476::t_a4bf21b51feed5 10-12,14-41
+tests/test_package_submission.py
+  s_1b978492e82476::t_59c4a055d0d55b 1-24
+tests/test_metrics.py
+  s_1b978492e82476::t_a058d90e656c3c 1-100
+src/agents/random_agent.py
+  s_1b978492e82476::t_625c782a130d96 1-3,6-26,28-31,33-34
+  s_1b978492e82476::t_312d72e7571614 27,32
+src/package_submission.py
+  s_1b978492e82476::t_7f61d95eec9d71 1-26,56-60,63-207
+  s_1b978492e82476::t_04b7a7d8b766d6 27-55,61-62
+GEMINI.md
+  s_1b978492e82476::t_848ce2501ecc0b 1-10
+docs/superpowers/specs/2026-10-01-phase-1-eval-runner-baseline-design.md
+  s_1b978492e82476::t_c9eb6e47fc53d8 1-103
+AGENTS.md
+  s_1b978492e82476::t_fdb687e81b698d 1-41
+docs/superpowers/plans/2026-10-01-phase-1-eval-runner-baseline.md
+  s_1b978492e82476::t_2476af13455d93 1-864
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "f038a10d9e9bcc2ef53f714acc6e1a280ef7062d",
+  "prompts": {},
+  "sessions": {
+    "s_1b978492e82476": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "951c1599-ff35-4453-baf1-9917fba1aabb",
+        "model": "gemini-3.8-flash"
+      },
+      "human_author": "Aleix López <aleix.lopez@glovoapp.com>"
+    }
+  }
+}
