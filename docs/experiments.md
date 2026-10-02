@@ -18,6 +18,7 @@ Tracking all agent iterations, local validation scores, efficiency benchmarks, a
 | `exp-00-scaffold` | 2026-10-01 | Baseline metric engine & test suite verification | - | - | - | - | 100% test pass on metric calculation. Scaffold complete. |
 | `eval-random` | 2026-10-01 | RandomAgent baseline on smoke games (ls20, ar25, dc22) | 0.00% | 0 | 349 | - | Random exploration lower bound verified. |
 | `eval-stochastic_goose` | 2026-10-01 | StochasticGoose (Tufa Labs CNN) on smoke games (ls20, ar25, dc22) | 0.00% | 0 | 407 | - | Offline forward pass & state encoding verified. |
+| `eval-stochastic_goose-2026-10-02` | 2026-10-02 | stochastic_goose on all 25 public games | 0.00% | 0 | 5142 | - | Benchmark baseline for untrained CNN agent. |
 
 ---
 
@@ -50,3 +51,4 @@ Tracking all agent iterations, local validation scores, efficiency benchmarks, a
 | `tu93` | - | - | - | Public game |
 | `vc33` | - | - | - | Public game |
 | `wa30` | - | - | - | Public game |
+| `eval-stochastic_goose-2026-10-02` | 2026-10-02 | stochastic_goose on ar25,bp35,cd82,cn04,dc22,ft09,g50t,ka59,lf52,lp85,ls20,m0r0,r11l,re86,s5i5,sb26,sc25,sk48,sp80,su15,tn36,tr87,tu93,vc33,wa30 | 0.00% | 0 | 5142 | - | Offline evaluation runner pass. |
