@@ -1,0 +1,34 @@
+tests/test_search.py
+  s_1b978492e82476::t_08f1d2444fec07 1-13
+src/search/__init__.py
+  s_1b978492e82476::t_cabee7c5142890 1,4
+  s_1b978492e82476::t_19c67e765700f1 2-3
+src/search/action_selector.py
+  s_1b978492e82476::t_bd880d419d32e2 1-31
+src/agents/random_agent.py
+  s_1b978492e82476::t_e85b9fd3710950 30-32
+docs/superpowers/specs/2026-10-01-phase-3-mcts-search-design.md
+  s_1b978492e82476::t_4b936e6daa1ddc 1-66
+src/search/branch_evaluator.py
+  s_1b978492e82476::t_d8d2d549ad7027 1-36
+docs/superpowers/plans/2026-10-01-phase-3-mcts-search.md
+  s_1b978492e82476::t_7a44914a174a44 1-168
+src/agents/stochastic_goose.py
+  s_1b978492e82476::t_299df9d584d6cc 69-70,92-93
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "2d5dca562f14855fb988e717bbb7c278fe2eb3da",
+  "prompts": {},
+  "sessions": {
+    "s_1b978492e82476": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "951c1599-ff35-4453-baf1-9917fba1aabb",
+        "model": "gemini-3.8-flash"
+      },
+      "human_author": "Aleix López <aleix.lopez@glovoapp.com>"
+    }
+  }
+}
