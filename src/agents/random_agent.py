@@ -27,8 +27,8 @@ class RandomAgent(BaseAgent):
         action = GameAction.from_id(action_int)
 
         if action == GameAction.ACTION6:
-            x = self.rng.randint(0, 63)
-            y = self.rng.randint(0, 63)
-            action.set_data({"x": x, "y": y})
+            r = self.rng.randint(0, 63)
+            c = self.rng.randint(0, 63)
+            action.set_data({"x": r, "y": c, "game_id": latest_frame.game_id})
 
         return action

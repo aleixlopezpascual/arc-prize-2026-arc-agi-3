@@ -46,9 +46,7 @@ def _function_record(source: str) -> tuple[str, str, set[str]]:
 
     tree = ast.Module(body=[node], type_ignores=[])
     code = next(
-        c
-        for c in compile(tree, "<retained>", "exec").co_consts
-        if isinstance(c, types.CodeType)
+        c for c in compile(tree, "<retained>", "exec").co_consts if isinstance(c, types.CodeType)
     )
     reads = set()
     pending = [code]

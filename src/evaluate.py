@@ -206,7 +206,9 @@ def main() -> None:
     print(f"{'Game ID':<20} | {'Levels':<8} | {'Actions':<8} | {'Score (%)':<10}")
     print("-" * 65)
     for g in suite_summary.game_summaries:
-        print(f"{g.game_id:<20} | {g.levels_completed:<8} | {g.total_actions:<8} | {g.score:<10.2f}")
+        print(
+            f"{g.game_id:<20} | {g.levels_completed:<8} | {g.total_actions:<8} | {g.score:<10.2f}"
+        )
     print("=" * 65)
     print(f"Overall Competition Score: {suite_summary.total_score:.2f}%")
     print(f"Total Levels Cleared:      {suite_summary.total_levels_completed}")

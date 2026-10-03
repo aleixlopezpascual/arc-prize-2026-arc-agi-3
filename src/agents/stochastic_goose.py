@@ -66,7 +66,8 @@ class StochasticGoose(BaseAgent):
         frames: Sequence[FrameData],
         latest_frame: FrameData,
     ) -> GameAction:
-        available = latest_frame.available_actions
+        # Filter out ACTION6 temporarily
+        available = [a for a in latest_frame.available_actions if a != 6]
         if not available:
             return GameAction.RESET
 
@@ -81,7 +82,6 @@ class StochasticGoose(BaseAgent):
                 # Mask unavailable actions
                 masked_logits = np.full_like(logits, -1e9)
                 for act_id in available:
-                    # arcengine action integers 1-7 map to 0-6
                     idx = act_id - 1
                     if 0 <= idx < len(logits):
                         masked_logits[idx] = logits[idx]
@@ -89,9 +89,6 @@ class StochasticGoose(BaseAgent):
                 action_int = int(np.argmax(masked_logits)) + 1
 
         action = GameAction.from_id(action_int)
-        if action == GameAction.ACTION6:
-            x = self.rng.randint(0, 63)
-            y = self.rng.randint(0, 63)
-            action.set_data({"x": x, "y": y})
-
+        # if action == GameAction.ACTION6:
+        #    ...
         return action

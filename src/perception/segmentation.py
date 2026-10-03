@@ -106,18 +106,20 @@ def segment_grid(
             max_c = max(cc for _, cc in cells)
 
             sig = compute_object_signature(cells, val)
-            nodes.append({
-                "id": node_id,
-                "color": val,
-                "canonical_hash": sig["canonical_hash"],
-                "shape_hash": sig["shape_hash"],
-                "rotation": sig["rotation"],
-                "rotational_symmetry": sig["rotational_symmetry"],
-                "pose_hash": sig["pose_hash"],
-                "pixels": len(cells),
-                "bbox": [min_r, min_c, max_r, max_c],
-                "cells": cells,
-            })
+            nodes.append(
+                {
+                    "id": node_id,
+                    "color": val,
+                    "canonical_hash": sig["canonical_hash"],
+                    "shape_hash": sig["shape_hash"],
+                    "rotation": sig["rotation"],
+                    "rotational_symmetry": sig["rotational_symmetry"],
+                    "pose_hash": sig["pose_hash"],
+                    "pixels": len(cells),
+                    "bbox": [min_r, min_c, max_r, max_c],
+                    "cells": cells,
+                }
+            )
             node_id += 1
 
     return nodes
