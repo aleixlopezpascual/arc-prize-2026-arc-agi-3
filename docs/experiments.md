@@ -52,3 +52,4 @@ Tracking all agent iterations, local validation scores, efficiency benchmarks, a
 | `vc33` | - | - | - | Public game |
 | `wa30` | - | - | - | Public game |
 | `eval-stochastic_goose-2026-10-02` | 2026-10-02 | stochastic_goose on ar25,bp35,cd82,cn04,dc22,ft09,g50t,ka59,lf52,lp85,ls20,m0r0,r11l,re86,s5i5,sb26,sc25,sk48,sp80,su15,tn36,tr87,tu93,vc33,wa30 | 0.00% | 0 | 5142 | - | Offline evaluation runner pass. |
+| `eval-perception_search-2026-10-03` | 2026-10-03 | perception_search on ls20,ar25,dc22 | 0.00% | 0 | 407 | - | Offline evaluation runner pass. |
