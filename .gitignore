@@ -2,7 +2,9 @@
 input/
 models/
 oof/
-submissions/
+submissions/**/*.parquet
+submissions/**/*.pkl
+submissions/**/*.log
 *.zip
 *.tar.gz
 

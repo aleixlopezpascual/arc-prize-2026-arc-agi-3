@@ -19,6 +19,9 @@ Tracking all agent iterations, local validation scores, efficiency benchmarks, a
 | `eval-random` | 2026-10-01 | RandomAgent baseline on smoke games (ls20, ar25, dc22) | 0.00% | 0 | 349 | - | Random exploration lower bound verified. |
 | `eval-stochastic_goose` | 2026-10-01 | StochasticGoose (Tufa Labs CNN) on smoke games (ls20, ar25, dc22) | 0.00% | 0 | 407 | - | Offline forward pass & state encoding verified. |
 | `eval-stochastic_goose-2026-10-02` | 2026-10-02 | stochastic_goose on all 25 public games | 0.00% | 0 | 5142 | - | Benchmark baseline for untrained CNN agent. |
+| `sub-56806684` | 2026-10-03 | Daniel Franzen M2 Baseline (TAAF + Qwen 3.8 Flash-Next) | 40.25% (10 demo) | 39 / 65 | 1462 | 23.97% | Official baseline evaluation complete! Secured competitive standing on Public Leaderboard. |
+| `sub-duck-centroid-v1` | 2026-10-04 | Duck Centroid V1: Franzen M2 + Bbox & Centroid Injection for ACTION6 | 46.72% (10 demo) | 41 / 65 | 1434 | Ready to Submit | Kernel COMPLETE! Mean score jumped from 40.25% to 46.72% (+6.47%). sc25 jumped 0%->25.5%, tu93 tripled 11%->33.3%, ar25 jumped 27%->41.7%. |
+| `sub-duck-pacing-v2` | 2026-10-03 | Duck Pacing V2: Centroids + Real Baseline Priority + 185k Token Sink Cap | - | - | - | Ready to Push | Built in submissions/duck_pacing_v2/. Caches human_baseline in PrioritySnapshot and caps runaway games at 185k tokens. Awaiting GPU slot. |
 
 ---
 
