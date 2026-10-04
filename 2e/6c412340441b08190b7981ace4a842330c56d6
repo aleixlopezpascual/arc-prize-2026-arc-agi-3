@@ -1,0 +1,23 @@
+submissions/duck_memory_v3/kernel-metadata.json
+  s_1b978492e82476::t_535d4c23d3325b 1-28
+scripts/auto_submit_midnight.py
+  s_1b978492e82476::t_600c261492c6e4 1-81
+docs/experiments.md
+  s_1b978492e82476::t_98b449ed38a8cf 24-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "2e6c412340441b08190b7981ace4a842330c56d6",
+  "prompts": {},
+  "sessions": {
+    "s_1b978492e82476": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "951c1599-ff35-4453-baf1-9917fba1aabb",
+        "model": "gemini-3.8-flash"
+      },
+      "human_author": "Aleix López <aleix.lopez@glovoapp.com>"
+    }
+  }
+}
