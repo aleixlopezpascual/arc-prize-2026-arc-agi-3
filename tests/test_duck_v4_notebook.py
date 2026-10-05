@@ -11,6 +11,9 @@ def test_duck_v4_notebook_validity():
     meta = json.loads(meta_path.read_text())
     assert meta["id"] == "aleixlopez/arc-agi-3-duck-v4"
     assert meta["enable_gpu"] is True
+    assert "dfranzen/pennyroyal-v253" in meta["dataset_sources"]
+    assert "dfranzen/taaf-kaggle-source-bundle-copy" in meta["dataset_sources"]
+    assert len(meta["model_sources"]) == 2
 
     nb = json.load(open(nb_path))
     assert len(nb["cells"]) >= 20
