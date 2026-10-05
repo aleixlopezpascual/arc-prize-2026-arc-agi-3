@@ -1,0 +1,21 @@
+src/perception/sandbox_primitives.py
+  s_f5ff601dd3b1b1::t_0267c26f1e9a27 1-66
+tests/test_sandbox_primitives.py
+  s_f5ff601dd3b1b1::t_969b09039ffe68 1-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "37c6548d80cbf56f24f619720fd8fb3b9bb202ff",
+  "prompts": {},
+  "sessions": {
+    "s_f5ff601dd3b1b1": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "c3c021ab-9049-4fe6-ba77-c134c750e6ad",
+        "model": "gemini-3.8-flash"
+      },
+      "human_author": "Aleix López <aleix.lopez@glovoapp.com>"
+    }
+  }
+}
