@@ -23,7 +23,7 @@ Tracking all agent iterations, local validation scores, efficiency benchmarks, a
 | `sub-56827574` | 2026-10-04 | Duck Centroid V1 Run 1 | 46.72% (10 demo) | 41 / 65 | 1434 | 25.22% | Injected bbox and centroids for ACTION6 clicks. First leaderboard improvement (+1.25%). |
 | `sub-56836213` | 2026-10-05 | Duck Centroid V1 Run 2 (Midnight Auto-Submit) | 46.72% (10 demo) | 41 / 65 | 1434 | **30.19%** | 🚀 BROKE 30%! Rank #152 on the Global Leaderboard. +6.22% jump over baseline! |
 | `sub-duck-pacing-v2` | 2026-10-03 | Duck Pacing V2: Centroids + Real Baseline Priority + 185k Token Sink Cap | - | - | - | Staged | Caches human_baseline in PrioritySnapshot and caps runaway games at 185k tokens. |
-| `sub-duck-memory-v3` | 2026-10-04 | Duck Memory V3: Centroids + Baseline Pacing + Cross-Level Solved Memory | - | - | - | Built & Ready | Injects winning actions & confirmed mechanics from cleared levels into prompts for levels 2+. |
+| `sub-duck-memory-v3` | 2026-10-05 | Duck Memory V3 (Centroids + Pacing + Solved Memory) | 26.11% (10 demo) | 30 / 65 | 860 | - | Kernel complete. Finding: dynamic prompt prefix text hurt SGLang prefix-cache reuse rate. Preserving static prefix is critical. |
 
 ---
 
