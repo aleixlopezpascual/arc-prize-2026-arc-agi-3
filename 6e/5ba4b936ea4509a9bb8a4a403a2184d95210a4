@@ -1,0 +1,19 @@
+scripts/auto_submit_midnight.py
+  s_1b978492e82476::t_4c67b9951fd342 7-9,12,20-27,29-30,38,40,44,50,53,57,61-63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "6e5ba4b936ea4509a9bb8a4a403a2184d95210a4",
+  "prompts": {},
+  "sessions": {
+    "s_1b978492e82476": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "951c1599-ff35-4453-baf1-9917fba1aabb",
+        "model": "gemini-3.8-flash"
+      },
+      "human_author": "Aleix López <aleix.lopez@glovoapp.com>"
+    }
+  }
+}
