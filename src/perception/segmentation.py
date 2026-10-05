@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 from collections.abc import Sequence
+from typing import Any
 
 import numpy as np
 
@@ -24,7 +25,7 @@ def _cells_hash(norm_cells: Sequence[tuple[int, int]], color_tag: str | int) -> 
 
 def compute_object_signature(
     cells: Sequence[tuple[int, int]] | set[tuple[int, int]],
-    color: int,
+    color: int | str,
 ) -> dict:
     if not cells:
         return {
@@ -104,6 +105,17 @@ def segment_grid(
             max_r = max(cr for cr, _ in cells)
             min_c = min(cc for _, cc in cells)
             max_c = max(cc for _, cc in cells)
+            r_c = round(sum(cr for cr, _ in cells) / len(cells))
+            c_c = round(sum(cc for _, cc in cells) / len(cells))
+
+            is_border = False
+            if h > 0 and w > 0:
+                is_border = bool(
+                    (min_r == 0 and max_r == 0 and len(cells) >= w * 0.75) or
+                    (min_r == h - 1 and max_r == h - 1 and len(cells) >= w * 0.75) or
+                    (min_c == 0 and max_c == 0 and len(cells) >= h * 0.75) or
+                    (min_c == w - 1 and max_c == w - 1 and len(cells) >= h * 0.75)
+                )
 
             sig = compute_object_signature(cells, val)
             nodes.append(
@@ -117,9 +129,77 @@ def segment_grid(
                     "pose_hash": sig["pose_hash"],
                     "pixels": len(cells),
                     "bbox": [min_r, min_c, max_r, max_c],
+                    "centroid": [r_c, c_c],
+                    "is_border": is_border,
                     "cells": cells,
                 }
             )
             node_id += 1
 
     return nodes
+
+
+def segment_layer(
+    grid: Sequence[Sequence[str]] | Sequence[str],
+    color_chars: str = "",
+) -> dict[str, Any]:
+    """Segment a 2D grid of character cells into connected components."""
+    if not grid or len(grid) == 0:
+        return {"nodes": [], "adjacency_list": []}
+
+    h = len(grid)
+    w = len(grid[0]) if h > 0 else 0
+    if h == 0 or w == 0:
+        return {"nodes": [], "adjacency_list": []}
+
+    visited = [[False] * w for _ in range(h)]
+    nodes: list[dict[str, Any]] = []
+    node_id = 0
+
+    for r in range(h):
+        for c in range(w):
+            ch = grid[r][c]
+            if visited[r][c] or ch == ".":
+                continue
+
+            queue = [(r, c)]
+            visited[r][c] = True
+            cells: list[tuple[int, int]] = []
+
+            while queue:
+                curr_r, curr_c = queue.pop()
+                cells.append((curr_r, curr_c))
+                for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                    nr, nc = curr_r + dr, curr_c + dc
+                    if 0 <= nr < h and 0 <= nc < w and not visited[nr][nc] and grid[nr][nc] == ch:
+                        visited[nr][nc] = True
+                        queue.append((nr, nc))
+
+            min_r = min(cr for cr, _ in cells)
+            max_r = max(cr for cr, _ in cells)
+            min_c = min(cc for _, cc in cells)
+            max_c = max(cc for _, cc in cells)
+            r_c = round(sum(cr for cr, _ in cells) / len(cells))
+            c_c = round(sum(cc for _, cc in cells) / len(cells))
+
+            is_border = bool(
+                (min_r == 0 and max_r == 0 and len(cells) >= w * 0.75) or
+                (min_r == h - 1 and max_r == h - 1 and len(cells) >= w * 0.75) or
+                (min_c == 0 and max_c == 0 and len(cells) >= h * 0.75) or
+                (min_c == w - 1 and max_c == w - 1 and len(cells) >= h * 0.75)
+            )
+
+            nodes.append(
+                {
+                    "id": node_id,
+                    "color": ch,
+                    "pixels": len(cells),
+                    "bbox": [min_r, min_c, max_r, max_c],
+                    "centroid": [r_c, c_c],
+                    "is_border": is_border,
+                    "cells": cells,
+                }
+            )
+            node_id += 1
+
+    return {"nodes": nodes, "adjacency_list": []}
