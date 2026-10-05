@@ -1,0 +1,22 @@
+{
+  "id": "aleixlopez/arc-agi-3-duck-v4",
+  "title": "ARC-AGI-3 Duck V4",
+  "code_file": "notebook.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_internet": false,
+  "keywords": [],
+  "dataset_sources": [
+    "dfranzen/pennyroyal-v253",
+    "dfranzen/qwen38-flashnext-autoround-w4a16",
+    "dfranzen/albucino-autoround-int4-mtp-draft",
+    "dfranzen/taaf-source"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [
+    "arc-prize-2026-arc-agi-3"
+  ],
+  "model_sources": []
+}
