@@ -1,6 +1,7 @@
 import subprocess
 import sys
 import time
+from pathlib import Path
 from datetime import datetime, timezone
 
 competition = "arc-prize-2026-arc-agi-3"
@@ -27,6 +28,15 @@ for _ in range(240):  # Run for up to 20 hours
     print(f"[{ts} UTC] {v4_kernel} status: {k_status}", flush=True)
 
     if "COMPLETE" in k_status:
+        print(f"\n[{ts} UTC] 🏆 Kernel {v4_kernel} COMPLETE! Fetching demo summary...", flush=True)
+        subprocess.run(["mkdir", "-p", "/tmp/v4_output"])
+        subprocess.run(["kaggle", "kernels", "output", v4_kernel, "-p", "/tmp/v4_output"], capture_output=True, text=True)
+        summary_file = Path("/tmp/v4_output/summary.txt")
+        if summary_file.exists():
+            print("=" * 60, flush=True)
+            print(summary_file.read_text(), flush=True)
+            print("=" * 60, flush=True)
+
         # Submit to competition
         sub_cmd = [
             "kaggle",
