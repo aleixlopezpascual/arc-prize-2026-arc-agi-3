@@ -6,19 +6,44 @@ from datetime import datetime, timezone
 
 competition = "arc-prize-2026-arc-agi-3"
 v4_kernel = "aleixlopez/arc-agi-3-duck-v4"
+v4_dir = "/Users/aleix.lopez/arc-prize-2026-arc-agi-3/submissions/duck_v4"
 output_file = "submission.parquet"
 message = "Duck V4 (Centroids + candidate_clicks/object_at/is_border + Zero-Prompt-Drift Solved Memory)"
 
 print(
-    f"[{datetime.now(timezone.utc).strftime('%X')} UTC] Auto-Submit Daemon for Duck V4 started.",
+    f"[{datetime.now(timezone.utc).strftime('%X')} UTC] Auto-Launch and Submit Daemon for Duck V4 started.",
     flush=True,
 )
 
-for _ in range(240):  # Run for up to 20 hours
+v4_pushed = False
+
+for attempt in range(480):  # Run for up to 24 hours
     now_utc = datetime.now(timezone.utc)
     ts = now_utc.strftime("%Y-%m-%d %H:%M:%S")
 
-    # Check kernel status
+    # 1. Try pushing Duck V4 if not yet pushed / queued
+    if not v4_pushed:
+        push_res = subprocess.run(
+            ["kaggle", "kernels", "push", "-p", v4_dir],
+            capture_output=True,
+            text=True,
+        )
+        combined_push = (push_res.stdout + " " + push_res.stderr).strip()
+
+        if "successfully pushed" in combined_push:
+            print(f"[{ts} UTC] 🚀 Duck V4 successfully pushed to Kaggle GPU!", flush=True)
+            v4_pushed = True
+        elif "Maximum batch GPU session count" in combined_push:
+            if attempt % 5 == 0:
+                print(f"[{ts} UTC] Waiting for Kaggle batch GPU slot to open (max session limit 2)...", flush=True)
+            time.sleep(180)
+            continue
+        else:
+            print(f"[{ts} UTC] Push attempt returned: {combined_push}", flush=True)
+            time.sleep(60)
+            continue
+
+    # 2. Check kernel status
     k_res = subprocess.run(
         ["kaggle", "kernels", "status", v4_kernel],
         capture_output=True,
@@ -66,8 +91,9 @@ for _ in range(240):  # Run for up to 20 hours
         else:
             print(f"[{ts} UTC] Submission attempt response: {combined}", flush=True)
 
-    elif "ERROR" in k_status or "CANCELLED" in k_status:
+    elif "ERROR" in k_status:
         print(f"[{ts} UTC] ❌ Kernel finished with failure status: {k_status}", flush=True)
-        sys.exit(1)
+        # Reset pushed flag so it re-attempts push if needed
+        v4_pushed = False
 
-    time.sleep(300)  # Check every 5 minutes
+    time.sleep(180)  # Check every 3 minutes

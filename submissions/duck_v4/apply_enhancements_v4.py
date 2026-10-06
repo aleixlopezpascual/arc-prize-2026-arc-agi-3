@@ -248,25 +248,25 @@ if "Knowledge from cleared levels:" in agent_text:
         print("Cleaned up legacy prompt injection from tool_agent.py")
 
 if "_cleared_level_memories" not in agent_text:
-    old_init = """        self._session_generated_tokens = 0
-        self._session_wallclock_seconds = 0.0"""
+    old_init = """        self._session_total_tokens = 0
+        self._session_generated_tokens = 0
+        self._step_env_callback: Callable[[dict[str, Any]], dict[str, Any]] | None = None"""
 
-    new_init = """        self._session_generated_tokens = 0
-        self._session_wallclock_seconds = 0.0
-        self._cleared_level_memories = []"""
+    new_init = """        self._session_total_tokens = 0
+        self._session_generated_tokens = 0
+        self._cleared_level_memories: list[dict[str, Any]] = []
+        self._step_env_callback: Callable[[dict[str, Any]], dict[str, Any]] | None = None"""
 
     assert old_init in agent_text, "Failed to find session init in tool_agent.py"
     agent_text = agent_text.replace(old_init, new_init, 1)
 
-    old_ensure = """        if self._state_path != state_path:
-            self._state_path = state_path
-            self._ensure_prompt_cache()
-            self._history_messages = []"""
+    old_ensure = """            self._history_messages = []
+            self._session_total_tokens = 0
+            self._session_generated_tokens = 0"""
 
-    new_ensure = """        if self._state_path != state_path:
-            self._state_path = state_path
-            self._ensure_prompt_cache()
-            self._history_messages = []
+    new_ensure = """            self._history_messages = []
+            self._session_total_tokens = 0
+            self._session_generated_tokens = 0
             self._cleared_level_memories = []"""
 
     assert old_ensure in agent_text, "Failed to find _ensure_session in tool_agent.py"
@@ -293,12 +293,12 @@ if "_cleared_level_memories" not in agent_text:
 
     old_state_return = """            return {
                 "current_frame": current_frame_payload,
-                "history": _serialized_history(refreshed_history),
+                "history": _ascii_history_view_payload(refreshed_history),
                 "valid_actions": sanitized_actions,
-                "death_ledger": dict(
+                "death_ledger": (
                     self._death_ledger_payload()
-                    if hasattr(self, "_death_ledger_payload")
-                    else {}
+                    if _get_env_bool("ARC3_DEATH_LEDGER", False)
+                    else None
                 ),
                 "last_action_call_result": (
                     dict(persisted_action_result)
@@ -310,12 +310,12 @@ if "_cleared_level_memories" not in agent_text:
     new_state_return = """            current_frame_payload["solved_memory"] = list(getattr(self, "_cleared_level_memories", []))
             return {
                 "current_frame": current_frame_payload,
-                "history": _serialized_history(refreshed_history),
+                "history": _ascii_history_view_payload(refreshed_history),
                 "valid_actions": sanitized_actions,
-                "death_ledger": dict(
+                "death_ledger": (
                     self._death_ledger_payload()
-                    if hasattr(self, "_death_ledger_payload")
-                    else {}
+                    if _get_env_bool("ARC3_DEATH_LEDGER", False)
+                    else None
                 ),
                 "last_action_call_result": (
                     dict(persisted_action_result)
