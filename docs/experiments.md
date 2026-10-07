@@ -25,7 +25,7 @@ Tracking all agent iterations, local validation scores, efficiency benchmarks, a
 | `sub-duck-pacing-v2` | 2026-10-03 | Duck Pacing V2: Centroids + Real Baseline Priority + 185k Token Sink Cap | - | - | - | Staged | Caches human_baseline in PrioritySnapshot and caps runaway games at 185k tokens. |
 | `sub-duck-memory-v3` | 2026-10-05 | Duck Memory V3 (Centroids + Pacing + Solved Memory) | 26.11% (10 demo) | 30 / 65 | 860 | - | Kernel complete. Finding: dynamic prompt prefix text hurt SGLang prefix-cache reuse rate. Preserving static prefix is critical. |
 | `sub-56891721` | 2026-10-06 | Duck V4 (candidate_clicks, object_at, is_border, in-sandbox solved_memory) | **56.81%** (10 demo) | **48 / 65** | 1580 | ERROR | 🚀 +10.09% Demo Benchmark jump over V1 (46.72% -> 56.81%). 48/65 levels cleared (+7 levels). Terminated due to missing null check on frame payload during live arcade reset. Fixed in V5. |
-| `sub-56912309` | 2026-10-07 | Duck V5 (Null-Safe Memory + candidate_clicks + bfs_path + D-prime Scheduler) | 47.14% (10 demo) | 41 / 65 | 1470 | **PENDING** | 🛡️ Null-safe solved memory, built-in BFS navigation pathfinder, and Shiiin9 D-prime scheduler. Submitted & executing on 110 private competition games! |
+| `sub-56912309` | 2026-10-07 | Duck V5 (Null-Safe Memory + candidate_clicks + bfs_path + D-prime Scheduler) | 47.14% (10 demo) | 41 / 65 | 1470 | **24.31%** | 🛡️ Clean 9-hour execution across all 110 games with 0 crashes. Finding: D-prime queueing suppressed unstarted games, concentrating budget on fewer games. Returning to guaranteed-first-turn round-robin with Duck V4 perception is the path to 35%+. |
 
 ---
 
