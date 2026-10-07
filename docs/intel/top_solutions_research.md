@@ -146,3 +146,34 @@ Instead of building a simulator or custom solver from scratch, our project shoul
    - **MCTS / Best-First Planning in Python REPL:** Allow the model to simulate short rollouts and evaluate candidate action branches before committing moves to the environment.
    - **Coordinate Action Search Specialist (`ACTION6`):** Dedicated sub-module for mouse-driven click games (detecting clickable centroids from component boundaries).
    - **Dynamic Action Budget Guard:** Dynamically adjust the level action budget based on `baseline_actions` (which forum topic #687655 confirmed is visible in `environment_info.baseline_actions` during evaluation!).
+
+---
+
+## 6. Breakthroughs from Recent Top Competitors (October 4–6, 2026)
+
+### 6.1. Shiiin9's $D'$ Optimal Priority Formula (LB 31.54%)
+- **Source:** `shiiin9/affectify-arc-31-54-in-a-single-sub` (Osaka Metropolitan University)
+- **Key Discovery:** Running Franzen's unchanged agent with an improved queue priority formula jumped the public leaderboard score from **27.89% to 31.54%** in a single submission.
+- **Formula:**
+  $$\text{priority} = A \cdot M \cdot C + B \cdot \phi$$
+  - **$A$ (Depth & Action Efficiency):** $(1 + 0.5(\ell - 1)) \cdot \text{norm}(N) \cdot \left(\frac{300}{300 + a}\right)^{2.5}$
+  - **$M$ (Pace Tracker):** $\text{clip}\left(\left(\frac{30000}{p}\right)^{0.4}, 0.25, 4\right)$ where $p$ is the mean tokens per cleared level.
+  - **$C$ (Patience Decay):** $0.1 \cdot \max(0.1, 1 - a / 115) + 0.9 \cdot \max(0.1, 1 - t / T)$, with $T = 225000 \cdot \text{clip}(p / 30000, 0.5, 2)^{0.5}$ giving more patience to games that naturally need more tokens per level.
+  - **$B$ (Growth Bonus):** $(16, 14, 10, 0)$ based on remaining levels.
+  - **$\phi$ (Tail Fade):** Linear decay $1 \to 0$ over the last 40% of the 9-hour budget.
+  - **Queue Fairness:** Unstarted games no longer jump to the front of the queue; they compete on equal footing with active games.
+
+### 6.2. Aleksei Provorov's Fable 5 & Astra Analysis
+- **Source:** `leoprovorov/fable-astra-play-arc-3-handbook-harness` (2026-10-06)
+- **Core Findings:**
+  1. **Add Facts, Not Advice:** Adding blocks of strategic advice dropped agent score from 13.40 to 9.98. Adding concrete facts (e.g. pinned rules from cleared levels, indicator changes) yielded +2.8 to +8.0 score improvements.
+  2. **Never Remove History:** Replacing history with summaries halved the number of solved levels (23 vs 46).
+  3. **Intervene Only on Dragging Levels:** Level notes and guidance should only appear after 15k–30k tokens are spent on a single level without a solution.
+  4. **Indicator Icon Highlighting:** Automatically detect 2x2 indicator icon color changes on the board/tray that signal objective progress.
+  5. **Step Budget Alerts:** Warn the agent when remaining budget bar $\le 25\%$ or $\le 12$ actions.
+
+### 6.3. Our Duck V4 vs. State of the Art
+- **Duck Centroid V1:** 46.72% Demo, **30.19% LB** (Rank #152)
+- **Duck V4 (Current):** **56.81% Demo** (+10.09% demo gain, **48/65 levels cleared**), currently executing on 110 private competition games (Ref `56891721`).
+- **Duck V5 Roadmap:** Combine Duck V4's perception primitives (`candidate_clicks`, `object_at`, `is_border`) + built-in `bfs_path()` search + Shiiin9's $D'$ priority scheduling for an expected **40%+** milestone.
+
