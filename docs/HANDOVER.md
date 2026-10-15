@@ -12,6 +12,7 @@
 
 | Submission Ref | Date (UTC) | Model Architecture | Status | Public Score | Key Finding / Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- |
+| **`57232788`** | **2026-10-15 13:53:34** | **Duck V12 Run 2 (58.42% Demo Record + No-Op Repeat Guard Active + Level Baseline)** | **`PENDING`** | *(Evaluating)* | 🚀 Actively executing rerun on live 110 private games. Re-submitting all-time demo record architecture (58.42% with 3 full sweeps) to sample upper distribution tail. |
 | **`57160065`** | **2026-10-14 00:04:03** | **Duck V12 (No-Op Repeat Guard Active + Level Baseline + Fable 30k + Temp 0.6)** | **`COMPLETE`** | **`26.26%`** | 🚀 Clean 9-hour run across 110 private games. Demo: **58.42%** (All-time demo record, 3 full sweeps: `ft09`, `sb26`, `tr87`). Activated `ARC3_NOOP_REPEAT_GUARD=1`. |
 | **`57138832`** | **2026-10-13 09:51:52** | **Duck V11 (Refined Action-Budget Guidance + Fable 30k + Temp 0.6 + Unconstrained)** | **`COMPLETE`** | **`27.77%`** 🚀 | 🚀 Clean 9-hour run across 110 private games. Continuous climb: V6 (23.00%) -> V7 (24.51%) -> V8 (25.46%) -> V9 (27.26%) -> V11 (27.77%). Demo: 49.27% (2 sweeps). |
 | **`57088724`** | **2026-10-12 00:03:48** | **Duck V10 (Level Baseline Awareness + Calibrated Fable 30k + Temp 0.6 + Unconstrained)** | **`COMPLETE`** | **`26.68%`** | 🚀 Clean 9-hour execution across 110 private games. Demo: **50.45%** (2 full 100% sweeps: `sb26`, `tr87`). Injected `current_frame.level_baseline` to guide action conservation. |

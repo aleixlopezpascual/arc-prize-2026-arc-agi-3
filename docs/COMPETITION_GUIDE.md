@@ -234,7 +234,7 @@ Because LLM token sampling stochasticity, asynchronous multi-game thread schedul
 ## 9. Next Strategic Steps
 
 1. **Daily Submission Slot (Thursday, Oct 15):**  
-   Our daily submission quota is currently **OPEN (1 remaining)**. Submitting a second run of **Duck V12** (which established our all-time record 58.42% demo score with 3 full game sweeps) is the highest-ROI opportunity to sample the upper tail of its distribution (targeting **30%–35%+**).
+   **Duck V12 Run 2** has been submitted (Ref `57232788`, `SubmissionStatus.PENDING`). It is actively executing its 9-hour competition rerun on the 110 private competition games, capitalizing on its all-time record 58.42% demo score to sample the upper distribution tail (targeting **30%–35%+**).
 2. **Duck V13 Engineering:**  
    Pre-engineer in-sandbox action stagnation truncation (truncating multi-action batches when an action produces zero gameplay change) to conserve even more actions against the squared efficiency penalty.
 
