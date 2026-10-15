@@ -64,3 +64,25 @@ def object_at(
             return dict(node)
 
     return None
+
+
+def detect_indicators(
+    before: list[list[int]] | None,
+    after: list[list[int]] | None,
+) -> list[dict[str, Any]]:
+    """Detect small indicator patches far from moving clusters."""
+    if not before or not after:
+        return []
+    from src.perception.fable_core import small_far_changes
+    return small_far_changes(before, after)
+
+
+def detect_budget_helper(
+    frames: list[list[list[int]]] | None,
+) -> dict[str, Any] | None:
+    """Detect linear fuel or countdown budget bar across frames."""
+    if not frames or len(frames) < 3:
+        return None
+    from src.perception.fable_core import detect_budget
+    return detect_budget(frames)
+

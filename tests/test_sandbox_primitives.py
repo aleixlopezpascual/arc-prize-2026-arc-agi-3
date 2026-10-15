@@ -1,5 +1,10 @@
 import pytest
-from src.perception.sandbox_primitives import candidate_clicks, object_at
+from src.perception.sandbox_primitives import (
+    candidate_clicks,
+    object_at,
+    detect_indicators,
+    detect_budget_helper,
+)
 
 def test_candidate_clicks_filtering():
     nodes = [
@@ -37,3 +42,25 @@ def test_primitives_empty_or_none():
     assert candidate_clicks([]) == []
     assert object_at(None, 0, 0) is None
     assert object_at([], 0, 0) is None
+
+def test_sandbox_diagnostic_helpers_safe_empty():
+    assert detect_indicators(None, None) == []
+    assert detect_budget_helper([]) is None
+
+def test_sandbox_detect_indicators():
+    before = [[0] * 64 for _ in range(64)]
+    after = [[0] * 64 for _ in range(64)]
+    # Main moving cluster
+    for r in range(20, 25):
+        for c in range(20, 25):
+            before[r][c] = 1
+            after[r][c+1] = 1
+    # Distant indicator
+    for r in range(5, 7):
+        for c in range(5, 7):
+            before[r][c] = 2
+            after[r][c] = 3
+
+    res = detect_indicators(before, after)
+    assert len(res) == 1
+    assert res[0]["size"] == 4
