@@ -1,0 +1,35 @@
+src/utils/win_path_replay.py
+  s_88ae8e2f3728a7::t_030710f0a721e4 1-51
+tests/test_win_path_replay.py
+  s_88ae8e2f3728a7::t_97a83267790aad 1-61
+submissions/duck_v13/kernel-metadata.json
+  s_88ae8e2f3728a7::t_f05b046cc245c0 1-28
+tests/test_duck_v13_notebook.py
+  s_88ae8e2f3728a7::t_0bdf198c5c8420 1-41
+scripts/auto_submit_duck_v13.py
+  s_88ae8e2f3728a7::t_a9750b3dc46354 1-109
+docs/HANDOVER.md
+  s_88ae8e2f3728a7::t_af08d99e48f827 15
+docs/experiments.md
+  s_88ae8e2f3728a7::t_6a4e3ecc46253b 38
+AGENTS.md
+  s_88ae8e2f3728a7::t_9ce47407e696f2 8
+docs/COMPETITION_GUIDE.md
+  s_88ae8e2f3728a7::t_8b48c04e6691c2 237,243-244
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "b094860dae7cc23bfb70c86f388bfa867e910430",
+  "prompts": {},
+  "sessions": {
+    "s_88ae8e2f3728a7": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "275634af-dcbb-4438-817e-b7b0c9d5489a",
+        "model": "gemini-3.8-flash"
+      },
+      "human_author": "Aleix López <aleix.lopez@glovoapp.com>"
+    }
+  }
+}
