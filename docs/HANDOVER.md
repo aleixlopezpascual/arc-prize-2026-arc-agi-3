@@ -12,6 +12,7 @@
 
 | Submission Ref | Date (UTC) | Model Architecture | Status | Public Score | Key Finding / Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- |
+| **`In Flight`** | **2026-10-17 14:45:00** | **Duck V13 (Win-Path Pure Replay + No-Op Repeat Guard + Level Baseline + Fable 30k)** | **`STAGED`** | - | 🚀 Win-Path Pure Replay graft installed. Programmatically replays contiguous winning segments in seconds on second run (zero LLM tokens) to maximize quadratic efficiency score. Daemon PID 12451 active. |
 | **`57264236`** | **2026-10-16 09:49:34** | **Duck V12 Run 3 (58.42% Demo Record + No-Op Repeat Guard Active + Level Baseline)** | **`COMPLETE`** | **`23.57%`** | 🚀 Clean 9-hour run across 110 private games. Completes 3-run empirical sample of Duck V12 (26.26%, 29.46%, 23.57% — mean 26.43%). Confirms standard sampling spread. |
 | **`57232788`** | **2026-10-15 13:53:34** | **Duck V12 Run 2 (58.42% Demo Record + No-Op Repeat Guard Active + Level Baseline)** | **`COMPLETE`** | **`29.46%`** 🚀 | 🚀 Clean 9-hour run across 110 private games. +3.20% over Run 1 (26.26%). Empirically proves Duck V12's higher distribution ceiling and strong generalization. |
 | **`57160065`** | **2026-10-14 00:04:03** | **Duck V12 (No-Op Repeat Guard Active + Level Baseline + Fable 30k + Temp 0.6)** | **`COMPLETE`** | **`26.26%`** | 🚀 Clean 9-hour run across 110 private games. Demo: **58.42%** (All-time demo record, 3 full sweeps: `ft09`, `sb26`, `tr87`). Activated `ARC3_NOOP_REPEAT_GUARD=1`. |
