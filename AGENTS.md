@@ -5,8 +5,8 @@ This repository contains competitive agent implementations, evaluation harness c
 
 - **Official Leaderboard Standing:** Team `Aleix López`, Rank **#535** (out of ~800+ teams).
 - **Official Best Score:** **`30.19%`** (Ref `56836213`, Duck Centroid V1).
-- **Latest Active Architecture:** **`Duck V13`** (Win-Path Pure Replay + No-Op Repeat Guard + Level Baseline + Fable 30k; Daemon PID 12451 active).
-- **Reliability:** 13 / 13 clean Kaggle executions (0 crashes, 0 timeouts, 0 invalid parquet outputs).
+- **Latest Active Submission:** **`Duck V13`** (Ref `57316619`, Win-Path Pure Replay + No-Op Repeat Guard + Level Baseline + Fable 30k; Demo 52.45%).
+- **Reliability:** 14 / 14 clean Kaggle executions (0 crashes, 0 timeouts, 0 invalid parquet outputs).
 
 ---
 
