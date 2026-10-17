@@ -34,7 +34,7 @@ Tracking all agent iterations, local validation scores, efficiency benchmarks, a
 | `sub-57138832` | 2026-10-13 | Duck V11 (Refined Action-Budget Guidance + Fable 30k + Temp 0.6 + Unconstrained) | **49.27%** (10 demo) | 42 / 64 | 1466 | **27.77%** 🚀 | 🚀 Clean 9-hour run across 110 private games. Continuous climb: V6 (23.00%) -> V7 (24.51%) -> V8 (25.46%) -> V9 (27.26%) -> V11 (27.77%). Demo: 49.27% (2 sweeps). |
 | `sub-57160065` | 2026-10-14 | Duck V12 (No-Op Repeat Guard Active + Level Baseline + Fable 30k + Temp 0.6) | **58.42%** (10 demo) | 44 / 64 | 1365 | **26.26%** | 🚀 Clean 9-hour run across 110 private games. Demo: 58.42% (All-time demo record, 3 full sweeps: `ft09`, `sb26`, `tr87`). Activated `ARC3_NOOP_REPEAT_GUARD=1`. |
 | `sub-57232788` | 2026-10-15 | Duck V12 Run 2 (58.42% Demo Record + No-Op Repeat Guard Active + Level Baseline) | **58.42%** (10 demo) | 44 / 64 | 1365 | **29.46%** 🚀 | 🚀 Clean 9-hour run across 110 private games. +3.20% over Run 1 (26.26%). Empirically proves Duck V12's higher distribution ceiling and strong generalization. |
-| `sub-57264236` | 2026-10-16 | Duck V12 Run 3 (58.42% Demo Record + No-Op Repeat Guard Active + Level Baseline) | **58.42%** (10 demo) | 44 / 64 | 1365 | PENDING | 🚀 Actively executing rerun on live 110 private games. Capitalizing on 29.46% momentum to sample upper distribution tail (targeting 31-35%+). |
+| `sub-57264236` | 2026-10-16 | Duck V12 Run 3 (58.42% Demo Record + No-Op Repeat Guard Active + Level Baseline) | **58.42%** (10 demo) | 44 / 64 | 1365 | **23.57%** | 🚀 Clean 9-hour run across 110 private games. Completes 3-run empirical sample of Duck V12 (26.26%, 29.46%, 23.57% — mean 26.43%). Confirms standard sampling spread. |
 
 ---
 

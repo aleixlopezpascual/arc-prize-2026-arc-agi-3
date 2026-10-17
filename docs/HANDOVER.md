@@ -12,7 +12,7 @@
 
 | Submission Ref | Date (UTC) | Model Architecture | Status | Public Score | Key Finding / Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **`57264236`** | **2026-10-16 09:49:34** | **Duck V12 Run 3 (58.42% Demo Record + No-Op Repeat Guard Active + Level Baseline)** | **`PENDING`** | *(Evaluating)* | 🚀 Actively executing rerun on live 110 private games. Capitalizing on 29.46% momentum to sample upper distribution tail (targeting 31-35%+). |
+| **`57264236`** | **2026-10-16 09:49:34** | **Duck V12 Run 3 (58.42% Demo Record + No-Op Repeat Guard Active + Level Baseline)** | **`COMPLETE`** | **`23.57%`** | 🚀 Clean 9-hour run across 110 private games. Completes 3-run empirical sample of Duck V12 (26.26%, 29.46%, 23.57% — mean 26.43%). Confirms standard sampling spread. |
 | **`57232788`** | **2026-10-15 13:53:34** | **Duck V12 Run 2 (58.42% Demo Record + No-Op Repeat Guard Active + Level Baseline)** | **`COMPLETE`** | **`29.46%`** 🚀 | 🚀 Clean 9-hour run across 110 private games. +3.20% over Run 1 (26.26%). Empirically proves Duck V12's higher distribution ceiling and strong generalization. |
 | **`57160065`** | **2026-10-14 00:04:03** | **Duck V12 (No-Op Repeat Guard Active + Level Baseline + Fable 30k + Temp 0.6)** | **`COMPLETE`** | **`26.26%`** | 🚀 Clean 9-hour run across 110 private games. Demo: **58.42%** (All-time demo record, 3 full sweeps: `ft09`, `sb26`, `tr87`). Activated `ARC3_NOOP_REPEAT_GUARD=1`. |
 | **`57138832`** | **2026-10-13 09:51:52** | **Duck V11 (Refined Action-Budget Guidance + Fable 30k + Temp 0.6 + Unconstrained)** | **`COMPLETE`** | **`27.77%`** 🚀 | 🚀 Clean 9-hour run across 110 private games. Continuous climb: V6 (23.00%) -> V7 (24.51%) -> V8 (25.46%) -> V9 (27.26%) -> V11 (27.77%). Demo: 49.27% (2 sweeps). |
