@@ -240,7 +240,9 @@ Because LLM token sampling stochasticity, asynchronous multi-game thread schedul
    - **Run 3:** `23.57%` (Ref `57264236`)
    - **Mean Score:** `26.43%` across 330 private game plays with 0 crashes.
    This perfectly mirrors the community statistical variance distribution ($\pm 3.9$ points standard deviation), proving that Duck V12 possesses a peak ceiling approaching our all-time high (`30.19%`).
-2. **Duck V13 Live Submission (Win-Path Pure Replay):**  
-   **Duck V13** has been officially submitted (Ref `57316619`, `SubmissionStatus.PENDING`). It completed its demo benchmark with a strong **`52.45%`** score (`ft09` 100%, `sb26` 89.24%, `lp85` 77.78%, `ar25` 58.33%, `tu93` 33.33%). It incorporates the breakthrough `FR WIN-PATH REPLAY` mechanism: recording winning contiguous segments during LLM exploration and programmatically replaying only the clean winning moves in seconds on a second run (zero LLM tokens) to maximize the quadratic efficiency score $(\text{Baseline}/\text{Actions})^2$ with zero downside risk. It is actively executing across all 110 private competition games.
+2. **Duck V13 Completed Evaluation (Win-Path Pure Replay):**  
+   **Duck V13** completed its 9-hour live competition evaluation across all 110 private competition games (Ref `57316619`, `23.91%` score, 14/14 clean runs). On its demo run, it cleared 43/64 levels with a strong `52.45%` score (`ft09` 100%, `sb26` 89.24%, `lp85` 77.78%, `ar25` 58.33%, `tu93` 33.33%). It proved that programmatic win-path replay works smoothly in the live Kaggle environment without crashing.
+3. **Duck V14 Engineering (Pre-Explorer + Replay):**  
+   Our daily submission quota is currently **OPEN (1 remaining for Sunday, Oct 18)**. We are staging Duck V14 combining CPU pre-exploration on frame 0 with our perception, No-Op guard, and pure win-path replay stack.
 
 You are now fully caught up with the competition mechanics, our codebase, and the competitive frontier.
