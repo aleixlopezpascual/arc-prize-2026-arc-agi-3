@@ -1,0 +1,25 @@
+docs/HANDOVER.md
+  s_88ae8e2f3728a7::t_3dce3f9acfe3a0 15
+docs/experiments.md
+  s_88ae8e2f3728a7::t_2ea5ff6ec3ae02 38
+AGENTS.md
+  s_88ae8e2f3728a7::t_352251c047cdcd 6,8
+docs/COMPETITION_GUIDE.md
+  s_88ae8e2f3728a7::t_d4e4dca6c60fbc 243-246
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "dbcacc81b17100f525322c45c3b8890120df2b21",
+  "prompts": {},
+  "sessions": {
+    "s_88ae8e2f3728a7": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "275634af-dcbb-4438-817e-b7b0c9d5489a",
+        "model": "gemini-3.8-flash"
+      },
+      "human_author": "Aleix López <aleix.lopez@glovoapp.com>"
+    }
+  }
+}
