@@ -242,10 +242,11 @@ Because LLM token sampling stochasticity, asynchronous multi-game thread schedul
    This perfectly mirrors the community statistical variance distribution ($\pm 3.9$ points standard deviation), proving that Duck V12 possesses a peak ceiling approaching our all-time high (`30.19%`).
 2. **Duck V13 Completed Evaluation (Win-Path Pure Replay):**  
    **Duck V13** completed its 9-hour live competition evaluation across all 110 private competition games (Ref `57316619`, `23.91%` score, 14/14 clean runs). On its demo run, it cleared 43/64 levels with a strong `52.45%` score (`ft09` 100%, `sb26` 89.24%, `lp85` 77.78%, `ar25` 58.33%, `tu93` 33.33%). It proved that programmatic win-path replay works smoothly in the live Kaggle environment without crashing.
-3. **Duck V14 Engineering & Deployment (Pre-Explorer + Replay):**  
-   **Duck V14** has been engineered, verified with 82/82 passing tests, and deployed to the Kaggle GPU worker (PID 48167). It introduces a breakthrough two-phase pre-exploration architecture:
-   - **Phase A (Parallel CPU Pre-Exploration):** Runs a mechanical 45-second probe across all games on independent environment instances (consuming zero official actions) to discover movement key bindings (UP/DOWN/LEFT/RIGHT/SPACE/ACTION7) and responsive mouse click coordinates.
-   - **Phase B (Game Manual Injection):** Injects verified ground-truth action semantics into each game's system prompt (100% RadixAttention prefix-cache-hot within game streams), eliminating the 15–20 exploratory turns models typically waste on Level 1.
-   - **Full Stack Preservation:** Retains `FR WIN-PATH REPLAY` to programmatically replay clean winning paths in seconds on a second run, alongside active No-Op Repeat Guards (`ARC3_NOOP_REPEAT_GUARD=1`) and level baseline budget guidance.
+3. **Duck V14 Completed Evaluation & Learnings:**  
+   **Duck V14** completed its 9-hour live competition evaluation across all 110 private competition games (Ref `57371121`, `24.78%` score, 15/15 clean runs). 
+   - **Empirical Finding:** Injecting static Level 1 pre-exploration manuals directly into `analyzer._system_prompt` over-anchored the model, causing it to mispredict movement and rules on higher levels (levels 2–8) where mechanics evolve.
+   - **Conclusion:** **Duck V12 remains our definitive, superior baseline** (58.42% demo record, 3 full game sweeps, and 29.46% peak live LB score). All state and memory should pass strictly via runtime JSON state (`current_frame.xyz`), never by injecting text into system prompts.
+4. **Daily Submission Slot (Monday, Oct 19):**  
+   Our daily submission quota is currently **OPEN (1 remaining for Monday, Oct 19)**. We can resubmit **Duck V12** to sample its high-performing upper tail (targeting **30%–35%+**).
 
 You are now fully caught up with the competition mechanics, our codebase, and the competitive frontier.
