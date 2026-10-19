@@ -246,7 +246,10 @@ Because LLM token sampling stochasticity, asynchronous multi-game thread schedul
    **Duck V14** completed its 9-hour live competition evaluation across all 110 private competition games (Ref `57371121`, `24.78%` score, 15/15 clean runs). 
    - **Empirical Finding:** Injecting static Level 1 pre-exploration manuals directly into `analyzer._system_prompt` over-anchored the model, causing it to mispredict movement and rules on higher levels (levels 2–8) where mechanics evolve.
    - **Conclusion:** **Duck V12 remains our definitive, superior baseline** (58.42% demo record, 3 full game sweeps, and 29.46% peak live LB score). All state and memory should pass strictly via runtime JSON state (`current_frame.xyz`), never by injecting text into system prompts.
-4. **Daily Submission Slot (Monday, Oct 19):**  
-   Our daily submission quota is currently **OPEN (1 remaining for Monday, Oct 19)**. We can resubmit **Duck V12** to sample its high-performing upper tail (targeting **30%–35%+**).
+4. **Duck V15 Engineering & Live Deployment:**  
+   **Duck V15** has been engineered, verified with 86/86 passing tests, and deployed to the Kaggle GPU worker (PID 11524). Built directly on Duck V12's proven foundation (58.42% demo record, 3 full game sweeps, 29.46% peak LB score), Duck V15 introduces three surgical optimizations without touching system prompt text:
+   - **In-Sandbox Batch Early Stopping:** Truncates multi-action sequences immediately the moment an interior action produces zero gameplay change (`gameplay_changed=False` or `board_changed=False`), preventing wasted moves from inflating the quadratic penalty denominator.
+   - **Zero-Prompt-Drift Stagnation Alerts:** Passes `current_frame.stagnation_alert` strictly via runtime JSON state when 3 consecutive turns produce no progress, breaking hypothesis fixation while preserving 100% SGLang prefix caching.
+   - **Heliosli Animation KeyError Defense:** Repairs the empty-animation schema in `animation.py` to prevent crash risks during action animation inspection.
 
 You are now fully caught up with the competition mechanics, our codebase, and the competitive frontier.
