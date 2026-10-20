@@ -248,7 +248,10 @@ Because LLM token sampling stochasticity, asynchronous multi-game thread schedul
    - **Conclusion:** **Duck V12 remains our definitive, superior baseline** (58.42% demo record, 3 full game sweeps, and 29.46% peak live LB score). All state and memory should pass strictly via runtime JSON state (`current_frame.xyz`), never by injecting text into system prompts.
 4. **Duck V15 Completed Evaluation & Learnings:**  
    **Duck V15** completed its 9-hour live competition evaluation across all 110 private competition games (Ref `57401251`, `24.63%` score, 16/16 clean runs). On its demo benchmark, it achieved **`48.71%`** with **2 full 100% game sweeps** (`ft09` 100%, `sb26` 100%), improved `tu93` to 33.33%, and doubled `r11l` to 28.57%. The in-sandbox batch early stoppage and empty animation schema repairs functioned cleanly without errors.
-5. **Daily Submission Slot (Tuesday, Oct 20):**  
-   Our daily submission quota is currently **OPEN (1 remaining for Tuesday, Oct 20)**.
+5. **Duck V16 Engineering & Live Deployment (Goal Sockets & Anti-Stagnation):**  
+   **Duck V16** has been engineered, verified with 88/88 passing tests, and deployed to the Kaggle GPU worker (PID 71680). Built directly on Duck V12/V15's proven foundation (58.42% demo record, 3 full game sweeps, 29.46% peak live LB score), Duck V16 introduces:
+   - **Candidate Goal Sockets (`candidate_goals()`):** Automatically extracts and ranks destination sockets, color singularities, and rare landmarks with centroids `[r, c]` and `goal_score`, resolving goal-state blindness in navigation and delivery games.
+   - **In-Sandbox Batch Action Early Stoppage:** Truncates multi-action sequences immediately the moment an interior move produces zero gameplay change, preventing wasted moves from inflating the quadratic penalty denominator.
+   - **Full Foundation Preservation:** Retains active No-Op Repeat Guards (`ARC3_NOOP_REPEAT_GUARD=1`), Fable 30k diagnostics, `candidate_clicks()`, `bfs_path()`, `level_baseline` budget guidance, and temperature 0.6 with zero prompt drift.
 
 You are now fully caught up with the competition mechanics, our codebase, and the competitive frontier.
