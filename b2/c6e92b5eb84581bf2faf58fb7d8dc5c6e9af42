@@ -1,0 +1,38 @@
+docs/experiments.md
+  s_88ae8e2f3728a7::t_b862d1d0f4c468 41
+submissions/duck_v16/kernel-metadata.json
+  s_88ae8e2f3728a7::t_c893f7954b5064 1-28
+docs/HANDOVER.md
+  s_88ae8e2f3728a7::t_b326dcca774530 15
+docs/COMPETITION_GUIDE.md
+  s_88ae8e2f3728a7::t_5b4edbf1e014f9 251-255
+tests/test_duck_v16_notebook.py
+  s_88ae8e2f3728a7::t_dcab0c7fb275b9 1-47
+tests/test_sandbox_primitives.py
+  s_88ae8e2f3728a7::t_21e7c35aa3144a 4,6-7,10,12-47,49-107,111-124,127-133,136-138,141-152,154-156
+AGENTS.md
+  s_88ae8e2f3728a7::t_6cef9d7b7d4979 8
+src/perception/sandbox_primitives.py
+  s_88ae8e2f3728a7::t_f3280089db38cd 4,48-113
+scripts/build_duck_v16.py
+  s_88ae8e2f3728a7::t_486ce8efeee3de 1-119
+scripts/auto_submit_duck_v16.py
+  s_88ae8e2f3728a7::t_b962792b8cbde7 1-17,19-137
+  s_88ae8e2f3728a7::t_26e5fb9eb4834f 18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "b2c6e92b5eb84581bf2faf58fb7d8dc5c6e9af42",
+  "prompts": {},
+  "sessions": {
+    "s_88ae8e2f3728a7": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "275634af-dcbb-4438-817e-b7b0c9d5489a",
+        "model": "gemini-3.8-flash"
+      },
+      "human_author": "Aleix López <aleix.lopez@glovoapp.com>"
+    }
+  }
+}
