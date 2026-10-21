@@ -3,10 +3,10 @@
 ## 1. Project Purpose & Current Standing
 This repository contains competitive agent implementations, evaluation harness code, perception and diagnostic modules, and submission pipelines for Kaggle's **ARC Prize 2026 - ARC-AGI-3** competition (`arc-prize-2026-arc-agi-3`).
 
-- **Official Leaderboard Standing:** Team `Aleix López`, Rank **#607** (out of ~800+ teams).
+- **Official Leaderboard Standing:** Team `Aleix López`, Rank **#621** (out of ~800+ teams).
 - **Official Best Score:** **`30.19%`** (Ref `56836213`, Duck Centroid V1).
-- **Latest Active Architecture:** **`Duck V16`** (Candidate Goal Sockets + In-Sandbox Early Stopping + V12 Core + Fable 30k; Daemon PID 71680 active).
-- **Reliability:** 16 / 16 clean Kaggle executions (0 crashes, 0 timeouts, 0 invalid parquet outputs).
+- **Latest Evaluated Submission:** **`Duck V16`** (Ref `57441883`, `24.53%` LB, Demo `34.74%`).
+- **Reliability:** 17 / 17 clean Kaggle executions (0 crashes, 0 timeouts, 0 invalid parquet outputs).
 
 ---
 
