@@ -1,10 +1,12 @@
 # ARC Prize 2026 (ARC-AGI-3) — Session Handover Document
 
-**Date:** Thursday, October 8, 2026  
+**Date:** Wednesday, October 21, 2026  
 **Repository:** `aleixlopezpascual/arc-prize-2026-arc-agi-3` (Local: `/Users/aleix.lopez/arc-prize-2026-arc-agi-3`)  
-**Current Best Leaderboard Score:** **`30.19%`** (Rank #152 of 750+ teams, Ref `56836213`)  
-**Best Demo Benchmark:** **`56.81%`** (Duck V4: 48 / 65 levels cleared, +10.09% over Centroid V1)  
+**Current Best Leaderboard Score:** **`30.19%`** (Rank #621 of ~800+ teams, Ref `56836213`)  
+**Best Demo Benchmark:** **`58.42%`** (Duck V12: 44 / 64 levels cleared, 3 full 100% sweeps: `ft09`, `sb26`, `tr87`)  
 **Kaggle User:** `aleixlopez`  
+**Daily Submissions Remaining Today:** **`1 Remaining`** (0 used so far on Oct 21)  
+**Lifetime Submissions:** **`17 / 17 Clean 9-Hour Executions`** (100% reliability, 0 crashes)  
 
 ---
 
@@ -96,15 +98,17 @@ Duck V6 will bring together the best of both worlds:
 │   ├── agents/                             # stochastic goose, search agent, etc.
 │   └── metrics.py                          # Official ARC-AGI-3 efficiency metric
 ├── submissions/
-│   ├── duck_centroid_v1/                   # 30.19% LB Best Working Submission
-│   ├── duck_v4/                            # 56.81% Demo Benchmark package
-│   ├── duck_v5/                            # 24.31% LB Null-Safe + BFS + D-prime package
-│   └── duck_v6/                            # In Flight (Perception + BFS + Round-Robin + 185k Pacing)
+│   ├── duck_centroid_v1/                   # 30.19% LB Best Working Submission (Rank #621)
+│   ├── duck_v11/                           # 27.77% LB Working Package
+│   ├── duck_v12/                           # 58.42% Demo Record Package (3 sweeps: ft09, sb26, tr87; 29.46% LB)
+│   ├── duck_v13/                           # Win-Path Pure Replay Package (23.91% LB)
+│   ├── duck_v14/                           # CPU Pre-Explorer Package (24.78% LB)
+│   ├── duck_v15/                           # Anti-Stagnation Batch Early Stopping Package (24.63% LB)
+│   └── duck_v16/                           # Candidate Goal Sockets Package (24.53% LB)
 ├── scripts/
-│   ├── auto_submit_duck_v4.py              # V4 auto-launch & submit daemon
-│   ├── auto_submit_duck_v5.py              # V5 auto-launch & submit daemon
-│   └── auto_submit_duck_v6.py              # V6 auto-launch & submit daemon
-└── tests/                                  # 54/54 pytest tests (100% GREEN in 3.36s)
+│   ├── auto_submit_duck_*.py               # Autonomous GPU launch & midnight submit daemons
+│   └── build_duck_*.py                     # Deterministic patch & notebook generators
+└── tests/                                  # 88/88 pytest unit & notebook validation tests (100% GREEN)
 ```
 
 ---
@@ -112,23 +116,46 @@ Duck V6 will bring together the best of both worlds:
 ## 🧪 Testing & Verification Commands
 
 ```bash
-# Run the entire test suite (54 tests)
-python3 -m pytest tests/ -v
+# Run the entire test suite (88 tests, 100% green)
+python3 -m pytest tests/ -q
 
-# Run Duck V6 verification tests
-python3 -m pytest tests/test_duck_v6.py tests/test_duck_v6_notebook.py -v
-python3 -m pytest tests/test_duck_v4_patch.py tests/test_duck_v4_notebook.py -v
-
-# Check competition submissions status
+# Check competition submissions status & quota
 kaggle competitions submissions -c arc-prize-2026-arc-agi-3
+kaggle competitions submission-limits -c arc-prize-2026-arc-agi-3
+
+# Submit a notebook to the competition via API
+/Users/aleix.lopez/.local/share/uv/tools/kaggle/bin/python -c "
+from kaggle.api.kaggle_api_extended import KaggleApi
+api = KaggleApi(); api.authenticate()
+api.competition_submit_code('submission.parquet', 'Message', 'arc-prize-2026-arc-agi-3', 'aleixlopez/arc-agi-3-duck-v12', 1)
+"
 ```
 
 ---
 
-## 🔐 Git & Remote Push Overrides
+## 🧭 Instructions for Incoming Agent (Next Session)
 
-- Local git remote overrides:
-  ```bash
-  GIT_SSH_COMMAND="ssh" env -u GIT_CONFIG_COUNT -u GIT_CONFIG_KEY_3 -u GIT_CONFIG_VALUE_3 git push origin master
-  ```
-- All commits are pushed to `origin/master`. Working tree is 100% clean.
+1. **Current Standing:**
+   - Team `Aleix López`, Rank **#621**, Best Score **`30.19%`** (Ref `56836213`).
+   - Track record: **17 / 17 clean 9-hour competition runs** (100% reliability, zero crashes).
+   - Daily quota: **1 Remaining for Wednesday, Oct 21, 2026** (0 used so far today).
+   - GPU worker slot: **idle / free**.
+2. **Definitive Baseline:**
+   - **Duck V12** remains our highest-performing architecture:
+     - Local demo benchmark: **`58.42%` all-time record** with **3 full 100% game sweeps** (`ft09`, `sb26`, `tr87`) and level 7 on `lp85`.
+     - Live 110-game private test set: **`29.46%`** on Run 2.
+   - Core configuration:
+     - `LOCAL_ANALYZER_TEMPERATURE = '0.6'`
+     - `ARC3_FABLE_LAYER = '1'` with `ARC3_FABLE_EVENTS_AFTER_TOKENS = '30000'`
+     - `ARC3_NOOP_REPEAT_GUARD = '1'` with `ARC3_GUARDS_FROM_LEVEL = 2`
+     - `current_frame.level_baseline` budget awareness
+     - Unconstrained priority scheduling (`max_generated_tokens = None`)
+     - Zero prompt drift (never inject text into system prompts).
+3. **Immediate Recommended Action:**
+   - Submit another run of **Duck V12** or Duck V15 core to sample the upper quartile distribution (targeting **30%–35%+**).
+4. **Git Remote Overrides:**
+   - Push to `origin/master` using:
+     ```bash
+     GIT_SSH_COMMAND="ssh" env -u GIT_CONFIG_COUNT -u GIT_CONFIG_KEY_3 -u GIT_CONFIG_VALUE_3 git push origin master
+     ```
+
