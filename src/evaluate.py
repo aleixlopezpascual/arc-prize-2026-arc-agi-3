@@ -182,6 +182,12 @@ def main() -> None:
         help="Max action count per level before termination",
     )
     parser.add_argument(
+        "--model",
+        type=str,
+        default="gpt-6-luna",
+        help="Model name for API-based agents (e.g. gpt-6-luna)",
+    )
+    parser.add_argument(
         "--log-ledger",
         action="store_true",
         help="Log experiment results into docs/experiments.md",
@@ -195,7 +201,10 @@ def main() -> None:
         else [g.strip() for g in args.games.split(",")]
     )
     agent_cls = AVAILABLE_AGENTS[args.agent]
-    agent = agent_cls()
+    if args.agent == "openai":
+        agent = agent_cls(model=args.model)
+    else:
+        agent = agent_cls()
 
     runner = EvaluationRunner(max_actions_per_level=args.max_actions)
     print(f"\n🎮 Evaluating Agent '{args.agent}' across {len(target_games)} game(s)...")
