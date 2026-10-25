@@ -1,0 +1,25 @@
+docs/intel/forum_intel.md
+  s_927c64575f4005::t_d1ddbdc6ca719f 3-54
+docs/superpowers/plans/2026-10-25-duck-v17-adaptive-armor.md
+  s_927c64575f4005::t_40db8e68208c9f 1-412
+docs/intel/top_solutions_research.md
+  s_927c64575f4005::t_6fec3b0cf29dc9 175-222
+docs/intel/top_notebooks.md
+  s_927c64575f4005::t_d0fd9d506dee1a 3-34
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "2902021c33361bf437f531f0c3b667fbdb09edef",
+  "prompts": {},
+  "sessions": {
+    "s_927c64575f4005": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "888a23c6-13ff-42a9-84f6-323875edc7b5",
+        "model": "gemini-3.8-flash"
+      },
+      "human_author": "Aleix López <aleix.lopez@glovoapp.com>"
+    }
+  }
+}
