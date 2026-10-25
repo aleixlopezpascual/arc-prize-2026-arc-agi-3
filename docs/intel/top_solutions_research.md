@@ -172,8 +172,52 @@ Instead of building a simulator or custom solver from scratch, our project shoul
   4. **Indicator Icon Highlighting:** Automatically detect 2x2 indicator icon color changes on the board/tray that signal objective progress.
   5. **Step Budget Alerts:** Warn the agent when remaining budget bar $\le 25\%$ or $\le 12$ actions.
 
-### 6.3. Our Duck V4 vs. State of the Art
-- **Duck Centroid V1:** 46.72% Demo, **30.19% LB** (Rank #152)
-- **Duck V4 (Current):** **56.81% Demo** (+10.09% demo gain, **48/65 levels cleared**), currently executing on 110 private competition games (Ref `56891721`).
-- **Duck V5 Roadmap:** Combine Duck V4's perception primitives (`candidate_clicks`, `object_at`, `is_border`) + built-in `bfs_path()` search + Shiiin9's $D'$ priority scheduling for an expected **40%+** milestone.
+### 6.3. Our Duck Trajectory
+- **Duck Centroid V1:** 46.72% Demo, **30.19% LB** (Ref `56836213`, Rank #621)
+- **Duck V12:** **58.42% Demo Record** (3 full 100% sweeps: `ft09`, `sb26`, `tr87`), **29.46% LB** on Run 2.
+- **Duck V15:** In-sandbox batch early stopping & animation repair (48.71% Demo, 24.63% LB).
+- **Duck V16:** Candidate goal sockets (24.53% LB).
+
+---
+
+## 7. Late October Breakthroughs & Endgame Research (October 20–25, 2026)
+
+### 7.1. The Kaggle Infrastructure Caching Crisis & Defensive Architecture
+- **Incident Overview (Discussions #751598, #752253, #752147):** Between Oct 20 and Oct 25, Kaggle experienced severe regional cache instability. Model weight loading for Qwen3.8-Flash-Next jumped from 4–5 minutes to 45–60+ minutes.
+- **Root Cause of 0.00 Rerun Failures:**
+  1. Franzen's default `SERVER_STARTUP_TIMEOUT = 12 * 60` (720s) aborted before SGLang became ready, generating 3,411-byte empty parquet outputs.
+  2. Kaggle host gateway killed runs for inactivity if no initial environment action was issued during startup.
+- **Defensive Shield (Weitao Guo `arc3-slm-plus-55min-startup-fix` & Laimer Botrolenk `candidate-g`):**
+  - `SERVER_STARTUP_TIMEOUT = 55 * 60` (or `3600s`) to survive heavy disk contention.
+  - `os.environ['ARC3_WARMUP_ACTION_GAMES'] = '1'`: Issues an initial keepalive action (`RESET`) to ensure the session remains active in Kaggle's gateway.
+  - `os.environ['ARC3_HTTP_RETRY_INITIAL_SECONDS'] = '900'`: 15-minute HTTP backoff grace period before aborting turns.
+
+### 7.2. Laimer Botrolenk's "Candidate G · Adaptive Duck" (LB 30.58%)
+- **Source:** `laimerbotrolenk/candidate-g-lb-score-30-58` (Oct 22, 2026)
+- **Key Innovations:**
+  1. **Bounded JSON Memory (`notes['game']`, `notes['level']`):**
+     - Keeps a compact JSON memory structure ($\le 16\text{ KiB}$) across tool calls and history trimming.
+     - `notes['level']` persists across deaths on the current level and clears upon level completion.
+     - `notes['game']` persists across the entire game.
+     - Pure in-sandbox runtime state: **zero system prompt drift**, maintaining SGLang's >93% KV cache hit rate!
+  2. **Exact Algebraic Puzzle Solvers (`solve_toggle`):**
+     - Solves independent binary XOR button puzzles via Gaussian elimination over $\text{GF}(2)$ with Gray code nullspace search.
+     - Completely automates toggle/switch puzzles that LLMs struggle with due to token-level combinatorial explosion.
+  3. **Verified Plan Execution (`follow_plan` & `check_model`):**
+     - `check_model(predict, encode, transitions)` tests inferred transition models against recorded history before executing plans.
+     - `follow_plan(plan, predict, encode, max_actions=6)` executes plans step-by-step through the game engine, automatically stopping at the first prediction mismatch to prevent quadratic action waste.
+  4. **Fast Symbolic Primitives:**
+     - `board()`: Character grid tuple.
+     - `scene()`: 4-connected component segmentation with colors, pixel areas, bounding boxes, and centroid click coordinates.
+     - `route(mask, start, goals)`: Fast BFS pathfinder on boolean masks.
+
+### 7.3. The 25-Game World Record & Optimal Trajectory Trap (Topic #752014)
+- Solo competitor `maoxin123` solved all 25 public ARC games (5,502 actions, 100% win rate).
+- **Critical Finding:** Naive SFT / behavioral cloning on optimal paths collapses on test games because optimal trajectories have **zero exploratory actions, zero hypothesis refutations, and zero recovery steps**. Test-time interactive tool reasoning with Python REPL + bounded search is mathematically necessary for out-of-distribution ARC-AGI-3 generalization.
+
+### 7.4. Synthesis & Next Steps: The Duck V17 Architecture
+To capture the top public capabilities and protect against platform instability:
+1. **Infra Armor:** Incorporate the 55-minute startup timeout, 900s HTTP retry grace, and warmup action keepalive from `arc3-slm-plus-55min-startup-fix`.
+2. **Adaptive Memory & Primitives:** Integrate Candidate G's bounded 16 KiB JSON `notes`, `solve_toggle` XOR solver, and verified `follow_plan` stopping mechanism into our proven Duck V12/V15 foundation.
+3. **Queue Fairness:** Maintain guaranteed round-robin admission for unstarted games (`gate.acquire(2000000 - waiting_order)`) to ensure all 110 games register points before priority pruning.
 

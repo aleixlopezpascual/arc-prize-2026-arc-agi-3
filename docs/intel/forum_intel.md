@@ -1,54 +1,54 @@
 # Forum Discussions & Community Intel: arc-prize-2026-arc-agi-3
 
-| ID | Title | Votes | Comments | Date |
-| :--- | :--- | :--- | :--- | :--- |
-| 695158 | Upgraded accelerators | 20 | 2 | 2026-04-28 18:20:14.975000 |
-| 697944 | Update on Code Requirements | 11 | 7 | 2026-05-07 22:16:59.523000 |
-| 697720 | Update on accelerators | 9 | 6 | 2026-05-07 02:12:48.865000 |
-| 684625 | How to get started + Competition's Official Discord | 8 | 9 | 2026-03-25 16:40:49.697000 |
-| 687384 | Welcome to ARC Prize 2026 - ARC-AGI-3 Edition | 7 | 0 | 2026-04-02 22:37:13.554000 |
-| 713634 | Clarification on deadline for milestone prizes | 5 | 5 | 2026-06-24 20:36:05.362000 |
-| 705405 | Correcting an Error in Competition Submission Limits | 3 | 12 | 2026-06-09 21:39:16.349000 |
-| 717133 | Tufa Labs’ Winning Solution for ARC-AGI-3 Milestone 1 | 71 | 18 | 2026-07-01 14:47:58.064000 |
-| 686416 | Simplified submission framework | 41 | 3 | 2026-03-31 07:29:19.755000 |
-| 742801 | We will not be open-sourcing for the second milestone prize | 38 | 42 | 2026-09-23 15:16:10.913000 |
-| 716696 | Code for milestone 1st place open sourced - writeup tomorrow | 38 | 16 | 2026-06-30 21:10:43.953000 |
-| 744792 | Comparing the Milestone 2 winning solutions | 37 | 14 | 2026-10-01 00:36:37.030000 |
-| 691696 | It is 0.66% | 24 | 8 | 2026-04-15 15:37:57.379000 |
-| 709355 | View your run time and the historical leaderboard | 23 | 5 | 2026-06-18 11:04:47.252000 |
-| 687648 | ARC3 Offline Agent Evaluation and Recording Viewer | 23 | 10 | 2026-04-03 11:22:40.455000 |
-| 705043 | Exact timing of milestone prize | 21 | 7 | 2026-06-08 14:16:26.896000 |
-| 687655 | Human scores visible to agents | 20 | 3 | 2026-04-03 11:42:35.751000 |
-| 742148 | Long Queue for RTX Pro 6000 (8 hours) partially due to abusive used for non ARC-AGI-3 tasks, Proposal to mitigate | 20 | 22 | 2026-09-20 09:41:10.344000 |
-| 739938 | What Have You Tried So Far? | 18 | 6 | 2026-09-07 08:41:20.032000 |
-| 703426 | I did "autoresearch" in a hackathon and won some GPU credits | 15 | 4 | 2026-05-31 04:54:54.847000 |
+*Last Updated: 2026-10-25*
 
-## High-Value Technical Discussions
+## Summary of Key Forum Topics
 
-### Topic 687648: ARC3 Offline Agent Evaluation and Recording Viewer
+| ID | Title | Votes | Comments | Post Date | Core Takeaway / Status |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **751598** | **Scoring 0 possibly due to dataset loading issues** | 32 | 38 | 2026-10-22 | **CRITICAL PLATFORM ALERT**: Kaggle regional dataset cache instability causes model loading to slow from 4m to 40–60m. Franzen's default 12m startup timeout triggers premature exit with 0.00 score. Staff (María Cruz) confirmed cache instability. |
+| **752253** | **Model loading has become several times slower this week, and it can turn a healthy run into 0.00** | 3 | 0 | 2026-10-24 | Provides concrete workarounds: extend server startup timeout to 55m+, keep at least one game issuing cheap moves during startup so gateway does not kill the run for inactivity, and increase HTTP retry grace to 900s. |
+| **752014** | **[Dataset & Replayer] All 25 Public Games Solved at World-Record Steps (5,502 Actions)** | 2 | 0 | 2026-10-23 | Open-sourced 100% win-rate trajectories. **Key insight**: SFT/Behavioral Cloning on optimal paths collapses out-of-distribution (zero probe actions, covariate shift). Test-time interactive Python REPL + search is strictly superior. |
+| **751799** | **ARC-AGI-3-style game generator (Open source)** | 10 | 1 | 2026-10-22 | Skyfall AI synthetic game generator for training and evaluating generalized rule induction. |
+| **752147** | **Model mount error** | 9 | 24 | 2026-10-23 | Corroborates mount/caching delays across Kaggle instances. |
+| **752315** | **OSError: [Errno 30] Read-only file system: '/kaggle/tmp/** | 6 | 1 | 2026-10-24 | Highlights file-system permissions in Kaggle submission containers. |
+| **752485** | **Draft session stuck at “adding data”, even with a 1 KB dataset** | 2 | 3 | 2026-10-25 | Live status report indicating Kaggle infrastructure data-mount latency remains elevated. |
+| **744792** | **Comparing the Milestone 2 winning solutions** | 65 | 18 | 2026-10-01 | Detailed architectural breakdown of Franzen (27.89%), Lord Han Solo (23.84%), and Siriki Lohit (22.53%). Confirms Qwen3.8-Flash-Next + TAAF + SGLang/Pennyroyal dominance. |
+| **742801** | **We will not be open-sourcing for the second milestone prize** | 41 | 45 | 2026-09-23 | Tufa Labs opted not to open-source Milestone 2 code, cementing Franzen's M2 repo as the primary public foundation. |
+| **717133** | **Tufa Labs’ Winning Solution for ARC-AGI-3 Milestone 1** | 74 | 18 | 2026-07-01 | M1 winning architecture release. |
+| **687648** | **ARC3 Offline Agent Evaluation and Recording Viewer** | 23 | 10 | 2026-04-03 | Shiinehata offline eval viewer using official `main.py` entrypoint. |
+| **687655** | **Human scores visible to agents** | 20 | 3 | 2026-04-03 | Confirmation that `environment_info.baseline_actions` is exposed during runtime. |
 
-<p>Hi everyone, sharing a reproducible ARC3 notebook for offline agent evaluation and debugging.</p>
-<p>Notebook: <a href="https://www.kaggle.com/code/shiinehata/arc3-agent-evaluation-and-recording-viewer/notebook?scriptVersionId=308657447" target="_blank">ARC3 Offline Agent Evaluation and Recording Viewer</a></p>
-<p>What this notebook adds:</p>
-<ul>
-<li>Runs the copied agent offline</li>
-<li>Computes per-game action-count and score stats on public games</li>
-<li>Visualizes recordings for behavior inspection and debugging</li>
-</ul>
-<p><strong>Key point: The pipeline runs through the official main.py command path, so behavior is closer to the real evaluation runtime than using a custom simulator from environment files</strong></p>
-<p>Run artifacts:</p>
-<ul>
-<li>recordings</li>
-<li>summary.csv</li>
-<li>summary.txt</li>
-<li>scorecard.json</li>
-<li>run.log</li>
-</ul>
-<p>Visualization snapshots:
-<img src="https://www.googleapis.com/download/storage/v1/b/kaggle-forum-message-attachments/o/inbox%2F21018013%2F7e0b217497c67660bd42b2394b87b581%2F1.PNG?generation=1775215264186395&amp;alt=media" alt=""></p>
-<p><img src="https://www.googleapis.com/download/storage/v1/b/kaggle-forum-message-attachments/o/inbox%2F21018013%2F5feffd16267d1fc087971e8779860631%2F2.PNG?generation=1775215276539069&amp;alt=media" alt=""></p>
-<p><img src="https://www.googleapis.com/download/storage/v1/b/kaggle-forum-message-attachments/o/inbox%2F21018013%2F14c9262f989966d4d0730b6839cc8ccf%2F3.PNG?generation=1775215287433041&amp;alt=media" alt=""></p>
+---
 
-### Topic 687655: Human scores visible to agents
+## High-Value Technical Discussions Breakdown
 
-<p>From some submission probing, I believe that the scores of the second-best human used for scoring (i.e. <code>environment_info.baseline_actions</code>) are available to us for the 110 test games during submission. Is this intentional, and are we indeed free to use this information?</p>
+### 1. Topic 751598 & 752253: The Kaggle Infrastructure Caching Crisis & Defensive Architecture
+
+- **The Problem:** Between October 20 and October 25, 2026, Kaggle backend changes caused severe dataset caching and mount latency spikes. Model loading of large weights (`Qwen3.8-Flash-Next` shards, ~73 GB) degraded from ~4–8 minutes to 45–60+ minutes.
+- **The Consequence:** Because Daniel Franzen's original baseline used `SERVER_STARTUP_TIMEOUT = 12 * 60` (720 seconds), submissions hit the timeout before SGLang reported healthy. The harness exited or generated a 3,411-byte dummy submission, returning a `COMPLETE` status with a **`0.00` score** on the leaderboard. Additionally, if no action was executed within Kaggle's initial gateway inactivity window, the runner terminated the job.
+- **Community Solution (Weitao Guo `arc3-slm-plus-55min-startup-fix` & Laimer Botrolenk `candidate-g`):**
+  1. `SERVER_STARTUP_TIMEOUT = 55 * 60` (or `3600`): Generous timeout allowing SGLang to finish loading even under degraded cache performance.
+  2. `os.environ['ARC3_WARMUP_ACTION_GAMES'] = '1'`: Issues an initial keepalive action/reset to prevent gateway inactivity aborts while server boots.
+  3. `os.environ['ARC3_HTTP_RETRY_INITIAL_SECONDS'] = '900'`: 15-minute HTTP retry backoff to survive long server initializations.
+
+---
+
+### 2. Topic 752014: The 25 World-Record Solutions & Why Pure SFT Fails
+
+- **Dataset Release:** `maoxin123/arc3-25-optimal-solutions` released all 25 public ARC-AGI-3 games solved with 100% win rate in 5,502 total actions (matching or beating world record on every game).
+- **Core Finding ("The Optimal Trajectory Trap"):** Training an LLM or policy directly on optimal replay paths causes immediate failure on unseen games due to severe covariate shift:
+  - Optimal paths have **zero exploratory actions, zero hypothesis testing, and zero error recovery**.
+  - As soon as the agent makes one non-optimal move or encounters a novel layout, the state has zero training support, causing hallucinations and infinite loops.
+- **Strategic Direction:** Test-time interactive reasoning with external tools (Python REPL, BFS shortest path, component geometry extraction, bounded state-space search) is fundamentally more robust than imitation learning.
+
+---
+
+### 3. Topic 744792: Milestone 2 Architectural Consensus
+
+- All top 3 public winners (Franzen 27.89%, Lord Han Solo 23.84%, Siriki Lohit 22.53%) utilized:
+  - **Qwen3.8-Flash-Next** served locally on Kaggle RTX PRO 6000 (96 GB VRAM).
+  - **AutoRound W4A16 or NVFP4** quantization with Albucino MTP draft model.
+  - **SGLang Pennyroyal** with custom prefix-cache hysteresis (dropping ~59k tokens in blocks to keep the prefix cache-hot at >93% hit rate).
+  - Retained Python functions across tool invocations.
+  - Priority scheduling across the 110 games.
