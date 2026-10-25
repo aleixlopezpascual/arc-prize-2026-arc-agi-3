@@ -79,6 +79,10 @@ class OpenAIAgent(BaseAgent):
         api_base: str = "https://api.openai.com/v1",
         timeout: float = 30.0,
     ) -> None:
+        from dotenv import load_dotenv
+        from src.config import ROOT
+
+        load_dotenv(ROOT / ".env")
         self.model = os.environ.get("OPENAI_MODEL", model)
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY", "")
         self.api_base = os.environ.get("OPENAI_BASE_URL", api_base).rstrip("/")
@@ -108,7 +112,6 @@ class OpenAIAgent(BaseAgent):
                 },
                 {"role": "user", "content": prompt},
             ],
-            "temperature": 0.2,
         }
 
         data = json.dumps(payload).encode("utf-8")
@@ -121,10 +124,23 @@ class OpenAIAgent(BaseAgent):
             },
         )
 
+        ssl_context = None
         try:
-            with urllib.request.urlopen(req, timeout=self.timeout) as resp:
+            import ssl
+            import certifi
+
+            ssl_context = ssl.create_default_context(cafile=certifi.where())
+        except Exception:
+            pass
+
+        try:
+            with urllib.request.urlopen(req, timeout=self.timeout, context=ssl_context) as resp:
                 resp_data = json.loads(resp.read().decode("utf-8"))
                 return resp_data["choices"][0]["message"]["content"]
+        except urllib.error.HTTPError as e:
+            err_body = e.read().decode("utf-8", errors="replace") if hasattr(e, "read") else ""
+            logger.error(f"OpenAI HTTP {e.code} error: {e.reason} - {err_body}")
+            return "ACTION: RESET"
         except Exception as e:
             logger.error(f"OpenAI API call failed: {e}")
             return "ACTION: RESET"
@@ -138,8 +154,11 @@ class OpenAIAgent(BaseAgent):
         if not available:
             return GameAction.RESET
 
-        grid = latest_frame.frame[0] if latest_frame.frame and len(latest_frame.frame) > 0 else []
-        ascii_grid = grid_to_ascii(grid)
+        grid = latest_frame.frame[0] if latest_frame.frame is not None and len(latest_frame.frame) > 0 else []
+        has_grid = grid is not None and len(grid) > 0
+        grid_h = len(grid) if has_grid else 0
+        grid_w = len(grid[0]) if has_grid else 0
+        ascii_grid = grid_to_ascii(grid) if has_grid else ""
 
         # Build prompt
         action_names = []
@@ -167,7 +186,7 @@ class OpenAIAgent(BaseAgent):
             f"Available Actions: {', '.join(action_names)}",
         ]
 
-        if 6 in available and grid:
+        if 6 in available and has_grid:
             clicks = extract_candidate_clicks(grid, max_candidates=6)
             if clicks:
                 prompt_parts.append(
@@ -175,22 +194,27 @@ class OpenAIAgent(BaseAgent):
                     + "\n".join(f"  - click ({r}, {c})" for r, c in clicks)
                 )
 
-        prompt_parts.append(f"Current Board ({len(grid)}x{len(grid[0]) if grid else 0}):\n{ascii_grid}")
+        prompt_parts.append(f"Current Board ({grid_h}x{grid_w}):\n{ascii_grid}")
         prompt = "\n\n".join(prompt_parts)
 
         resp = self._call_api(prompt)
         action, coords = parse_action_response(resp, available)
+
+        # Print concise model decision for interactive evaluation feedback
+        first_line = resp.strip().splitlines()[0] if resp.strip() else ""
+        coord_str = f"({coords[0]},{coords[1]})" if coords else ""
+        print(f"🤖 [{self.model}] L{latest_frame.levels_completed}: {action.name}{coord_str} | {first_line[:80]}", flush=True)
 
         if action == GameAction.ACTION6:
             if coords is not None:
                 r, c = coords
             else:
                 # Fallback to first centroid or board center
-                clicks = extract_candidate_clicks(grid, max_candidates=1) if grid else []
+                clicks = extract_candidate_clicks(grid, max_candidates=1) if has_grid else []
                 if clicks:
                     r, c = clicks[0]
                 else:
-                    r, c = len(grid) // 2 if grid else 0, len(grid[0]) // 2 if grid and grid[0] else 0
+                    r, c = grid_h // 2, grid_w // 2
             action.set_data({"x": r, "y": c, "game_id": latest_frame.game_id})
 
         return action
