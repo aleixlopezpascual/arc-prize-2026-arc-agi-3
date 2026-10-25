@@ -152,3 +152,77 @@ def detect_budget_helper(
         return None
     from src.perception.fable_core import detect_budget
     return detect_budget(frames)
+
+
+def solve_toggle(
+    button_masks: list[int],
+    target: int,
+    n_cells: int | None = None,
+    max_nullity: int = 18,
+) -> dict[str, Any]:
+    """Solve independent binary XOR toggles from measured button effects via GF(2) Gaussian elimination."""
+    masks = [int(x) for x in button_masks]
+    target = int(target)
+    if target < 0 or any(x < 0 for x in masks) or len(masks) > 256:
+        raise ValueError("Use at most 256 nonnegative button masks and target")
+    required = max([target.bit_length()] + [m.bit_length() for m in masks])
+    n_cells = required if n_cells is None else int(n_cells)
+    if not required <= n_cells <= 4096:
+        raise ValueError("n_cells must cover all mask bits and be <=4096")
+    basis = {}
+    nullspace = []
+    for index, vector in enumerate(masks):
+        combination = 1 << index
+        while vector:
+            pivot = vector.bit_length() - 1
+            if pivot not in basis:
+                basis[pivot] = (vector, combination)
+                break
+            row, row_combination = basis[pivot]
+            vector ^= row
+            combination ^= row_combination
+        if not vector:
+            nullspace.append(combination)
+    residual, solution = target, 0
+    while residual:
+        pivot = residual.bit_length() - 1
+        if pivot not in basis:
+            return dict(
+                solvable=False,
+                indices=None,
+                minimal=False,
+                nullity=len(nullspace),
+                clicks=0,
+            )
+        row, combination = basis[pivot]
+        residual ^= row
+        solution ^= combination
+    minimal = len(nullspace) <= min(18, max(0, int(max_nullity)))
+    if minimal:
+        current, best, last_gray = solution, solution, 0
+        for i in range(1, 1 << len(nullspace)):
+            gray = i ^ (i >> 1)
+            current ^= nullspace[(gray ^ last_gray).bit_length() - 1]
+            last_gray = gray
+            if current.bit_count() < best.bit_count():
+                best = current
+        solution = best
+    else:
+        for _ in range(3):
+            for vector in nullspace:
+                if (solution ^ vector).bit_count() < solution.bit_count():
+                    solution ^= vector
+    indices = [i for i in range(len(masks)) if solution & (1 << i)]
+    check = 0
+    for i in indices:
+        check ^= masks[i]
+    if check != target:
+        raise AssertionError("Toggle solution failed verification")
+    return dict(
+        solvable=True,
+        indices=indices,
+        clicks=len(indices),
+        minimal=minimal,
+        nullity=len(nullspace),
+    )
+

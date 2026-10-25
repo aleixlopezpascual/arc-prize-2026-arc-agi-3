@@ -154,3 +154,25 @@ def test_sandbox_detect_indicators():
   res = detect_indicators(before, after)
   assert len(res) == 1
   assert res[0]["size"] == 4
+
+
+def test_solve_toggle_exact():
+  from src.perception.sandbox_primitives import solve_toggle
+  # Button 0 toggles cell 0 (mask 1)
+  # Button 1 toggles cells 0 and 1 (mask 3)
+  # Button 2 toggles cell 1 (mask 2)
+  # Target: turn on cell 1 only (target 2)
+  res = solve_toggle([1, 3, 2], target=2)
+  assert res["solvable"] is True
+  assert res["indices"] == [2] or len(res["indices"]) == 1
+  assert res["clicks"] == 1
+  assert res["minimal"] is True
+
+
+def test_solve_toggle_unsolvable():
+  from src.perception.sandbox_primitives import solve_toggle
+  # Parity conflict: only even bits togglable, odd bit required
+  res = solve_toggle([2, 4], target=1)
+  assert res["solvable"] is False
+  assert res["indices"] is None
+
