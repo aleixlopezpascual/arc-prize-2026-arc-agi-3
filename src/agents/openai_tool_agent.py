@@ -62,6 +62,7 @@ class OpenAIToolAgent(BaseAgent):
         self.guard = NoopRepeatGuard()
         self.last_action: GameAction | None = None
         self.current_level = 0
+        self.last_sandbox_stdout: str = ""
 
     def reset(self) -> None:
         self.action_queue.clear()
@@ -69,6 +70,7 @@ class OpenAIToolAgent(BaseAgent):
         self.guard = NoopRepeatGuard()
         self.last_action = None
         self.current_level = 0
+        self.last_sandbox_stdout = ""
 
     def _call_api(self, prompt: str) -> str:
         """Issue completion request to OpenAI API using standard library urllib."""
@@ -254,6 +256,9 @@ class OpenAIToolAgent(BaseAgent):
         if feedback_msg:
             prompt_parts.append(feedback_msg)
 
+        if self.last_sandbox_stdout:
+            prompt_parts.append(f"Previous Sandbox Output:\n{self.last_sandbox_stdout[:1000]}")
+
         nodes = segment_grid(grid, background_color=0) if has_grid else []
 
         if 6 in available and nodes:
@@ -300,11 +305,19 @@ class OpenAIToolAgent(BaseAgent):
             "grid": grid,
         }
 
+        import io
+        import contextlib
+
+        stdout_buf = io.StringIO()
         if code:
             try:
-                exec(code, sandbox_scope)
+                with contextlib.redirect_stdout(stdout_buf):
+                    exec(code, sandbox_scope)
             except Exception as e:
+                print(f"Error: {e}", file=stdout_buf)
                 logger.warning(f"Sandbox execution error: {e}")
+
+        self.last_sandbox_stdout = stdout_buf.getvalue().strip()
 
         # 6. Parse queued actions
         for raw in queued_raw:

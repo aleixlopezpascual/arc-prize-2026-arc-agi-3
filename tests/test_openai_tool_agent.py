@@ -161,3 +161,32 @@ def test_openai_tool_agent_frame_diff_feedback():
         assert "modified" in called_prompt or "pixels" in called_prompt
 
 
+def test_openai_tool_agent_captures_sandbox_stdout():
+    agent = OpenAIToolAgent(model="gpt-6-luna", api_key="dummy-key")
+    frame1 = FrameData(
+        frame=[[[0, 1], [8, 0]]],
+        available_actions=[1, 2, 3, 4],
+        state=GameState.NOT_FINISHED,
+        game_id="ls20-1234",
+        levels_completed=0,
+    )
+    # Turn 1: model executes Python print
+    with patch.object(agent, "_call_api", return_value='```python\nprint("FOUND_TARGET_AT_32_20")\naction(["UP"])\n```'):
+        agent.choose_action([frame1], frame1)
+        assert "FOUND_TARGET_AT_32_20" in agent.last_sandbox_stdout
+
+    frame2 = FrameData(
+        frame=[[[0, 0], [8, 1]]],
+        available_actions=[1, 2, 3, 4],
+        state=GameState.NOT_FINISHED,
+        game_id="ls20-1234",
+        levels_completed=0,
+    )
+    # Turn 2: verify prompt includes the captured output from Turn 1
+    with patch.object(agent, "_call_api", return_value='```python\naction(["RIGHT"])\n```') as mock_call:
+        agent.choose_action([frame1, frame2], frame2)
+        called_prompt = mock_call.call_args[0][0]
+        assert "FOUND_TARGET_AT_32_20" in called_prompt
+
+
+
