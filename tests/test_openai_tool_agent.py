@@ -189,4 +189,26 @@ def test_openai_tool_agent_captures_sandbox_stdout():
         assert "FOUND_TARGET_AT_32_20" in called_prompt
 
 
+def test_openai_tool_agent_route_to_helper():
+    agent = OpenAIToolAgent(model="gpt-6-luna", api_key="dummy-key")
+    # 3x3 open grid of color 1
+    frame = FrameData(
+        frame=[[[1, 1, 1], [1, 1, 1], [1, 1, 1]]],
+        available_actions=[1, 2, 3, 4],
+        state=GameState.NOT_FINISHED,
+        game_id="ls20-1234",
+        levels_completed=0,
+    )
+    llm_response = """
+```python
+route_to((2, 2), start=(0, 0))
+```
+"""
+    with patch.object(agent, "_call_api", return_value=llm_response):
+        act = agent.choose_action([frame], frame)
+        assert len(agent.action_queue) == 3
+        assert act in (GameAction.ACTION2, GameAction.ACTION4)
+
+
+
 

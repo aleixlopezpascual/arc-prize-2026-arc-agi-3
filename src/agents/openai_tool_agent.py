@@ -91,6 +91,7 @@ class OpenAIToolAgent(BaseAgent):
                         "- candidate_clicks(min_size=1): Returns segmented object targets with [row, col] centroids.\n"
                         "- candidate_goals(): Returns destination landmarks and sockets.\n"
                         "- route(mask, start, goals): BFS shortest path on boolean mask; returns {'status': 'solved', 'actions': [...]}.\n"
+                        "- route_to(target, start=None): Calculates BFS path to target coordinate/centroid and queues all moves in one shot!\n"
                         "- solve_toggle(button_masks, target): Solves binary button/toggle puzzles instantly via GF(2).\n"
                         "- notes['game'], notes['level']: Dicts to store discovered rules or goals.\n"
                         "- grid: Current 2D board array.\n\n"
@@ -273,8 +274,8 @@ class OpenAIToolAgent(BaseAgent):
         prompt_parts.append(f"Current Board ({grid_h}x{grid_w}):\n{ascii_grid}")
         prompt_parts.append(
             "Write Python code calling action([actions...]) to execute your plan.\n"
-            "PLANNING TIP: If navigating open corridors or paths, plan multiple moves in a sequence like action(['UP', 'UP', 'RIGHT', 'RIGHT'])!\n"
-            "You can use candidate_clicks(), candidate_goals(), route(), solve_toggle(), notes."
+            "PLANNING TIP: Use route_to(target_centroid) to compute and queue all moves to any target in one step!\n"
+            "You can use candidate_clicks(), candidate_goals(), route(), route_to(), solve_toggle(), notes."
         )
         prompt = "\n\n".join(prompt_parts)
 
@@ -288,6 +289,11 @@ class OpenAIToolAgent(BaseAgent):
         code = extract_python_snippet(resp)
         queued_raw: list[str] = []
 
+        import io
+        import contextlib
+
+        stdout_buf = io.StringIO()
+
         def sandbox_action(act_list: list[Any]) -> None:
             if isinstance(act_list, (list, tuple)):
                 for item in act_list:
@@ -295,20 +301,58 @@ class OpenAIToolAgent(BaseAgent):
             else:
                 queued_raw.append(str(act_list))
 
+        def sandbox_route_to(
+            target: Any,
+            start: tuple[int, int] | list[int] | None = None,
+            walkable_colors: list[int] | set[int] | None = None,
+        ) -> dict[str, Any]:
+            if isinstance(target, dict):
+                target_coords = target.get("centroid") or target.get("bbox")[:2]
+            else:
+                target_coords = target
+            tr, tc = int(target_coords[0]), int(target_coords[1])
+
+            if start is not None:
+                sr, sc = int(start[0]), int(start[1])
+            else:
+                sr, sc = (grid_h // 2, grid_w // 2) if has_grid else (0, 0)
+                for n in nodes:
+                    if n.get("pixels") == 1 or n.get("color") in (0, 1):
+                        sr, sc = int(n["centroid"][0]), int(n["centroid"][1])
+                        break
+
+            if walkable_colors is not None:
+                allowed = set(walkable_colors)
+            else:
+                start_c = grid[sr][sc] if has_grid and 0 <= sr < grid_h and 0 <= sc < grid_w else 0
+                target_c = grid[tr][tc] if has_grid and 0 <= tr < grid_h and 0 <= tc < grid_w else 0
+                allowed = {start_c, target_c, 0, 1, 3, 4}
+
+            mask = [[grid[r][c] in allowed for c in range(grid_w)] for r in range(grid_h)]
+            if 0 <= sr < grid_h and 0 <= sc < grid_w:
+                mask[sr][sc] = True
+            if 0 <= tr < grid_h and 0 <= tc < grid_w:
+                mask[tr][tc] = True
+
+            path_res = route(mask, start=(sr, sc), goals=[(tr, tc)])
+            if path_res.get("status") == "solved" and path_res.get("actions"):
+                sandbox_action(path_res["actions"])
+                print(f"🗺️ [route_to] Computed {len(path_res['actions'])}-step route to ({tr}, {tc})", file=stdout_buf)
+            else:
+                print(f"⚠️ [route_to] Could not find route from ({sr}, {sc}) to ({tr}, {tc})", file=stdout_buf)
+            return path_res
+
         sandbox_scope = {
             "action": sandbox_action,
             "candidate_clicks": lambda **kw: candidate_clicks(nodes, **kw),
             "candidate_goals": lambda **kw: candidate_goals(nodes, **kw),
             "route": route,
+            "route_to": sandbox_route_to,
             "solve_toggle": solve_toggle,
             "notes": self.notes,
             "grid": grid,
         }
 
-        import io
-        import contextlib
-
-        stdout_buf = io.StringIO()
         if code:
             try:
                 with contextlib.redirect_stdout(stdout_buf):
