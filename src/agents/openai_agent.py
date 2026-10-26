@@ -12,6 +12,7 @@ from typing import Any
 from arcengine import FrameData, GameAction
 
 from src.agents.base import BaseAgent
+from src.guards.noop_repeat_guard import NoopRepeatGuard, compute_interior_hash
 from src.perception.centroids import extract_candidate_clicks
 
 logger = logging.getLogger("openai_agent")
@@ -88,9 +89,15 @@ class OpenAIAgent(BaseAgent):
         self.api_base = os.environ.get("OPENAI_BASE_URL", api_base).rstrip("/")
         self.timeout = timeout
         self.history: list[dict[str, Any]] = []
+        self.guard = NoopRepeatGuard()
+        self.last_action: GameAction | None = None
+        self.current_level = 0
 
     def reset(self) -> None:
         self.history.clear()
+        self.guard = NoopRepeatGuard()
+        self.last_action = None
+        self.current_level = 0
 
     def _call_api(self, prompt: str) -> str:
         """Issue completion request to OpenAI API using standard library urllib."""
@@ -154,11 +161,33 @@ class OpenAIAgent(BaseAgent):
         if not available:
             return GameAction.RESET
 
+        if latest_frame.levels_completed != self.current_level:
+            self.current_level = latest_frame.levels_completed
+            self.guard.note_level(self.current_level)
+            self.last_action = None
+
         grid = latest_frame.frame[0] if latest_frame.frame is not None and len(latest_frame.frame) > 0 else []
         has_grid = grid is not None and len(grid) > 0
         grid_h = len(grid) if has_grid else 0
         grid_w = len(grid[0]) if has_grid else 0
         ascii_grid = grid_to_ascii(grid) if has_grid else ""
+        curr_hash = compute_interior_hash(grid) if has_grid else ""
+
+        # Observe previous transition
+        warning_msg = None
+        if len(frames) >= 2 and self.last_action is not None:
+            prev_grid = frames[-2].frame[0] if frames[-2].frame is not None and len(frames[-2].frame) > 0 else []
+            prev_has_grid = prev_grid is not None and len(prev_grid) > 0
+            prev_hash = compute_interior_hash(prev_grid) if prev_has_grid else ""
+            gameplay_changed = (prev_hash != curr_hash)
+            self.guard.observe(prev_hash, self.last_action, gameplay_changed)
+
+            if not gameplay_changed:
+                warning_msg = (
+                    f"⚠️ ALERT: Your previous action '{self.last_action.name}' produced NO change on the board "
+                    f"(wall/obstacle bump). You are blocked in that direction! Do NOT repeat '{self.last_action.name}'. "
+                    f"Choose an alternate direction or action."
+                )
 
         # Build prompt
         action_names = []
@@ -186,6 +215,9 @@ class OpenAIAgent(BaseAgent):
             f"Available Actions: {', '.join(action_names)}",
         ]
 
+        if warning_msg:
+            prompt_parts.append(warning_msg)
+
         if 6 in available and has_grid:
             clicks = extract_candidate_clicks(grid, max_candidates=6)
             if clicks:
@@ -199,6 +231,18 @@ class OpenAIAgent(BaseAgent):
 
         resp = self._call_api(prompt)
         action, coords = parse_action_response(resp, available)
+
+        # Guard override if model still selects blocked action
+        if self.guard.should_block(curr_hash, action):
+            for alt_id in available:
+                alt_act = GameAction.from_id(alt_id)
+                if not self.guard.should_block(curr_hash, alt_act):
+                    print(f"🛡️ [No-Op Guard] Overriding blocked action {action.name} -> {alt_act.name}", flush=True)
+                    action = alt_act
+                    coords = None
+                    break
+
+        self.last_action = action
 
         # Print concise model decision for interactive evaluation feedback
         first_line = resp.strip().splitlines()[0] if resp.strip() else ""
