@@ -135,3 +135,29 @@ def test_openai_tool_agent_aborts_queue_on_level_change():
         assert act2 == GameAction.ACTION1
         assert len(agent.action_queue) == 0
 
+
+def test_openai_tool_agent_frame_diff_feedback():
+    agent = OpenAIToolAgent(model="gpt-6-luna", api_key="dummy-key")
+    frame1 = FrameData(
+        frame=[[[0, 1], [8, 0]]],
+        available_actions=[1, 2, 3, 4],
+        state=GameState.NOT_FINISHED,
+        game_id="ls20-1234",
+        levels_completed=0,
+    )
+    with patch.object(agent, "_call_api", return_value='```python\naction(["DOWN"])\n```'):
+        agent.choose_action([frame1], frame1)
+
+    frame2 = FrameData(
+        frame=[[[0, 0], [8, 1]]],  # pixels changed
+        available_actions=[1, 2, 3, 4],
+        state=GameState.NOT_FINISHED,
+        game_id="ls20-1234",
+        levels_completed=0,
+    )
+    with patch.object(agent, "_call_api", return_value='```python\naction(["RIGHT"])\n```') as mock_call:
+        agent.choose_action([frame1, frame2], frame2)
+        called_prompt = mock_call.call_args[0][0]
+        assert "modified" in called_prompt or "pixels" in called_prompt
+
+

@@ -15,6 +15,7 @@ from arcengine import FrameData, GameAction
 from src.agents.base import BaseAgent
 from src.agents.openai_agent import ACTION_MAP, grid_to_ascii, parse_action_response
 from src.guards.noop_repeat_guard import NoopRepeatGuard, compute_interior_hash
+from src.perception.frame_diff import compute_frame_diff
 from src.perception.sandbox_primitives import candidate_clicks, candidate_goals, solve_toggle
 from src.perception.segmentation import segment_grid
 from src.search.bounded_search import route
@@ -187,7 +188,7 @@ class OpenAIToolAgent(BaseAgent):
         curr_hash = compute_interior_hash(grid) if has_grid else ""
 
         # 2. Observe previous transition & check no-op stagnation
-        warning_msg = None
+        feedback_msg = None
         if len(frames) >= 2 and self.last_action is not None:
             prev_grid = frames[-2].frame[0] if frames[-2].frame is not None and len(frames[-2].frame) > 0 else []
             prev_has_grid = prev_grid is not None and len(prev_grid) > 0
@@ -199,10 +200,22 @@ class OpenAIToolAgent(BaseAgent):
                 if self.action_queue:
                     print(f"🛑 [No-Op Stagnation] Discarding {len(self.action_queue)} queued action(s) due to wall bump.", flush=True)
                     self.action_queue.clear()
-                warning_msg = (
+                feedback_msg = (
                     f"⚠️ ALERT: Your previous action '{self.last_action.name}' produced NO change on the board "
                     f"(wall/obstacle bump). Do NOT repeat '{self.last_action.name}' right now."
                 )
+            elif prev_has_grid and has_grid:
+                diff = compute_frame_diff(prev_grid, grid, background_color=0)
+                n_changed = diff.get("changed_cell_count", 0)
+                details = []
+                if diff.get("moved"):
+                    details.append(f"moved object to bbox {diff['moved'][0]['to_bbox']}")
+                if diff.get("appeared"):
+                    details.append(f"new object appeared at bbox {diff['appeared'][0]['bbox']}")
+                if diff.get("changed_color"):
+                    details.append(f"color changed to {diff['changed_color'][0]['after_color']}")
+                detail_str = f" ({', '.join(details)})" if details else ""
+                feedback_msg = f"Last action '{self.last_action.name}' modified {n_changed} pixels{detail_str}."
 
         # 3. Check if we still have active queued actions
         if self.action_queue:
@@ -238,8 +251,8 @@ class OpenAIToolAgent(BaseAgent):
             f"Persistent Notes: {json.dumps(self.notes)}",
         ]
 
-        if warning_msg:
-            prompt_parts.append(warning_msg)
+        if feedback_msg:
+            prompt_parts.append(feedback_msg)
 
         nodes = segment_grid(grid, background_color=0) if has_grid else []
 
@@ -262,8 +275,9 @@ class OpenAIToolAgent(BaseAgent):
 
         # 4. Call LLM
         resp = self._call_api(prompt)
-        first_line = resp.strip().splitlines()[0] if resp.strip() else ""
-        print(f"🤖 [{self.model} Tool] L{latest_frame.levels_completed} Thinking: {first_line[:80]}", flush=True)
+        non_fence_lines = [l.strip() for l in resp.strip().splitlines() if l.strip() and not l.strip().startswith("```")]
+        first_line = non_fence_lines[0] if non_fence_lines else resp.strip().splitlines()[0] if resp.strip() else ""
+        print(f"🤖 [{self.model} Tool] L{latest_frame.levels_completed} Thinking: {first_line[:85]}", flush=True)
 
         # 5. Extract and execute Python snippet
         code = extract_python_snippet(resp)
