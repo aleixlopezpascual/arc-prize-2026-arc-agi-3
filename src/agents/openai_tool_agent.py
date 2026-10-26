@@ -84,13 +84,14 @@ class OpenAIToolAgent(BaseAgent):
                         "You are an expert game-playing agent for ARC-AGI-3 equipped with Python sandbox tools.\n"
                         "You write short Python snippets to analyze the board, plan routes, and queue actions.\n"
                         "Available sandbox functions and state:\n"
-                        "- action(actions: list[str]): Queue actions to execute (e.g. action(['UP', 'RIGHT']) or action(['CLICK(r, c)'])).\n"
+                        "- action(actions: list[str]): Queue actions to execute (e.g. action(['UP', 'UP', 'RIGHT', 'RIGHT']) or action(['CLICK(r, c)'])).\n"
                         "- candidate_clicks(min_size=1): Returns segmented object targets with [row, col] centroids.\n"
                         "- candidate_goals(): Returns destination landmarks and sockets.\n"
                         "- route(mask, start, goals): BFS shortest path on boolean mask; returns {'status': 'solved', 'actions': [...]}.\n"
                         "- solve_toggle(button_masks, target): Solves binary button/toggle puzzles instantly via GF(2).\n"
                         "- notes['game'], notes['level']: Dicts to store discovered rules or goals.\n"
                         "- grid: Current 2D board array.\n\n"
+                        "EFFICIENCY MANDATE: When moving along clear corridors or traversing paths, plan 3-8 moves in a batch (e.g. action(['UP', 'UP', 'RIGHT']))!\n"
                         "Always wrap your executable code in ```python ... ```."
                     ),
                 },
@@ -168,18 +169,14 @@ class OpenAIToolAgent(BaseAgent):
         if not available:
             return GameAction.RESET
 
-        # 1. Check if we already have actions queued from a previous plan
-        if self.action_queue:
-            next_action = self.action_queue.popleft()
-            self.last_action = next_action
-            print(f"⚡ [Queue Replay] Executing queued action: {next_action.name}", flush=True)
-            return next_action
-
-        # 2. Check level change and normalize memory
+        # 1. Check level change first and reset queue
         if latest_frame.levels_completed != self.current_level:
             self.current_level = latest_frame.levels_completed
             self.guard.note_level(self.current_level)
             self.notes = normalize_notes(self.notes, self.current_level)
+            if self.action_queue:
+                print(f"🎉 [Level Cleared] Clearing {len(self.action_queue)} queued action(s) for new level.", flush=True)
+                self.action_queue.clear()
             self.last_action = None
 
         grid = latest_frame.frame[0] if latest_frame.frame is not None and len(latest_frame.frame) > 0 else []
@@ -189,7 +186,7 @@ class OpenAIToolAgent(BaseAgent):
         ascii_grid = grid_to_ascii(grid) if has_grid else ""
         curr_hash = compute_interior_hash(grid) if has_grid else ""
 
-        # Observe previous transition
+        # 2. Observe previous transition & check no-op stagnation
         warning_msg = None
         if len(frames) >= 2 and self.last_action is not None:
             prev_grid = frames[-2].frame[0] if frames[-2].frame is not None and len(frames[-2].frame) > 0 else []
@@ -199,12 +196,22 @@ class OpenAIToolAgent(BaseAgent):
             self.guard.observe(prev_hash, self.last_action, gameplay_changed)
 
             if not gameplay_changed:
+                if self.action_queue:
+                    print(f"🛑 [No-Op Stagnation] Discarding {len(self.action_queue)} queued action(s) due to wall bump.", flush=True)
+                    self.action_queue.clear()
                 warning_msg = (
                     f"⚠️ ALERT: Your previous action '{self.last_action.name}' produced NO change on the board "
                     f"(wall/obstacle bump). Do NOT repeat '{self.last_action.name}' right now."
                 )
 
-        # 3. Build prompt
+        # 3. Check if we still have active queued actions
+        if self.action_queue:
+            next_action = self.action_queue.popleft()
+            self.last_action = next_action
+            print(f"⚡ [Queue Replay] Executing queued action: {next_action.name}", flush=True)
+            return next_action
+
+        # 4. Build prompt
         action_names = []
         for a in available:
             if a == 0:
@@ -248,6 +255,7 @@ class OpenAIToolAgent(BaseAgent):
         prompt_parts.append(f"Current Board ({grid_h}x{grid_w}):\n{ascii_grid}")
         prompt_parts.append(
             "Write Python code calling action([actions...]) to execute your plan.\n"
+            "PLANNING TIP: If navigating open corridors or paths, plan multiple moves in a sequence like action(['UP', 'UP', 'RIGHT', 'RIGHT'])!\n"
             "You can use candidate_clicks(), candidate_goals(), route(), solve_toggle(), notes."
         )
         prompt = "\n\n".join(prompt_parts)
