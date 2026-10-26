@@ -201,7 +201,7 @@ def main() -> None:
         else [g.strip() for g in args.games.split(",")]
     )
     agent_cls = AVAILABLE_AGENTS[args.agent]
-    if args.agent == "openai":
+    if args.agent in ("openai", "openai_tool"):
         agent = agent_cls(model=args.model)
     else:
         agent = agent_cls()
