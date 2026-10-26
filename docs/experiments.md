@@ -75,3 +75,6 @@ Tracking all agent iterations, local validation scores, efficiency benchmarks, a
 | `eval-perception_search-2026-10-03` | 2026-10-03 | perception_search on ls20,ar25,dc22 | 0.00% | 0 | 407 | - | Offline evaluation runner pass. |
 | `duck_v17_adaptive_armor` | 2026-10-25 | Duck V17: 55m server startup shield, 900s HTTP retry grace, warmup keepalive, exact GF(2) solve_toggle, bounded_search, route, bounded 16 KiB JSON notes memory, follow_plan mismatch stop, Duck V12/V15 core | 23.94% | - | - | Complete | Ref 57638864 scored on hidden 110 test games. Survived Kaggle cache mount slowdowns cleanly without 0.00 crash. |
 | `eval-openai-2026-10-26` | 2026-10-26 | openai on ls20 | 0.00% | 0 | 30 | - | Offline evaluation runner pass with gpt-6-luna. |
+| `eval-openai_tool-2026-10-26` | 2026-10-26 | openai_tool on su15 | 0.00% | 0 | 20 | - | Offline evaluation runner pass. |
+| `eval-openai_tool-2026-10-26` | 2026-10-26 | openai_tool on ar25 | 0.00% | 0 | 15 | - | Offline evaluation runner pass. |
+| `eval-openai_tool-2026-10-26` | 2026-10-26 | openai_tool on ft09 | 0.00% | 0 | 15 | - | Offline evaluation runner pass. |
