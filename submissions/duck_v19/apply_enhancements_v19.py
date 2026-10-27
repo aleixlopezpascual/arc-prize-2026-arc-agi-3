@@ -328,30 +328,7 @@ if "def bfs_path" not in sandbox_text:
         new_refresh_tail = """            runtime_globals["valid_actions"] = [str(item) for item in state_payload.get("valid_actions", [])]
             runtime_globals["death_ledger"] = state_payload.get("death_ledger") or {"attempts": []}
             runtime_globals["last_action_call_result"] = action_result
-
-    def candidate_goals(exclude_border=True, max_candidates=8):
-        nodes = runtime_globals.get("candidate_clicks")(min_size=1, exclude_border=exclude_border)
-        if not nodes:
-            return []
-        scores = []
-        for n in nodes:
-            c = n.get("color")
-            p = n.get("pixels", 0)
-            score = 0.0
-            if p == 1:
-                score += 35.0
-            elif p <= 4:
-                score += 20.0
-            if c not in (0, 4):  # not background/floor
-                score += 15.0
-            n_copy = dict(n)
-            n_copy["goal_score"] = score
-            scores.append(n_copy)
-        scores.sort(key=lambda x: x["goal_score"], reverse=True)
-        return scores[:max_candidates]
-
             runtime_globals["candidate_clicks"] = candidate_clicks
-            runtime_globals["candidate_goals"] = candidate_goals
             runtime_globals["object_at"] = object_at
             runtime_globals["bfs_path"] = bfs_path
             runtime_globals["solved_memory"] = list(state_payload.get("solved_memory") or [])

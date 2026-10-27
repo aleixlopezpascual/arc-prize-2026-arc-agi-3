@@ -30,8 +30,17 @@ def test_duck_v19_notebook_structure():
     assert "ARC3_WARMUP_ACTION_GAMES" in text, "Must contain warmup action keepalive flag"
     assert "ARC3_HTTP_RETRY_INITIAL_SECONDS" in text, "Must contain HTTP retry grace period"
 
-    # Check perception & lean core
+    # Check perception & lean core (Duck V12 peak engine)
     assert "candidate_clicks" in text, "Must contain candidate_clicks"
-    assert "candidate_goals" in text, "Must contain candidate_goals"
+    assert "object_at" in text, "Must contain object_at"
+    assert "bfs_path" in text, "Must contain bfs_path"
     assert "solved_memory" in text, "Must contain solved_memory"
     assert "stagnation_alert" not in text, "Must NOT contain V15 stagnation alert early stopping"
+
+
+def test_duck_v19_enhancements_syntax_valid():
+    script_path = Path("submissions/duck_v19/apply_enhancements_v19.py")
+    assert script_path.exists()
+    code = script_path.read_text()
+    # Must compile without SyntaxError or IndentationError
+    compile(code, "apply_enhancements_v19.py", "exec")
