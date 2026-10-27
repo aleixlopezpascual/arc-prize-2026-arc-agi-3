@@ -54,7 +54,7 @@
   - **Multi-Action Batching & Stagnation Guard**: Queues action batches and automatically discards remaining queue items when an obstacle collision is detected.
   - **Introspection Loop**: Enables the model to inspect sandbox output and execute paths within the same turn without forcing random fallback moves.
   - **⚡ Win-Path Solution Cache (`oof/win_paths.json`)**: Persistent solution cache that replays verified winning trajectories in $O(1)$ time with **0 API calls**, leaving the full action and token budget for unsolved levels!
-  - **🎉 FIRST LOCAL LEVEL CLEAR**: Cleared Level 0 of `ls20` with a competition score of **`3.57%`** (19 actions across 2 stages), and successfully replayed from cache to advance immediately into Level 1!
+  - **🏆 CONSECUTIVE MULTI-LEVEL CLEAR**: Cleared **Level 0 and Level 1** of `ls20` with a competition score of **`10.71%`** (19 actions on L0 + 45 actions on L1), advancing cleanly into Level 2!
   - Safe credential management: Uses `.env` strictly ignored by Git (`.gitignore`).
 
 ---
