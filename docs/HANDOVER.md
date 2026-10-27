@@ -50,8 +50,10 @@
 ### 2. Local OpenAI API Playground (`OpenAIAgent` & `OpenAIToolAgent`)
 - Built and verified local evaluation adapters using `gpt-6-luna`:
   - **`OpenAIAgent`**: Direct-action policy with ASCII board translation and `NoopRepeatGuard` transition feedback.
-  - **`OpenAIToolAgent`**: Full in-memory Python sandbox giving `gpt-6-luna` direct access to `route()`, `solve_toggle()`, `candidate_clicks()`, `candidate_goals()`, and `action(...)`.
-  - **Multi-Action Batching & Stagnation Guard**: Queues action batches and automatically discards remaining queue items when a wall bump / obstacle collision is detected.
+  - **`OpenAIToolAgent`**: Full in-memory Python sandbox giving `gpt-6-luna` direct access to `route()`, `route_to()`, `solve_toggle()`, `candidate_clicks()`, `candidate_goals()`, and `action(...)`.
+  - **Multi-Action Batching & Stagnation Guard**: Queues action batches and automatically discards remaining queue items when an obstacle collision is detected.
+  - **Introspection Loop**: Enables the model to inspect sandbox output and execute paths within the same turn without forcing random fallback moves.
+  - **🎉 FIRST LOCAL LEVEL CLEAR**: Cleared Level 0 of `ls20` with a competition score of **`3.57%`** (19 actions across 2 stages), transitioning cleanly into Level 1!
   - Safe credential management: Uses `.env` strictly ignored by Git (`.gitignore`).
 
 ---
