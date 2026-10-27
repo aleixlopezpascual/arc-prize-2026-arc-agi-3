@@ -89,3 +89,7 @@ Tracking all agent iterations, local validation scores, efficiency benchmarks, a
 | `eval-openai_tool-2026-10-27` | 2026-10-27 | openai_tool on vc33 | 0.00% | 0 | 25 | - | Offline evaluation runner pass. |
 | `eval-openai_tool-2026-10-27` | 2026-10-27 | openai_tool on ls20 | 0.00% | 0 | 25 | - | Offline evaluation runner pass. |
 | `eval-openai_tool-2026-10-27` | 2026-10-27 | openai_tool on ls20 | 0.00% | 0 | 25 | - | Offline evaluation runner pass. |
+| `eval-openai_tool-2026-10-27` | 2026-10-27 | openai_tool on ls20 | 0.00% | 0 | 30 | - | Offline evaluation runner pass. |
+| `eval-openai_tool-2026-10-27` | 2026-10-27 | openai_tool on ls20 | 0.00% | 0 | 25 | - | Offline evaluation runner pass. |
+| `eval-openai_tool-2026-10-27` | 2026-10-27 | openai_tool on ls20 | 0.00% | 0 | 25 | - | Offline evaluation runner pass. |
+| `eval-openai_tool-2026-10-27` | 2026-10-27 | openai_tool on ls20 | 3.57% | 1 | 44 | - | Offline evaluation runner pass. |

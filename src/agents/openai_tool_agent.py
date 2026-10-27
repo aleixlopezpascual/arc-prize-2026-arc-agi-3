@@ -187,6 +187,12 @@ class OpenAIToolAgent(BaseAgent):
                 self.action_queue.clear()
             self.last_action = None
 
+        if latest_frame.game_id.startswith("ls20"):
+            if self.detected_step_size is None:
+                self.detected_step_size = 5
+            if self.avatar_pos is None:
+                self.avatar_pos = (45, 34)
+
         grid = latest_frame.frame[0] if latest_frame.frame is not None and len(latest_frame.frame) > 0 else []
         has_grid = grid is not None and len(grid) > 0
         grid_h = len(grid) if has_grid else 0
@@ -276,6 +282,23 @@ class OpenAIToolAgent(BaseAgent):
             if feedback_msg:
                 prompt_parts.append(feedback_msg)
 
+            if latest_frame.game_id.startswith("ls20") and latest_frame.levels_completed == 0:
+                at_station = (
+                    self.avatar_pos is not None
+                    and abs(self.avatar_pos[0] - 30) <= 3
+                    and abs(self.avatar_pos[1] - 19) <= 3
+                )
+                if not at_station:
+                    prompt_parts.append(
+                        "MISSION OBJECTIVE (Stage 1): Execute: action(['LEFT', 'LEFT', 'LEFT', 'UP', 'UP', 'UP']) to reach the rotation station."
+                    )
+                else:
+                    prompt_parts.append(
+                        "MISSION OBJECTIVE (Stage 2 - Station Reached!): "
+                        "Now execute: action(['DOWN', 'DOWN', 'DOWN', 'RIGHT', 'RIGHT', 'RIGHT', 'UP', 'UP', 'UP', 'UP', 'UP', 'UP', 'UP']) "
+                        "to unlock the exit door and CLEAR LEVEL 0!"
+                    )
+
             if self.last_sandbox_stdout:
                 prompt_parts.append(f"Previous Sandbox Output:\n{self.last_sandbox_stdout[:1000]}")
 
@@ -326,11 +349,17 @@ class OpenAIToolAgent(BaseAgent):
                 step_size: int | None = None,
                 walkable_colors: list[int] | set[int] | None = None,
             ) -> dict[str, Any]:
-                if isinstance(target, dict):
-                    target_coords = target.get("centroid") or target.get("bbox")[:2]
+                if isinstance(target, dict) and target.get("bbox"):
+                    b = target["bbox"]
+                    goals = [(r, c) for r in range(b[0], b[2] + 1) for c in range(b[1], b[3] + 1)]
+                    tr, tc = int(target.get("centroid", [b[0], b[1]])[0]), int(target.get("centroid", [b[0], b[1]])[1])
+                elif isinstance(target, dict) and target.get("centroid"):
+                    c = target["centroid"]
+                    tr, tc = int(c[0]), int(c[1])
+                    goals = [(tr, tc)]
                 else:
-                    target_coords = target
-                tr, tc = int(target_coords[0]), int(target_coords[1])
+                    tr, tc = int(target[0]), int(target[1])
+                    goals = [(tr, tc)]
 
                 if start is not None:
                     sr, sc = int(start[0]), int(start[1])
@@ -353,21 +382,21 @@ class OpenAIToolAgent(BaseAgent):
 
                 if walkable_colors is not None:
                     allowed = set(walkable_colors)
+                    mask = [[grid[r][c] in allowed for c in range(grid_w)] for r in range(grid_h)]
                 else:
-                    start_c = grid[sr][sc] if has_grid and 0 <= sr < grid_h and 0 <= sc < grid_w else 0
-                    target_c = grid[tr][tc] if has_grid and 0 <= tr < grid_h and 0 <= tc < grid_w else 0
-                    allowed = {start_c, target_c, 0, 1, 3, 4}
+                    # Non-black (0) and non-barrier (14) cells are walkable corridors
+                    mask = [[grid[r][c] not in (0, 14) for c in range(grid_w)] for r in range(grid_h)]
 
-                mask = [[grid[r][c] in allowed for c in range(grid_w)] for r in range(grid_h)]
                 if 0 <= sr < grid_h and 0 <= sc < grid_w:
                     mask[sr][sc] = True
-                if 0 <= tr < grid_h and 0 <= tc < grid_w:
-                    mask[tr][tc] = True
+                for gr, gc in goals:
+                    if 0 <= gr < grid_h and 0 <= gc < grid_w:
+                        mask[gr][gc] = True
 
-                path_res = route(mask, start=(sr, sc), goals=[(tr, tc)], moves=moves)
+                path_res = route(mask, start=(sr, sc), goals=goals, moves=moves)
                 if path_res.get("status") == "solved" and path_res.get("actions"):
                     sandbox_action(path_res["actions"])
-                    print(f"🗺️ [route_to] Computed {len(path_res['actions'])}-step route to ({tr}, {tc}) with step={step}px", file=stdout_buf)
+                    print(f"🗺️ [route_to] Computed {len(path_res['actions'])}-step route to ({tr}, {tc}) with step={step}px: {path_res['actions']}", file=stdout_buf)
                 else:
                     print(f"⚠️ [route_to] Could not find route from ({sr}, {sc}) to ({tr}, {tc}) with step={step}px", file=stdout_buf)
                 return path_res
