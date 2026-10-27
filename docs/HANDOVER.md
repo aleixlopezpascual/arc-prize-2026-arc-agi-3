@@ -93,8 +93,10 @@
 ├── submissions/
 │   ├── duck_centroid_v1/                   # 30.19% LB Best Working Submission (Rank #621)
 │   ├── duck_v12/                           # 58.42% Demo Record Package (29.46% LB)
-│   └── duck_v17/                           # 55m Startup Shield + Adaptive Primitives (23.94% LB)
-└── tests/                                  # 122/122 pytest unit & integration tests (100% GREEN)
+│   ├── duck_v17/                           # 55m Startup Shield + Adaptive Primitives (23.94% LB)
+│   ├── duck_v19/                           # Lean Armor (MEMFRAC=0.93, 28.60% Demo GPU Score)
+│   └── duck_v20/                           # Dynamic Grid Perception + Win-Path Cache Armor
+└── tests/                                  # 124/124 pytest unit & integration tests (100% GREEN)
 ```
 
 ---
@@ -102,7 +104,7 @@
 ## 🧪 Testing & Verification Commands
 
 ```bash
-# Run the entire test suite (122 tests, 100% green)
+# Run the entire test suite (124 tests, 100% green)
 python3 -m pytest tests/ -q
 
 # Run local evaluation with gpt-6-luna tool agent
