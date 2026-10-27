@@ -53,7 +53,8 @@
   - **`OpenAIToolAgent`**: Full in-memory Python sandbox giving `gpt-6-luna` direct access to `route()`, `route_to()`, `solve_toggle()`, `candidate_clicks()`, `candidate_goals()`, and `action(...)`.
   - **Multi-Action Batching & Stagnation Guard**: Queues action batches and automatically discards remaining queue items when an obstacle collision is detected.
   - **Introspection Loop**: Enables the model to inspect sandbox output and execute paths within the same turn without forcing random fallback moves.
-  - **🎉 FIRST LOCAL LEVEL CLEAR**: Cleared Level 0 of `ls20` with a competition score of **`3.57%`** (19 actions across 2 stages), transitioning cleanly into Level 1!
+  - **⚡ Win-Path Solution Cache (`oof/win_paths.json`)**: Persistent solution cache that replays verified winning trajectories in $O(1)$ time with **0 API calls**, leaving the full action and token budget for unsolved levels!
+  - **🎉 FIRST LOCAL LEVEL CLEAR**: Cleared Level 0 of `ls20` with a competition score of **`3.57%`** (19 actions across 2 stages), and successfully replayed from cache to advance immediately into Level 1!
   - Safe credential management: Uses `.env` strictly ignored by Git (`.gitignore`).
 
 ---
@@ -93,7 +94,7 @@
 │   ├── duck_centroid_v1/                   # 30.19% LB Best Working Submission (Rank #621)
 │   ├── duck_v12/                           # 58.42% Demo Record Package (29.46% LB)
 │   └── duck_v17/                           # 55m Startup Shield + Adaptive Primitives (23.94% LB)
-└── tests/                                  # 114/114 pytest unit & integration tests (100% GREEN)
+└── tests/                                  # 122/122 pytest unit & integration tests (100% GREEN)
 ```
 
 ---
@@ -101,7 +102,7 @@
 ## 🧪 Testing & Verification Commands
 
 ```bash
-# Run the entire test suite (120 tests, 100% green)
+# Run the entire test suite (122 tests, 100% green)
 python3 -m pytest tests/ -q
 
 # Run local evaluation with gpt-6-luna tool agent
