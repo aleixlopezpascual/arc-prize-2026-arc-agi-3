@@ -210,5 +210,36 @@ route_to((2, 2), start=(0, 0))
         assert act in (GameAction.ACTION2, GameAction.ACTION4)
 
 
+def test_openai_tool_agent_detects_step_size():
+    agent = OpenAIToolAgent(model="gpt-6-luna", api_key="dummy-key")
+    # Frame 1: player at row 45
+    frame1 = FrameData(
+        frame=[[[0]*64 for _ in range(64)]],
+        available_actions=[1, 2, 3, 4],
+        state=GameState.NOT_FINISHED,
+        game_id="ls20-1234",
+        levels_completed=0,
+    )
+    frame1.frame[0][45][34] = 12
+
+    with patch.object(agent, "_call_api", return_value='```python\naction(["UP"])\n```'):
+        agent.choose_action([frame1], frame1)
+
+    # Frame 2: player moved by 5 pixels to row 40
+    frame2 = FrameData(
+        frame=[[[0]*64 for _ in range(64)]],
+        available_actions=[1, 2, 3, 4],
+        state=GameState.NOT_FINISHED,
+        game_id="ls20-1234",
+        levels_completed=0,
+    )
+    frame2.frame[0][40][34] = 12
+
+    with patch.object(agent, "_call_api", return_value='```python\naction(["RIGHT"])\n```'):
+        agent.choose_action([frame1, frame2], frame2)
+        assert agent.detected_step_size == 5
+
+
+
 
 

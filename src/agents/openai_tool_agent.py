@@ -63,6 +63,8 @@ class OpenAIToolAgent(BaseAgent):
         self.last_action: GameAction | None = None
         self.current_level = 0
         self.last_sandbox_stdout: str = ""
+        self.detected_step_size: int | None = None
+        self.avatar_pos: tuple[int, int] | None = None
 
     def reset(self) -> None:
         self.action_queue.clear()
@@ -71,6 +73,8 @@ class OpenAIToolAgent(BaseAgent):
         self.last_action = None
         self.current_level = 0
         self.last_sandbox_stdout = ""
+        self.detected_step_size = None
+        self.avatar_pos = None
 
     def _call_api(self, prompt: str) -> str:
         """Issue completion request to OpenAI API using standard library urllib."""
@@ -212,7 +216,14 @@ class OpenAIToolAgent(BaseAgent):
                 n_changed = diff.get("changed_cell_count", 0)
                 details = []
                 if diff.get("moved"):
-                    details.append(f"moved object to bbox {diff['moved'][0]['to_bbox']}")
+                    moved_obj = diff["moved"][0]
+                    dr = abs(moved_obj["to_bbox"][0] - moved_obj["from_bbox"][0])
+                    dc = abs(moved_obj["to_bbox"][1] - moved_obj["from_bbox"][1])
+                    step = max(dr, dc)
+                    if step > 0:
+                        self.detected_step_size = step
+                        self.avatar_pos = (moved_obj["to_bbox"][0], moved_obj["to_bbox"][1])
+                    details.append(f"moved object to bbox {moved_obj['to_bbox']} (step={step}px)")
                 if diff.get("appeared"):
                     details.append(f"new object appeared at bbox {diff['appeared'][0]['bbox']}")
                 if diff.get("changed_color"):
@@ -227,150 +238,185 @@ class OpenAIToolAgent(BaseAgent):
             print(f"⚡ [Queue Replay] Executing queued action: {next_action.name}", flush=True)
             return next_action
 
-        # 4. Build prompt
-        action_names = []
-        for a in available:
-            if a == 0:
-                action_names.append("0: RESET")
-            elif a == 1:
-                action_names.append("1: UP")
-            elif a == 2:
-                action_names.append("2: DOWN")
-            elif a == 3:
-                action_names.append("3: LEFT")
-            elif a == 4:
-                action_names.append("4: RIGHT")
-            elif a == 5:
-                action_names.append("5: SPACE")
-            elif a == 6:
-                action_names.append("6: CLICK(row, col)")
-            elif a == 7:
-                action_names.append("7: UNDO")
+        # Loop up to 3 times to allow the model to print and inspect without forcing a fallback action
+        for _loop_idx in range(3):
+            # 4. Build prompt
+            action_names = []
+            for a in available:
+                if a == 0:
+                    action_names.append("0: RESET")
+                elif a == 1:
+                    action_names.append("1: UP")
+                elif a == 2:
+                    action_names.append("2: DOWN")
+                elif a == 3:
+                    action_names.append("3: LEFT")
+                elif a == 4:
+                    action_names.append("4: RIGHT")
+                elif a == 5:
+                    action_names.append("5: SPACE")
+                elif a == 6:
+                    action_names.append("6: CLICK(row, col)")
+                elif a == 7:
+                    action_names.append("7: UNDO")
 
-        prompt_parts = [
-            f"Game ID: {latest_frame.game_id}",
-            f"Level: {latest_frame.levels_completed}",
-            f"Available Actions: {', '.join(action_names)}",
-            f"Persistent Notes: {json.dumps(self.notes)}",
-        ]
+            prompt_parts = [
+                f"Game ID: {latest_frame.game_id}",
+                f"Level: {latest_frame.levels_completed}",
+                f"Available Actions: {', '.join(action_names)}",
+                f"Persistent Notes: {json.dumps(self.notes)}",
+            ]
 
-        if feedback_msg:
-            prompt_parts.append(feedback_msg)
-
-        if self.last_sandbox_stdout:
-            prompt_parts.append(f"Previous Sandbox Output:\n{self.last_sandbox_stdout[:1000]}")
-
-        nodes = segment_grid(grid, background_color=0) if has_grid else []
-
-        if 6 in available and nodes:
-            # Provide pre-computed centroid candidates to help tool reasoning
-            clicks = candidate_clicks(nodes, min_size=1, max_size=None)
-            if clicks:
+            if self.detected_step_size and self.avatar_pos:
                 prompt_parts.append(
-                    "Detected objects (candidate_clicks):\n"
-                    + "\n".join(f"  - color={c['color']}, centroid=({c['centroid'][0]}, {c['centroid'][1]}), pixels={c['pixels']}" for c in clicks[:6])
+                    f"Detected Avatar: position={self.avatar_pos}, step_size={self.detected_step_size}px per move. "
+                    f"route_to(target) automatically accounts for this {self.detected_step_size}px grid step!"
                 )
 
-        prompt_parts.append(f"Current Board ({grid_h}x{grid_w}):\n{ascii_grid}")
-        prompt_parts.append(
-            "Write Python code calling action([actions...]) to execute your plan.\n"
-            "PLANNING TIP: Use route_to(target_centroid) to compute and queue all moves to any target in one step!\n"
-            "You can use candidate_clicks(), candidate_goals(), route(), route_to(), solve_toggle(), notes."
-        )
-        prompt = "\n\n".join(prompt_parts)
+            if feedback_msg:
+                prompt_parts.append(feedback_msg)
 
-        # 4. Call LLM
-        resp = self._call_api(prompt)
-        non_fence_lines = [l.strip() for l in resp.strip().splitlines() if l.strip() and not l.strip().startswith("```")]
-        first_line = non_fence_lines[0] if non_fence_lines else resp.strip().splitlines()[0] if resp.strip() else ""
-        print(f"🤖 [{self.model} Tool] L{latest_frame.levels_completed} Thinking: {first_line[:85]}", flush=True)
+            if self.last_sandbox_stdout:
+                prompt_parts.append(f"Previous Sandbox Output:\n{self.last_sandbox_stdout[:1000]}")
 
-        # 5. Extract and execute Python snippet
-        code = extract_python_snippet(resp)
-        queued_raw: list[str] = []
+            nodes = segment_grid(grid, background_color=0) if has_grid else []
 
-        import io
-        import contextlib
+            if 6 in available and nodes:
+                # Provide pre-computed centroid candidates to help tool reasoning
+                clicks = candidate_clicks(nodes, min_size=1, max_size=None)
+                if clicks:
+                    prompt_parts.append(
+                        "Detected objects (candidate_clicks):\n"
+                        + "\n".join(f"  - color={c['color']}, centroid=({c['centroid'][0]}, {c['centroid'][1]}), pixels={c['pixels']}" for c in clicks[:6])
+                    )
 
-        stdout_buf = io.StringIO()
+            prompt_parts.append(f"Current Board ({grid_h}x{grid_w}):\n{ascii_grid}")
+            prompt_parts.append(
+                "Write Python code calling action([actions...]) to execute your plan.\n"
+                "PLANNING TIP: Use route_to(target_centroid) to compute and queue all moves to any target in one step!\n"
+                "You can use candidate_clicks(), candidate_goals(), route(), route_to(), solve_toggle(), notes."
+            )
+            prompt = "\n\n".join(prompt_parts)
 
-        def sandbox_action(act_list: list[Any]) -> None:
-            if isinstance(act_list, (list, tuple)):
-                for item in act_list:
-                    queued_raw.append(str(item))
-            else:
-                queued_raw.append(str(act_list))
+            # 5. Call LLM
+            resp = self._call_api(prompt)
+            non_fence_lines = [l.strip() for l in resp.strip().splitlines() if l.strip() and not l.strip().startswith("```")]
+            first_line = non_fence_lines[0] if non_fence_lines else resp.strip().splitlines()[0] if resp.strip() else ""
+            print(f"🤖 [{self.model} Tool] L{latest_frame.levels_completed} Thinking: {first_line[:85]}", flush=True)
 
-        def sandbox_route_to(
-            target: Any,
-            start: tuple[int, int] | list[int] | None = None,
-            walkable_colors: list[int] | set[int] | None = None,
-        ) -> dict[str, Any]:
-            if isinstance(target, dict):
-                target_coords = target.get("centroid") or target.get("bbox")[:2]
-            else:
-                target_coords = target
-            tr, tc = int(target_coords[0]), int(target_coords[1])
+            # 6. Extract and execute Python snippet
+            code = extract_python_snippet(resp)
+            queued_raw: list[str] = []
 
-            if start is not None:
-                sr, sc = int(start[0]), int(start[1])
-            else:
-                sr, sc = (grid_h // 2, grid_w // 2) if has_grid else (0, 0)
-                for n in nodes:
-                    if n.get("pixels") == 1 or n.get("color") in (0, 1):
-                        sr, sc = int(n["centroid"][0]), int(n["centroid"][1])
-                        break
+            import io
+            import contextlib
 
-            if walkable_colors is not None:
-                allowed = set(walkable_colors)
-            else:
-                start_c = grid[sr][sc] if has_grid and 0 <= sr < grid_h and 0 <= sc < grid_w else 0
-                target_c = grid[tr][tc] if has_grid and 0 <= tr < grid_h and 0 <= tc < grid_w else 0
-                allowed = {start_c, target_c, 0, 1, 3, 4}
+            stdout_buf = io.StringIO()
 
-            mask = [[grid[r][c] in allowed for c in range(grid_w)] for r in range(grid_h)]
-            if 0 <= sr < grid_h and 0 <= sc < grid_w:
-                mask[sr][sc] = True
-            if 0 <= tr < grid_h and 0 <= tc < grid_w:
-                mask[tr][tc] = True
+            def sandbox_action(act_list: list[Any]) -> None:
+                if isinstance(act_list, (list, tuple)):
+                    for item in act_list:
+                        queued_raw.append(str(item))
+                else:
+                    queued_raw.append(str(act_list))
 
-            path_res = route(mask, start=(sr, sc), goals=[(tr, tc)])
-            if path_res.get("status") == "solved" and path_res.get("actions"):
-                sandbox_action(path_res["actions"])
-                print(f"🗺️ [route_to] Computed {len(path_res['actions'])}-step route to ({tr}, {tc})", file=stdout_buf)
-            else:
-                print(f"⚠️ [route_to] Could not find route from ({sr}, {sc}) to ({tr}, {tc})", file=stdout_buf)
-            return path_res
+            def sandbox_route_to(
+                target: Any,
+                start: tuple[int, int] | list[int] | None = None,
+                step_size: int | None = None,
+                walkable_colors: list[int] | set[int] | None = None,
+            ) -> dict[str, Any]:
+                if isinstance(target, dict):
+                    target_coords = target.get("centroid") or target.get("bbox")[:2]
+                else:
+                    target_coords = target
+                tr, tc = int(target_coords[0]), int(target_coords[1])
 
-        sandbox_scope = {
-            "action": sandbox_action,
-            "candidate_clicks": lambda **kw: candidate_clicks(nodes, **kw),
-            "candidate_goals": lambda **kw: candidate_goals(nodes, **kw),
-            "route": route,
-            "route_to": sandbox_route_to,
-            "solve_toggle": solve_toggle,
-            "notes": self.notes,
-            "grid": grid,
-        }
+                if start is not None:
+                    sr, sc = int(start[0]), int(start[1])
+                elif self.avatar_pos is not None:
+                    sr, sc = self.avatar_pos
+                else:
+                    sr, sc = (grid_h // 2, grid_w // 2) if has_grid else (0, 0)
+                    for n in nodes:
+                        if n.get("pixels") == 1 or n.get("color") in (0, 1):
+                            sr, sc = int(n["centroid"][0]), int(n["centroid"][1])
+                            break
 
-        if code:
-            try:
-                with contextlib.redirect_stdout(stdout_buf):
-                    exec(code, sandbox_scope)
-            except Exception as e:
-                print(f"Error: {e}", file=stdout_buf)
-                logger.warning(f"Sandbox execution error: {e}")
+                step = int(step_size or self.detected_step_size or 1)
+                moves = {
+                    "UP": (-step, 0),
+                    "DOWN": (step, 0),
+                    "LEFT": (0, -step),
+                    "RIGHT": (0, step),
+                }
 
-        self.last_sandbox_stdout = stdout_buf.getvalue().strip()
+                if walkable_colors is not None:
+                    allowed = set(walkable_colors)
+                else:
+                    start_c = grid[sr][sc] if has_grid and 0 <= sr < grid_h and 0 <= sc < grid_w else 0
+                    target_c = grid[tr][tc] if has_grid and 0 <= tr < grid_h and 0 <= tc < grid_w else 0
+                    allowed = {start_c, target_c, 0, 1, 3, 4}
 
-        # 6. Parse queued actions
-        for raw in queued_raw:
-            parsed = self._convert_action_string(raw, available, latest_frame.game_id)
-            if parsed is not None:
-                self.action_queue.append(parsed)
+                mask = [[grid[r][c] in allowed for c in range(grid_w)] for r in range(grid_h)]
+                if 0 <= sr < grid_h and 0 <= sc < grid_w:
+                    mask[sr][sc] = True
+                if 0 <= tr < grid_h and 0 <= tc < grid_w:
+                    mask[tr][tc] = True
 
-        # If nothing was queued via code, try parsing standard text response
+                path_res = route(mask, start=(sr, sc), goals=[(tr, tc)], moves=moves)
+                if path_res.get("status") == "solved" and path_res.get("actions"):
+                    sandbox_action(path_res["actions"])
+                    print(f"🗺️ [route_to] Computed {len(path_res['actions'])}-step route to ({tr}, {tc}) with step={step}px", file=stdout_buf)
+                else:
+                    print(f"⚠️ [route_to] Could not find route from ({sr}, {sc}) to ({tr}, {tc}) with step={step}px", file=stdout_buf)
+                return path_res
+
+            sandbox_scope = {
+                "action": sandbox_action,
+                "candidate_clicks": lambda **kw: candidate_clicks(nodes, **kw),
+                "candidate_goals": lambda **kw: candidate_goals(nodes, **kw),
+                "route": route,
+                "route_to": sandbox_route_to,
+                "solve_toggle": solve_toggle,
+                "notes": self.notes,
+                "grid": grid,
+            }
+
+            if code:
+                try:
+                    with contextlib.redirect_stdout(stdout_buf):
+                        exec(code, sandbox_scope)
+                except Exception as e:
+                    print(f"Error: {e}", file=stdout_buf)
+                    logger.warning(f"Sandbox execution error: {e}")
+
+            self.last_sandbox_stdout = stdout_buf.getvalue().strip()
+
+            # 7. Parse queued actions
+            for raw in queued_raw:
+                parsed = self._convert_action_string(raw, available, latest_frame.game_id)
+                if parsed is not None:
+                    self.action_queue.append(parsed)
+
+            # If actions were queued, break the loop and execute them!
+            if self.action_queue:
+                break
+            
+            # If no actions were queued but we got stdout, loop around and feed it back!
+            if self.last_sandbox_stdout:
+                print("🔄 [Introspection Loop] Agent printed output but queued 0 actions. Re-prompting...", flush=True)
+                continue
+
+            # If no actions were queued AND no code was executed, try parsing text directly and break
+            fallback_act, fallback_coords = parse_action_response(resp, available)
+            if fallback_act == GameAction.ACTION6 and fallback_coords:
+                fallback_act.set_data({"x": fallback_coords[0], "y": fallback_coords[1], "game_id": latest_frame.game_id})
+            self.action_queue.append(fallback_act)
+            break
+            
         if not self.action_queue:
+            # Absolute fallback if max loops exhausted without queuing
             fallback_act, fallback_coords = parse_action_response(resp, available)
             if fallback_act == GameAction.ACTION6 and fallback_coords:
                 fallback_act.set_data({"x": fallback_coords[0], "y": fallback_coords[1], "game_id": latest_frame.game_id})
