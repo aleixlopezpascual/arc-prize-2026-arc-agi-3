@@ -14,6 +14,9 @@
 
 | Submission Ref | Date (UTC) | Model Architecture | Status | Public Score | Key Finding / Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- |
+| **`QUEUED`** | **2026-10-27 10:14:14** | **Duck V19 (Fixed Lean Armor + MEMFRAC=0.93 + Restored V12 Sandbox)** | **`QUEUED`** | - | 🚀 Fixed SGLang OOM (6.7 GB headroom) & restored pristine V12 sandbox syntax. Monitoring via auto_submit_duck_v19.py. |
+| **`57684146`** | **2026-10-27 01:00:52** | **Duck V19 Run 1 (Defragmented Lean Armor)** | **`COMPLETE`** | **`0.00`** | 🔬 SGLang OOM resolved (served 434 tok/s). However, inherited V18's sandbox IndentationError in new_refresh_tail, preventing action execution. Resolved in fixed build. |
+| **`57675689`** | **2026-10-26 18:45:09** | **Duck V18 (Lean Armor + 55min Startup Shield + V12 Core)** | **`COMPLETE`** | **`0.00`** | 🔬 Forensic finding: SGLang CUDA OOM during TileLang compilation due to MEMFRAC=0.96 (only 5 MB free) + sandbox IndentationError from candidate_goals injection. |
 | **`57638864`** | **2026-10-25 17:57:34** | **Duck V17 (Adaptive Armor + 55min Startup Shield + Bounded Memory + Exact Solvers)** | **`COMPLETE`** | **`23.94%`** | 🛡️ Survived Kaggle regional dataset cache crisis with 55m startup shield, 900s HTTP retry grace, and warmup reset keepalive. 0.00 timeout crash avoided. |
 | **`57441883`** | **2026-10-20 14:28:49** | **Duck V16 (Candidate Goal Sockets + In-Sandbox Early Stopping + V12 Core + Fable 30k)** | **`COMPLETE`** | **`24.53%`** | 🚀 Clean 9-hour run across 110 private games. Demo: 34.74%. Injected candidate_goals() to rank color singularities and socket centroids. |
 | **`57401251`** | **2026-10-19 15:38:16** | **Duck V15 (In-Sandbox Batch Early Stopping + Animation Repair + Stagnation Alert + V12 Core)** | **`COMPLETE`** | **`24.63%`** | 🚀 Clean 9-hour run across 110 private games. Demo: **48.71%** (2 full 100% sweeps: `ft09`, `sb26`; `r11l` doubled to 28.57%). Batch early stoppage prevented wasted actions on interior collisions. |
@@ -96,7 +99,7 @@
 ## 🧪 Testing & Verification Commands
 
 ```bash
-# Run the entire test suite (114 tests, 100% green)
+# Run the entire test suite (120 tests, 100% green)
 python3 -m pytest tests/ -q
 
 # Run local evaluation with gpt-6-luna tool agent
