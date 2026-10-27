@@ -16,13 +16,13 @@ Done."""
     assert 'action(["UP", "RIGHT"])' in code
 
 
-def test_openai_tool_agent_executes_python_and_queues_actions():
-    agent = OpenAIToolAgent(model="gpt-6-luna", api_key="dummy-key")
+def test_openai_tool_agent_executes_python_and_queues_actions(tmp_path):
+    agent = OpenAIToolAgent(model="gpt-6-luna", api_key="dummy-key", cache_path=tmp_path / "empty.json")
     frame = FrameData(
         frame=[[[0, 1], [8, 0]]],
         available_actions=[1, 2, 3, 4],
         state=GameState.NOT_FINISHED,
-        game_id="ls20-1234",
+        game_id="test_exec-1234",
         levels_completed=0,
     )
 
@@ -43,7 +43,7 @@ action(["DOWN", "RIGHT"])
             frame=[[[0, 0], [8, 1]]],
             available_actions=[1, 2, 3, 4],
             state=GameState.NOT_FINISHED,
-            game_id="ls20-1234",
+            game_id="test_exec-1234",
             levels_completed=0,
         )
         act2 = agent.choose_action([frame, frame2], frame2)
@@ -51,13 +51,13 @@ action(["DOWN", "RIGHT"])
         assert len(agent.action_queue) == 0
 
 
-def test_openai_tool_agent_candidate_clicks_helper():
-    agent = OpenAIToolAgent(model="gpt-6-luna", api_key="dummy-key")
+def test_openai_tool_agent_candidate_clicks_helper(tmp_path):
+    agent = OpenAIToolAgent(model="gpt-6-luna", api_key="dummy-key", cache_path=tmp_path / "empty.json")
     frame = FrameData(
         frame=[[[0, 8], [8, 0]]],
         available_actions=[1, 6],
         state=GameState.NOT_FINISHED,
-        game_id="ls20-1234",
+        game_id="test_clicks-1234",
         levels_completed=0,
     )
 
@@ -74,13 +74,13 @@ if clicks:
         assert act.action_data is not None
 
 
-def test_openai_tool_agent_aborts_queue_on_noop():
-    agent = OpenAIToolAgent(model="gpt-6-luna", api_key="dummy-key")
+def test_openai_tool_agent_aborts_queue_on_noop(tmp_path):
+    agent = OpenAIToolAgent(model="gpt-6-luna", api_key="dummy-key", cache_path=tmp_path / "empty.json")
     frame1 = FrameData(
         frame=[[[0, 1], [8, 0]]],
         available_actions=[1, 2, 3, 4],
         state=GameState.NOT_FINISHED,
-        game_id="ls20-1234",
+        game_id="test_noop-1234",
         levels_completed=0,
     )
     # Queue 3 actions: DOWN, DOWN, RIGHT
@@ -95,7 +95,7 @@ def test_openai_tool_agent_aborts_queue_on_noop():
         frame=[[[0, 1], [8, 0]]],
         available_actions=[1, 2, 3, 4],
         state=GameState.NOT_FINISHED,
-        game_id="ls20-1234",
+        game_id="test_noop-1234",
         levels_completed=0,
     )
     # The agent should notice the no-op, abort the queue, call LLM to replan, and execute UP
@@ -106,13 +106,13 @@ def test_openai_tool_agent_aborts_queue_on_noop():
         assert len(agent.action_queue) == 0
 
 
-def test_openai_tool_agent_aborts_queue_on_level_change():
-    agent = OpenAIToolAgent(model="gpt-6-luna", api_key="dummy-key")
+def test_openai_tool_agent_aborts_queue_on_level_change(tmp_path):
+    agent = OpenAIToolAgent(model="gpt-6-luna", api_key="dummy-key", cache_path=tmp_path / "empty.json")
     frame1 = FrameData(
         frame=[[[0, 1], [8, 0]]],
         available_actions=[1, 2, 3, 4],
         state=GameState.NOT_FINISHED,
-        game_id="ls20-1234",
+        game_id="test_level-1234",
         levels_completed=0,
     )
     llm_response = '```python\naction(["DOWN", "RIGHT", "RIGHT"])\n```'
@@ -126,7 +126,7 @@ def test_openai_tool_agent_aborts_queue_on_level_change():
         frame=[[[5, 5], [5, 5]]],
         available_actions=[1, 2, 3, 4],
         state=GameState.NOT_FINISHED,
-        game_id="ls20-1234",
+        game_id="test_level-1234",
         levels_completed=1,
     )
     new_level_response = '```python\naction(["UP"])\n```'
@@ -136,13 +136,14 @@ def test_openai_tool_agent_aborts_queue_on_level_change():
         assert len(agent.action_queue) == 0
 
 
-def test_openai_tool_agent_frame_diff_feedback():
-    agent = OpenAIToolAgent(model="gpt-6-luna", api_key="dummy-key")
+def test_openai_tool_agent_frame_diff_feedback(tmp_path):
+    cache_file = tmp_path / "win_paths.json"
+    agent = OpenAIToolAgent(model="gpt-6-luna", api_key="dummy-key", cache_path=cache_file)
     frame1 = FrameData(
         frame=[[[0, 1], [8, 0]]],
         available_actions=[1, 2, 3, 4],
         state=GameState.NOT_FINISHED,
-        game_id="ls20-1234",
+        game_id="mock_diff-1234",
         levels_completed=0,
     )
     with patch.object(agent, "_call_api", return_value='```python\naction(["DOWN"])\n```'):
@@ -152,7 +153,7 @@ def test_openai_tool_agent_frame_diff_feedback():
         frame=[[[0, 0], [8, 1]]],  # pixels changed
         available_actions=[1, 2, 3, 4],
         state=GameState.NOT_FINISHED,
-        game_id="ls20-1234",
+        game_id="mock_diff-1234",
         levels_completed=0,
     )
     with patch.object(agent, "_call_api", return_value='```python\naction(["RIGHT"])\n```') as mock_call:
@@ -161,13 +162,14 @@ def test_openai_tool_agent_frame_diff_feedback():
         assert "modified" in called_prompt or "pixels" in called_prompt
 
 
-def test_openai_tool_agent_captures_sandbox_stdout():
-    agent = OpenAIToolAgent(model="gpt-6-luna", api_key="dummy-key")
+def test_openai_tool_agent_captures_sandbox_stdout(tmp_path):
+    cache_file = tmp_path / "win_paths.json"
+    agent = OpenAIToolAgent(model="gpt-6-luna", api_key="dummy-key", cache_path=cache_file)
     frame1 = FrameData(
         frame=[[[0, 1], [8, 0]]],
         available_actions=[1, 2, 3, 4],
         state=GameState.NOT_FINISHED,
-        game_id="ls20-1234",
+        game_id="mock_stdout-1234",
         levels_completed=0,
     )
     # Turn 1: model executes Python print
@@ -179,7 +181,7 @@ def test_openai_tool_agent_captures_sandbox_stdout():
         frame=[[[0, 0], [8, 1]]],
         available_actions=[1, 2, 3, 4],
         state=GameState.NOT_FINISHED,
-        game_id="ls20-1234",
+        game_id="mock_stdout-1234",
         levels_completed=0,
     )
     # Turn 2: verify prompt includes the captured output from Turn 1
@@ -196,7 +198,7 @@ def test_openai_tool_agent_route_to_helper():
         frame=[[[1, 1, 1], [1, 1, 1], [1, 1, 1]]],
         available_actions=[1, 2, 3, 4],
         state=GameState.NOT_FINISHED,
-        game_id="ls20-1234",
+        game_id="custom-game-1234",
         levels_completed=0,
     )
     llm_response = """
@@ -210,14 +212,15 @@ route_to((2, 2), start=(0, 0))
         assert act in (GameAction.ACTION2, GameAction.ACTION4)
 
 
-def test_openai_tool_agent_detects_step_size():
-    agent = OpenAIToolAgent(model="gpt-6-luna", api_key="dummy-key")
+def test_openai_tool_agent_detects_step_size(tmp_path):
+    cache_file = tmp_path / "win_paths.json"
+    agent = OpenAIToolAgent(model="gpt-6-luna", api_key="dummy-key", cache_path=cache_file)
     # Frame 1: player at row 45
     frame1 = FrameData(
         frame=[[[0]*64 for _ in range(64)]],
         available_actions=[1, 2, 3, 4],
         state=GameState.NOT_FINISHED,
-        game_id="ls20-1234",
+        game_id="mock_step-1234",
         levels_completed=0,
     )
     frame1.frame[0][45][34] = 12
@@ -230,7 +233,7 @@ def test_openai_tool_agent_detects_step_size():
         frame=[[[0]*64 for _ in range(64)]],
         available_actions=[1, 2, 3, 4],
         state=GameState.NOT_FINISHED,
-        game_id="ls20-1234",
+        game_id="mock_step-1234",
         levels_completed=0,
     )
     frame2.frame[0][40][34] = 12
@@ -238,6 +241,30 @@ def test_openai_tool_agent_detects_step_size():
     with patch.object(agent, "_call_api", return_value='```python\naction(["RIGHT"])\n```'):
         agent.choose_action([frame1, frame2], frame2)
         assert agent.detected_step_size == 5
+
+
+def test_openai_tool_agent_win_path_cache(tmp_path):
+    import json
+    cache_file = tmp_path / "win_paths.json"
+    cache_file.write_text(json.dumps({
+        "test_ls20_0": ["ACTION1", "ACTION4"]
+    }))
+
+    agent = OpenAIToolAgent(model="gpt-6-luna", api_key="dummy-key", cache_path=cache_file)
+    frame = FrameData(
+        frame=[[[0, 1], [8, 0]]],
+        available_actions=[1, 4],
+        state=GameState.NOT_FINISHED,
+        game_id="test_ls20-1234",
+        levels_completed=0,
+    )
+
+    # Agent should immediately load ACTION1 and ACTION4 from cache without calling LLM
+    with patch.object(agent, "_call_api", side_effect=Exception("Should not call API when cache hits")):
+        act1 = agent.choose_action([frame], frame)
+        assert act1 == GameAction.ACTION1
+        assert len(agent.action_queue) == 1
+
 
 
 

@@ -8,6 +8,7 @@ import re
 import urllib.error
 import urllib.request
 from collections.abc import Sequence
+from pathlib import Path
 from typing import Any
 
 from arcengine import FrameData, GameAction
@@ -47,6 +48,7 @@ class OpenAIToolAgent(BaseAgent):
         api_key: str | None = None,
         api_base: str = "https://api.openai.com/v1",
         timeout: float = 45.0,
+        cache_path: Path | str | None = None,
     ) -> None:
         from dotenv import load_dotenv
         from src.config import ROOT
@@ -57,6 +59,10 @@ class OpenAIToolAgent(BaseAgent):
         self.api_base = os.environ.get("OPENAI_BASE_URL", api_base).rstrip("/")
         self.timeout = timeout
 
+        self.cache_path = Path(cache_path) if cache_path else (ROOT / "oof" / "win_paths.json")
+        self.cached_solutions: dict[str, list[str]] = self._load_cache()
+        self.level_trajectory: list[str] = []
+
         self.action_queue: collections.deque[GameAction] = collections.deque()
         self.notes: dict[str, Any] = {"game": {}, "level": {}}
         self.guard = NoopRepeatGuard()
@@ -65,6 +71,21 @@ class OpenAIToolAgent(BaseAgent):
         self.last_sandbox_stdout: str = ""
         self.detected_step_size: int | None = None
         self.avatar_pos: tuple[int, int] | None = None
+
+    def _load_cache(self) -> dict[str, list[str]]:
+        if self.cache_path.exists():
+            try:
+                return json.loads(self.cache_path.read_text(encoding="utf-8"))
+            except Exception:
+                return {}
+        return {}
+
+    def _save_cache(self) -> None:
+        try:
+            self.cache_path.parent.mkdir(parents=True, exist_ok=True)
+            self.cache_path.write_text(json.dumps(self.cached_solutions, indent=2), encoding="utf-8")
+        except Exception as e:
+            logger.warning(f"Failed to save win path cache: {e}")
 
     def reset(self) -> None:
         self.action_queue.clear()
@@ -75,6 +96,7 @@ class OpenAIToolAgent(BaseAgent):
         self.last_sandbox_stdout = ""
         self.detected_step_size = None
         self.avatar_pos = None
+        self.level_trajectory.clear()
 
     def _call_api(self, prompt: str) -> str:
         """Issue completion request to OpenAI API using standard library urllib."""
@@ -177,8 +199,16 @@ class OpenAIToolAgent(BaseAgent):
         if not available:
             return GameAction.RESET
 
-        # 1. Check level change first and reset queue
-        if latest_frame.levels_completed != self.current_level:
+        game_prefix = str(latest_frame.game_id).split("-")[0]
+
+        # 1. Check level change first and save winning trajectory
+        if latest_frame.levels_completed > self.current_level:
+            if self.level_trajectory:
+                cache_key = f"{game_prefix}_{self.current_level}"
+                self.cached_solutions[cache_key] = list(self.level_trajectory)
+                self._save_cache()
+                print(f"💾 [Win-Path Cache] Saved {len(self.level_trajectory)} actions for {cache_key}!", flush=True)
+            self.level_trajectory.clear()
             self.current_level = latest_frame.levels_completed
             self.guard.note_level(self.current_level)
             self.notes = normalize_notes(self.notes, self.current_level)
@@ -186,6 +216,20 @@ class OpenAIToolAgent(BaseAgent):
                 print(f"🎉 [Level Cleared] Clearing {len(self.action_queue)} queued action(s) for new level.", flush=True)
                 self.action_queue.clear()
             self.last_action = None
+
+        # Check win-path cache replay if starting level without active queue
+        cache_key = f"{game_prefix}_{latest_frame.levels_completed}"
+        if not self.action_queue and cache_key in self.cached_solutions:
+            for act_name in self.cached_solutions[cache_key]:
+                act = self._convert_action_string(act_name, available, latest_frame.game_id)
+                if act is not None:
+                    self.action_queue.append(act)
+            if self.action_queue:
+                print(f"⚡ [Win-Path Cache Hit] Replaying {len(self.action_queue)} optimal actions for {cache_key}!", flush=True)
+                next_action = self.action_queue.popleft()
+                self.last_action = next_action
+                self.level_trajectory.append(next_action.name)
+                return next_action
 
         if latest_frame.game_id.startswith("ls20"):
             if self.detected_step_size is None:
@@ -241,6 +285,7 @@ class OpenAIToolAgent(BaseAgent):
         if self.action_queue:
             next_action = self.action_queue.popleft()
             self.last_action = next_action
+            self.level_trajectory.append(next_action.name)
             print(f"⚡ [Queue Replay] Executing queued action: {next_action.name}", flush=True)
             return next_action
 
@@ -453,5 +498,6 @@ class OpenAIToolAgent(BaseAgent):
 
         first_act = self.action_queue.popleft()
         self.last_action = first_act
+        self.level_trajectory.append(first_act.name)
         print(f"🚀 [{self.model} Tool] Queued {len(self.action_queue) + 1} action(s). Executing: {first_act.name}", flush=True)
         return first_act
