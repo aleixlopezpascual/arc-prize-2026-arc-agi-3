@@ -1,0 +1,19 @@
+docs/HANDOVER.md
+  s_927c64575f4005::t_b06c88aaeee989 53-56
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "62e12de43df58bce07416438a7191011ebdca3ce",
+  "prompts": {},
+  "sessions": {
+    "s_927c64575f4005": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "888a23c6-13ff-42a9-84f6-323875edc7b5",
+        "model": "gemini-3.8-flash"
+      },
+      "human_author": "Aleix López <aleix.lopez@glovoapp.com>"
+    }
+  }
+}
