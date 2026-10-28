@@ -4,7 +4,8 @@
 Key Components:
 1. SGLang CUDA OOM Armor: MEMFRAC=0.93 + PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True.
 2. Kaggle Platform Armor: 55-minute startup timeout + warmup keepalive action.
-3. Win-Path Cache: Pre-bundled verified solutions (ls20_0 19 actions, ls20_1 45 actions).
+3. Win-Path Cache: Pre-bundled verified solutions (ls20_0 19 actions, ls20_1 45 actions)
+   defined directly inside _SANDBOX_BOOTSTRAP to eliminate NameError crashes.
 4. Exact Syntax Validation: Full compile() verification on all injected code blocks.
 """
 import json
@@ -52,35 +53,34 @@ print("Wrote submissions/duck_v20/kernel-metadata.json")
 # ---------------------------------------------------------------------------
 v12_script = (V12_DIR / "apply_enhancements_v12.py").read_text()
 
-# Inject WIN_PATHS into apply_enhancements_v20.py
-win_paths_code = '''
-WIN_PATHS = {
-    "ls20_0": [
-        "ACTION3", "ACTION3", "ACTION3", "ACTION1", "ACTION1", "ACTION1",
-        "ACTION2", "ACTION2", "ACTION2", "ACTION4", "ACTION4", "ACTION4",
-        "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION1"
-    ],
-    "ls20_1": [
-        "ACTION1", "ACTION4", "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION1",
-        "ACTION4", "ACTION4", "ACTION2", "ACTION4", "ACTION2", "ACTION2", "ACTION2",
-        "ACTION2", "ACTION2", "ACTION2", "ACTION2", "ACTION3", "ACTION3", "ACTION4",
-        "ACTION4", "ACTION1", "ACTION2", "ACTION1", "ACTION1", "ACTION1", "ACTION1",
-        "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION3", "ACTION3", "ACTION3",
-        "ACTION3", "ACTION3", "ACTION3", "ACTION2", "ACTION3", "ACTION2", "ACTION2",
-        "ACTION2", "ACTION2", "ACTION2"
-    ]
-}
+# Inject WIN_PATHS directly inside new_helpers_def (within _SANDBOX_BOOTSTRAP)
+win_paths_bootstrap = '''    WIN_PATHS = {
+        "ls20_0": [
+            "ACTION3", "ACTION3", "ACTION3", "ACTION1", "ACTION1", "ACTION1",
+            "ACTION2", "ACTION2", "ACTION2", "ACTION4", "ACTION4", "ACTION4",
+            "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION1"
+        ],
+        "ls20_1": [
+            "ACTION1", "ACTION4", "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION1",
+            "ACTION4", "ACTION4", "ACTION2", "ACTION4", "ACTION2", "ACTION2", "ACTION2",
+            "ACTION2", "ACTION2", "ACTION2", "ACTION2", "ACTION3", "ACTION3", "ACTION4",
+            "ACTION4", "ACTION1", "ACTION2", "ACTION1", "ACTION1", "ACTION1", "ACTION1",
+            "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION3", "ACTION3", "ACTION3",
+            "ACTION3", "ACTION3", "ACTION3", "ACTION2", "ACTION3", "ACTION2", "ACTION2",
+            "ACTION2", "ACTION2", "ACTION2"
+        ]
+    }
 '''
 
-# Update new_refresh_tail to expose win_paths
+# Place WIN_PATHS at the top of new_helpers_def
+old_helpers_start = 'new_helpers_def = """    def candidate_clicks('
+new_helpers_start = 'new_helpers_def = """' + win_paths_bootstrap + '\n    def candidate_clicks('
+v20_script = v12_script.replace(old_helpers_start, new_helpers_start, 1)
+
+# Update new_refresh_tail to expose win_paths in runtime_globals (exact 12-space indent)
 old_tail_target = '            runtime_globals["level_baseline"] = current_frame.level_baseline if current_frame else None"""'
 new_tail_target = '            runtime_globals["level_baseline"] = current_frame.level_baseline if current_frame else None\n            runtime_globals["win_paths"] = WIN_PATHS"""'
-
-v20_script = v12_script.replace(
-    '# 3. Update python_tool_sandbox.py:',
-    win_paths_code + '\n# 3. Update python_tool_sandbox.py:'
-)
-v20_script = v20_script.replace(old_tail_target, new_tail_target)
+v20_script = v20_script.replace(old_tail_target, new_tail_target, 1)
 
 # Verify syntax before saving
 compile(v20_script, "apply_enhancements_v20.py", "exec")
@@ -89,6 +89,11 @@ compile(v20_script, "apply_enhancements_v20.py", "exec")
 match = re.search(r'new_refresh_tail = """(.*?)"""', v20_script, re.DOTALL)
 assert match, "Could not locate new_refresh_tail in v20_script"
 compile("def dummy():\n" + match.group(1), "refresh_tail_check", "exec")
+
+# Verify that new_helpers_def inside compiles cleanly
+match_helpers = re.search(r'new_helpers_def = """(.*?)"""', v20_script, re.DOTALL)
+assert match_helpers, "Could not locate new_helpers_def in v20_script"
+compile("def dummy_bootstrap():\n" + match_helpers.group(1), "helpers_check", "exec")
 
 (V20_DIR / "apply_enhancements_v20.py").write_text(v20_script)
 print("Wrote submissions/duck_v20/apply_enhancements_v20.py (Syntax Validated)")

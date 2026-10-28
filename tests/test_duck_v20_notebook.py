@@ -46,3 +46,37 @@ def test_duck_v20_enhancements_syntax_valid():
     code = script_path.read_text()
     # Must compile without SyntaxError or IndentationError
     compile(code, "apply_enhancements_v20.py", "exec")
+
+
+def test_duck_v20_win_paths_defined_in_sandbox_bootstrap():
+    import re
+    script_path = Path("submissions/duck_v20/apply_enhancements_v20.py")
+    text = script_path.read_text()
+    match_helpers = re.search(r'new_helpers_def = """(.*?)"""', text, re.DOTALL)
+    assert match_helpers
+    helpers_code = match_helpers.group(1)
+    assert "WIN_PATHS = {" in helpers_code
+    assert "ls20_0" in helpers_code
+
+    match_tail = re.search(r'new_refresh_tail = """(.*?)"""', text, re.DOTALL)
+    assert match_tail
+    tail_code = match_tail.group(1)
+
+    dummy_sandbox_code = f"""
+def dummy_main():
+{helpers_code}
+    runtime_globals = {{}}
+    state_payload = {{}}
+    action_result = {{}}
+    current_frame = None
+    def dummy_refresh():
+{tail_code}
+    dummy_refresh()
+    assert "win_paths" in runtime_globals
+    assert "ls20_0" in runtime_globals["win_paths"]
+
+dummy_main()
+"""
+    compiled = compile(dummy_sandbox_code, "test_sandbox", "exec")
+    exec(compiled, {})
+

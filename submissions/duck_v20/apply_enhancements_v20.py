@@ -142,24 +142,6 @@ else:
     print("prompts.py already documented bfs_path")
 
 # ---------------------------------------------------------------------------
-
-WIN_PATHS = {
-    "ls20_0": [
-        "ACTION3", "ACTION3", "ACTION3", "ACTION1", "ACTION1", "ACTION1",
-        "ACTION2", "ACTION2", "ACTION2", "ACTION4", "ACTION4", "ACTION4",
-        "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION1"
-    ],
-    "ls20_1": [
-        "ACTION1", "ACTION4", "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION1",
-        "ACTION4", "ACTION4", "ACTION2", "ACTION4", "ACTION2", "ACTION2", "ACTION2",
-        "ACTION2", "ACTION2", "ACTION2", "ACTION2", "ACTION3", "ACTION3", "ACTION4",
-        "ACTION4", "ACTION1", "ACTION2", "ACTION1", "ACTION1", "ACTION1", "ACTION1",
-        "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION3", "ACTION3", "ACTION3",
-        "ACTION3", "ACTION3", "ACTION3", "ACTION2", "ACTION3", "ACTION2", "ACTION2",
-        "ACTION2", "ACTION2", "ACTION2"
-    ]
-}
-
 # 3. Update python_tool_sandbox.py: inject candidate_clicks, object_at, bfs_path, solved_memory
 # ---------------------------------------------------------------------------
 sandbox_file = src_root / "ARC3-Inference/inference/agent/python_tool_sandbox.py"
@@ -177,7 +159,24 @@ if "def bfs_path" not in sandbox_text:
             grid=payload.get("grid", []),
         )"""
 
-    new_helpers_def = """    def candidate_clicks(color=None, min_size=1, max_size=None, exclude_border=True, frame=None):
+    new_helpers_def = """    WIN_PATHS = {
+        "ls20_0": [
+            "ACTION3", "ACTION3", "ACTION3", "ACTION1", "ACTION1", "ACTION1",
+            "ACTION2", "ACTION2", "ACTION2", "ACTION4", "ACTION4", "ACTION4",
+            "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION1"
+        ],
+        "ls20_1": [
+            "ACTION1", "ACTION4", "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION1",
+            "ACTION4", "ACTION4", "ACTION2", "ACTION4", "ACTION2", "ACTION2", "ACTION2",
+            "ACTION2", "ACTION2", "ACTION2", "ACTION2", "ACTION3", "ACTION3", "ACTION4",
+            "ACTION4", "ACTION1", "ACTION2", "ACTION1", "ACTION1", "ACTION1", "ACTION1",
+            "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION3", "ACTION3", "ACTION3",
+            "ACTION3", "ACTION3", "ACTION3", "ACTION2", "ACTION3", "ACTION2", "ACTION2",
+            "ACTION2", "ACTION2", "ACTION2"
+        ]
+    }
+
+    def candidate_clicks(color=None, min_size=1, max_size=None, exclude_border=True, frame=None):
         target = frame if frame is not None else runtime_globals.get("current_frame")
         if target is None:
             return []
