@@ -1,0 +1,21 @@
+docs/intel/oct30_discussions_intelligence.md
+  s_45c63df30c588b::t_2e5321c7b03be5 1-114
+docs/intel/forum_intel.md
+  s_45c63df30c588b::t_37cdd810733abf 3,9-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "218b3ce336dd024393dc5a8c44af8e338dc93264",
+  "prompts": {},
+  "sessions": {
+    "s_45c63df30c588b": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "732f0825-9974-4dc5-8acb-724f4b669f51",
+        "model": "gemini-3.8-flash"
+      },
+      "human_author": "Aleix López <aleix.lopez@glovoapp.com>"
+    }
+  }
+}
