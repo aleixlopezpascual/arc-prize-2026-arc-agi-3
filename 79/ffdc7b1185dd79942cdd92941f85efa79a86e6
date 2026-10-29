@@ -1,0 +1,21 @@
+docs/intel/oct30_notebooks_intelligence.md
+  s_45c63df30c588b::t_9f87fd4b135f16 1-189
+docs/intel/top_notebooks.md
+  s_45c63df30c588b::t_eab8609964eb12 3,9-13,15-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "79ffdc7b1185dd79942cdd92941f85efa79a86e6",
+  "prompts": {},
+  "sessions": {
+    "s_45c63df30c588b": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "732f0825-9974-4dc5-8acb-724f4b669f51",
+        "model": "gemini-3.8-flash"
+      },
+      "human_author": "Aleix López <aleix.lopez@glovoapp.com>"
+    }
+  }
+}
