@@ -1,12 +1,12 @@
 # ARC Prize 2026 (ARC-AGI-3) — Session Handover Document
 
-**Date:** Monday, October 26, 2026  
+**Date:** Thursday, October 29, 2026  
 **Repository:** `aleixlopezpascual/arc-prize-2026-arc-agi-3` (Local: `/Users/aleix.lopez/arc-prize-2026-arc-agi-3`)  
-**Current Best Leaderboard Score:** **`30.19%`** (Rank #621 of ~800+ teams, Ref `56836213`)  
-**Best Demo Benchmark:** **`58.42%`** (Duck V12: 44 / 64 levels cleared, 3 full 100% sweeps: `ft09`, `sb26`, `tr87`)  
+**Current Best Leaderboard Score:** **`30.19%`** (Rank #621 of ~800+ teams, Ref `56836213`, Oct 5; rank last verified Oct 26, not re-checked)  
+**Best Demo Benchmark (general):** **`58.42%`** (Duck V12: 44 / 64 levels cleared, 3 full 100% sweeps: `ft09`, `sb26`, `tr87`). The V20 v3 `34.28%` GPU demo score relies on hardcoded `ls20` replay and is not comparable.  
+**Latest Kernel:** Duck V21 (Fusion Kernel), GPU verified at `26.86%` demo, queued for the 00:00 UTC auto-submit; leaderboard score pending.  
 **Kaggle User:** `aleixlopez`  
-**Daily Submissions Remaining Today:** **`1 Remaining`** (0 used so far on Oct 26)  
-**Lifetime Submissions:** **`18 / 18 Clean Executions`** (100% reliability, 0 crashes)  
+**Submissions:** 4 of the last 7 leaderboard runs scored `0.00` from our own bugs (V18, V19 Run 1, V20 Run 1, V20 Run 2); see the ledger. Kaggle quota status not re-checked (limit is 1 per day).  
 
 ---
 
@@ -62,16 +62,14 @@
 
 ---
 
-## 🎯 Blueprint for Duck V18 ("Lean Armor" — Targeting 32%–36%+):
+## 🎯 Next Steps (as of Oct 29)
 
-1. **Retain the 55-minute Startup Shield from V17:**
-   - `SERVER_STARTUP_TIMEOUT = 55 * 60`
-   - `ARC3_WARMUP_ACTION_GAMES = '1'`
-   - `ARC3_HTTP_RETRY_INITIAL_SECONDS = '900'`
-2. **Revert to Duck V12's Lean Core:**
-   - Remove aggressive batch truncation from V15 to allow multi-step pushing and exploration sequences.
-   - Restore Duck V12's concise prompt to maximize SGLang's >93% KV cache reuse rate.
-   - Retain `candidate_clicks`, `candidate_goals`, `object_at`, and `solved_memory`.
+1. **Read tonight's Duck V21 leaderboard score as the real test of the D' scheduler.** About 31% or higher supports D' (public D' notebook: 31.54%); below ~28% means D' is not the fix.
+2. **Verify V21's scheduler guarantees every game a first turn.** Duck V5's D' run (24.31%) starved unstarted games; the public D' notebook removes `fresh_floor`.
+3. **Stop investing in `ls20` replay.** `oof/win_paths.json` covers only `ls20_0`-`ls20_3` (a public game); it is unlikely to help on the 110 unseen games. Invest in general primitives (`candidate_clicks`, `route`, `solve_toggle`, action-budget guidance).
+4. **Gate every submission.** Four recent zero scores were packaging bugs. Run the packaged bootstrap end to end (subprocess tests) before arming the daemon.
+5. **Lint debt:** `ruff check .` reports 1,456 findings (433 auto-fixable); CLAUDE.md requires ruff-clean code.
+6. **Keep the Kaggle infra armor:** 55-minute startup shield (`SERVER_STARTUP_TIMEOUT = 55 * 60`, `ARC3_WARMUP_ACTION_GAMES = '1'`, `ARC3_HTTP_RETRY_INITIAL_SECONDS = '900'`) and Lean Armor (`MEMFRAC=0.93`, `expandable_segments:True`).
 
 ---
 
