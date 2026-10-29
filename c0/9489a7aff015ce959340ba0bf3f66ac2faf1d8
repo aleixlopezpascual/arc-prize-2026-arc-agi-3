@@ -1,0 +1,25 @@
+tests/test_duck_v21_notebook.py
+  s_927c64575f4005::t_bfe19a5a9de929 1-85
+scripts/auto_submit_duck_v21.py
+  s_927c64575f4005::t_2a412fe340b3ca 1-108
+docs/HANDOVER.md
+  s_927c64575f4005::t_32b52ecf54b348 100-102,110
+scripts/build_duck_v21.py
+  s_927c64575f4005::t_c3c024bdf58c6b 1-128
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "c09489a7aff015ce959340ba0bf3f66ac2faf1d8",
+  "prompts": {},
+  "sessions": {
+    "s_927c64575f4005": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "888a23c6-13ff-42a9-84f6-323875edc7b5",
+        "model": "gemini-3.8-flash"
+      },
+      "human_author": "Aleix López <aleix.lopez@glovoapp.com>"
+    }
+  }
+}
