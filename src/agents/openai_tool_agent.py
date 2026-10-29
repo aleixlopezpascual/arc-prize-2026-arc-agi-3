@@ -51,6 +51,7 @@ class OpenAIToolAgent(BaseAgent):
         cache_path: Path | str | None = None,
         seed: int | None = None,
         temperature: float | None = None,
+        introspection_hint: bool = False,
     ) -> None:
         from dotenv import load_dotenv
         from src.config import ROOT
@@ -63,6 +64,9 @@ class OpenAIToolAgent(BaseAgent):
         self.seed = seed
         self.temperature = temperature
         self.api_failures = 0
+        self.introspection_hint = introspection_hint
+        self.api_calls = 0
+        self.wasted_loops = 0
 
         self.cache_path = Path(cache_path) if cache_path else (ROOT / "oof" / "win_paths.json")
         self.cached_solutions: dict[str, list[str]] = self._load_cache()
@@ -396,6 +400,10 @@ class OpenAIToolAgent(BaseAgent):
                     )
 
             prompt_parts.append(f"Current Board ({grid_h}x{grid_w}):\n{ascii_grid}")
+            if self.introspection_hint and _loop_idx > 0:
+                prompt_parts.append(
+                    "You already printed output above. Do not print again; call action([...]) now."
+                )
             prompt_parts.append(
                 "Write Python code calling action([actions...]) to execute your plan.\n"
                 "PLANNING TIP: Use route_to(target_centroid) to compute and queue all moves to any target in one step!\n"
@@ -405,6 +413,7 @@ class OpenAIToolAgent(BaseAgent):
 
             # 5. Call LLM
             resp = self._call_api(prompt)
+            self.api_calls += 1
             non_fence_lines = [l.strip() for l in resp.strip().splitlines() if l.strip() and not l.strip().startswith("```")]
             first_line = non_fence_lines[0] if non_fence_lines else resp.strip().splitlines()[0] if resp.strip() else ""
             print(f"🤖 [{self.model} Tool] L{latest_frame.levels_completed} Thinking: {first_line[:85]}", flush=True)
@@ -516,6 +525,7 @@ class OpenAIToolAgent(BaseAgent):
             
             # If no actions were queued but we got stdout, loop around and feed it back!
             if self.last_sandbox_stdout:
+                self.wasted_loops += 1
                 print("🔄 [Introspection Loop] Agent printed output but queued 0 actions. Re-prompting...", flush=True)
                 continue
 

@@ -27,6 +27,7 @@ class Arm:
     max_actions_per_level: int = 400
     use_win_cache: bool = False
     temperature: float | None = None
+    introspection_hint: bool = False
 
 
 ARMS: dict[str, Arm] = {
@@ -35,6 +36,7 @@ ARMS: dict[str, Arm] = {
         Arm("random", "random"),
         Arm("tool_baseline", "openai_tool", max_actions_per_level=100),
         Arm("tool_weak", "openai_tool", max_actions_per_level=5),
+        Arm("tool_hint", "openai_tool", max_actions_per_level=100, introspection_hint=True),
     )
 }
 
@@ -49,6 +51,7 @@ def build_agent(arm: Arm, seed: int, workdir: Path) -> BaseAgent:
             cache_path=cache_path,
             seed=seed,
             temperature=arm.temperature,
+            introspection_hint=arm.introspection_hint,
         )
     raise ValueError(f"Unknown agent key '{arm.agent}' for arm '{arm.name}'")
 

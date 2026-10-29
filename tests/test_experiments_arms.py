@@ -38,3 +38,13 @@ def test_validate_games_rejects_ls20():
 def test_pilot_games_pass_validation():
     assert validate_games(list(PILOT_GAMES)) == list(PILOT_GAMES)
     assert len(PILOT_GAMES) == 8
+
+
+def test_hint_arm_enables_introspection_hint_and_baseline_does_not(tmp_path):
+    assert build_agent(ARMS["tool_hint"], seed=0, workdir=tmp_path).introspection_hint is True
+    assert build_agent(ARMS["tool_baseline"], seed=0, workdir=tmp_path).introspection_hint is False
+
+
+def test_hint_arm_differs_from_baseline_only_by_the_hint():
+    twin = dataclasses.replace(ARMS["tool_hint"], name="tool_baseline", introspection_hint=False)
+    assert twin == ARMS["tool_baseline"]
