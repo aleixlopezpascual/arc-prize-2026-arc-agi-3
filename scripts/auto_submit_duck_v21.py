@@ -16,7 +16,7 @@ COMPETITION = "arc-prize-2026-arc-agi-3"
 V21_KERNEL = "aleixlopez/arc-agi-3-duck-v21"
 V21_DIR = str(Path(__file__).resolve().parent.parent / "submissions" / "duck_v21")
 OUTPUT_FILE = "submission.parquet"
-MESSAGE = "Duck V21 (The Fusion Kernel: D' Priority Scheduler + 4-Level Win-Path Cache + Lean Armor)"
+MESSAGE = "Duck V21 (The Fusion Kernel: D-Prime Priority Scheduler + 4-Level Win-Path Cache + Lean Armor)"
 UV_PYTHON = "/Users/aleix.lopez/.local/share/uv/tools/kaggle/bin/python"
 
 
@@ -31,6 +31,7 @@ def submit_via_api(kernel_slug: str, dry_run: bool = False) -> bool:
         print(f"[DRY-RUN] Would submit {kernel_slug} output {OUTPUT_FILE} to {COMPETITION}")
         return True
 
+    safe_message = MESSAGE.replace("'", "")
     submit_script = f"""
 from kaggle.api.kaggle_api_extended import KaggleApi
 api = KaggleApi()
@@ -38,7 +39,7 @@ api.authenticate()
 try:
     res = api.competition_submit_code(
         file_name='{OUTPUT_FILE}',
-        message='{MESSAGE}',
+        message='{safe_message}',
         competition='{COMPETITION}',
         kernel='{kernel_slug}',
         kernel_version=None
