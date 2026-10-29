@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import argparse
+import dataclasses
+import hashlib
+import json
 import tempfile
 from collections.abc import Sequence
 from pathlib import Path
@@ -13,6 +16,12 @@ from src.experiments.arms import ARMS, PILOT_GAMES, Arm, build_agent, validate_g
 from src.experiments.records import RunRecord, append_record, load_records
 
 DEFAULT_RESULTS = OOF_DIR / "experiments" / "results.jsonl"
+
+
+def config_hash(arm: Arm) -> str:
+    """Short stable digest of an arm's full config, stored on every record it produces."""
+    payload = json.dumps(dataclasses.asdict(arm), sort_keys=True)
+    return hashlib.sha1(payload.encode("utf-8")).hexdigest()[:12]
 
 
 class Evaluator(Protocol):
@@ -29,7 +38,15 @@ def run_arm(
     evaluator: Evaluator,
 ) -> list[RunRecord]:
     """Run every (seed, game) not already in the results file; return the new records."""
-    done = {rec.key for rec in load_records(results_path)}
+    existing = load_records(results_path)
+    digest = config_hash(arm)
+    stale = sorted({rec.config for rec in existing if rec.arm == arm.name and rec.config != digest})
+    if stale:
+        raise ValueError(
+            f"Arm '{arm.name}' config changed since existing results in {results_path} "
+            f"({digest} vs {', '.join(stale)}); use a new arm name or a new results file"
+        )
+    done = {rec.key for rec in existing}
     evaluator.max_actions_per_level = arm.max_actions_per_level
     new: list[RunRecord] = []
     with tempfile.TemporaryDirectory() as tmp:
@@ -40,6 +57,9 @@ def run_arm(
                 try:
                     agent = build_agent(arm, seed, Path(tmp) / f"{game}-{seed}")
                     summary = evaluator.run_game(agent, game)
+                    failures = getattr(agent, "api_failures", 0)
+                    if failures:
+                        raise RuntimeError(f"{failures} API call(s) failed during the run")
                     record = RunRecord(
                         arm.name,
                         game,
@@ -47,10 +67,11 @@ def run_arm(
                         summary.score,
                         summary.levels_completed,
                         summary.total_actions,
+                        config=digest,
                     )
                 except Exception as exc:  # noqa: BLE001 - a failed run is data, not a crash
                     record = RunRecord(
-                        arm.name, game, seed, 0.0, 0, 0, f"{type(exc).__name__}: {exc}"
+                        arm.name, game, seed, 0.0, 0, 0, f"{type(exc).__name__}: {exc}", digest
                     )
                 append_record(results_path, record)
                 new.append(record)

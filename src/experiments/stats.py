@@ -22,12 +22,23 @@ class Verdict:
 
 
 def suite_means(records: Sequence[RunRecord], arm: str) -> dict[int, float]:
-    """Mean score over games for each seed of one arm (failed runs excluded)."""
-    by_seed: dict[int, list[float]] = defaultdict(list)
+    """Mean score over games for each *complete* seed of one arm.
+
+    A seed is complete when it has a successful run for every game the arm has any successful run
+    for; partial seeds (failed or not-yet-run games) are left out so they cannot skew comparisons.
+    """
+    scores: dict[tuple[int, str], float] = {}
+    games_by_seed: dict[int, set[str]] = defaultdict(set)
     for rec in records:
         if rec.arm == arm and rec.ok:
-            by_seed[rec.seed].append(rec.score)
-    return {seed: sum(scores) / len(scores) for seed, scores in by_seed.items()}
+            scores[(rec.seed, rec.game)] = rec.score
+            games_by_seed[rec.seed].add(rec.game)
+    all_games = set().union(*games_by_seed.values()) if games_by_seed else set()
+    return {
+        seed: sum(scores[(seed, game)] for game in all_games) / len(all_games)
+        for seed, games in games_by_seed.items()
+        if games == all_games
+    }
 
 
 def noise_floor(records: Sequence[RunRecord], arm: str) -> float | None:

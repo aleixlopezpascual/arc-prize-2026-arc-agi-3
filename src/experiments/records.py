@@ -14,6 +14,7 @@ class RunRecord:
     levels_completed: int
     total_actions: int
     error: str | None = None
+    config: str = ""
 
     @property
     def ok(self) -> bool:

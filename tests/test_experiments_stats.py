@@ -74,3 +74,34 @@ def test_verdict_insufficient_with_one_seed():
 def test_verdict_all_zero_scores_is_not_better():
     records = [rec(arm, g, s, 0.0) for arm in ("base", "cand") for g in GAMES for s in range(3)]
     assert verdict(records, "base", "cand").label == "no difference"
+
+
+def test_suite_means_ignores_partial_seeds():
+    records = [
+        rec("a", "g0", 0, 10.0), rec("a", "g1", 0, 20.0),
+        rec("a", "g0", 1, 90.0),  # seed 1 only finished one of the two games
+    ]
+    assert suite_means(records, "a") == {0: 15.0}
+
+
+def test_failed_baseline_run_does_not_inflate_noise_floor():
+    jitter = {0: 0.0, 1: 0.5, 2: -0.5}
+    records = [
+        rec("base", f"g{i}", seed, 30.0 * i + jitter[seed])
+        for i in range(4)
+        for seed in range(3)
+    ]
+    assert noise_floor(records, "base") < 1.0
+    records = [
+        rec("base", "g3", 1, 0.0, "boom") if (r.game, r.seed) == ("g3", 1) else r
+        for r in records
+    ]
+    assert noise_floor(records, "base") < 1.0
+
+
+def test_verdict_insufficient_when_only_one_seed_is_complete():
+    records = [
+        r for r in synthetic(effect=10.0, seeds=2)
+        if not (r.arm == "base" and r.seed == 1 and r.game != "g0")
+    ]
+    assert verdict(records, "base", "cand").label == "insufficient data"

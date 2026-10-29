@@ -1,3 +1,5 @@
+import dataclasses
+
 import pytest
 
 from src.evaluate import GameEvalSummary
@@ -62,3 +64,25 @@ def test_resolve_games_rejects_ls20():
 
 def test_resolve_games_splits_and_strips():
     assert resolve_games("ar25, cd82") == ["ar25", "cd82"]
+
+
+class ApiFailingEvaluator(FakeEvaluator):
+    def run_game(self, agent, game_prefix):
+        agent.api_failures = 2
+        return super().run_game(agent, game_prefix)
+
+
+def test_run_with_api_failures_is_recorded_as_error(tmp_path):
+    path = tmp_path / "r.jsonl"
+    run_arm(ARMS["tool_baseline"], ["g0"], [0], path, ApiFailingEvaluator())
+    record = load_records(path)[0]
+    assert record.ok is False
+    assert "2 API" in record.error
+
+
+def test_changed_arm_config_refuses_to_resume(tmp_path):
+    path = tmp_path / "r.jsonl"
+    run_arm(ARMS["random"], ["g0"], [0], path, FakeEvaluator())
+    changed = dataclasses.replace(ARMS["random"], max_actions_per_level=7)
+    with pytest.raises(ValueError, match="config"):
+        run_arm(changed, ["g0"], [0], path, FakeEvaluator())

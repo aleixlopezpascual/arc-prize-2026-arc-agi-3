@@ -62,6 +62,7 @@ class OpenAIToolAgent(BaseAgent):
         self.timeout = timeout
         self.seed = seed
         self.temperature = temperature
+        self.api_failures = 0
 
         self.cache_path = Path(cache_path) if cache_path else (ROOT / "oof" / "win_paths.json")
         self.cached_solutions: dict[str, list[str]] = self._load_cache()
@@ -163,9 +164,11 @@ class OpenAIToolAgent(BaseAgent):
         except urllib.error.HTTPError as e:
             err_body = e.read().decode("utf-8", errors="replace") if hasattr(e, "read") else ""
             logger.error(f"OpenAI HTTP {e.code} error: {e.reason} - {err_body}")
+            self.api_failures += 1
             return "action(['RESET'])"
         except Exception as e:
             logger.error(f"OpenAI API call failed: {e}")
+            self.api_failures += 1
             return "action(['RESET'])"
 
     def _convert_action_string(

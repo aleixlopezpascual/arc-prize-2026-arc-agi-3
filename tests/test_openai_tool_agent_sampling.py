@@ -45,3 +45,14 @@ def test_payload_unchanged_when_seed_and_temperature_unset(tmp_path, monkeypatch
     agent._call_api("hi")
     assert "seed" not in captured["payload"]
     assert "temperature" not in captured["payload"]
+
+
+def test_api_failures_are_counted(tmp_path, monkeypatch):
+    def boom(req, timeout=None, context=None):
+        raise OSError("network down")
+
+    monkeypatch.setattr("urllib.request.urlopen", boom)
+    agent = OpenAIToolAgent(api_key="dummy", cache_path=tmp_path / "c.json")
+    assert agent.api_failures == 0
+    assert agent._call_api("hi") == "action(['RESET'])"
+    assert agent.api_failures == 1
