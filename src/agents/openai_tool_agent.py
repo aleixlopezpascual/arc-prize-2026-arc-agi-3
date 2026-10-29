@@ -49,6 +49,8 @@ class OpenAIToolAgent(BaseAgent):
         api_base: str = "https://api.openai.com/v1",
         timeout: float = 45.0,
         cache_path: Path | str | None = None,
+        seed: int | None = None,
+        temperature: float | None = None,
     ) -> None:
         from dotenv import load_dotenv
         from src.config import ROOT
@@ -58,6 +60,9 @@ class OpenAIToolAgent(BaseAgent):
         self.api_key = api_key or os.environ.get("OPENAI_API_KEY", "")
         self.api_base = os.environ.get("OPENAI_BASE_URL", api_base).rstrip("/")
         self.timeout = timeout
+        self.seed = seed
+        self.temperature = temperature
+        self.api_failures = 0
 
         self.cache_path = Path(cache_path) if cache_path else (ROOT / "oof" / "win_paths.json")
         self.cached_solutions: dict[str, list[str]] = self._load_cache()
@@ -128,6 +133,10 @@ class OpenAIToolAgent(BaseAgent):
                 {"role": "user", "content": prompt},
             ],
         }
+        if self.seed is not None:
+            payload["seed"] = self.seed
+        if self.temperature is not None:
+            payload["temperature"] = self.temperature
 
         data = json.dumps(payload).encode("utf-8")
         req = urllib.request.Request(
@@ -155,9 +164,11 @@ class OpenAIToolAgent(BaseAgent):
         except urllib.error.HTTPError as e:
             err_body = e.read().decode("utf-8", errors="replace") if hasattr(e, "read") else ""
             logger.error(f"OpenAI HTTP {e.code} error: {e.reason} - {err_body}")
+            self.api_failures += 1
             return "action(['RESET'])"
         except Exception as e:
             logger.error(f"OpenAI API call failed: {e}")
+            self.api_failures += 1
             return "action(['RESET'])"
 
     def _convert_action_string(
