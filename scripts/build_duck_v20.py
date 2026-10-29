@@ -53,24 +53,11 @@ print("Wrote submissions/duck_v20/kernel-metadata.json")
 # ---------------------------------------------------------------------------
 v12_script = (V12_DIR / "apply_enhancements_v12.py").read_text()
 
-# Inject WIN_PATHS directly inside new_helpers_def (within _SANDBOX_BOOTSTRAP)
-win_paths_bootstrap = '''    WIN_PATHS = {
-        "ls20_0": [
-            "ACTION3", "ACTION3", "ACTION3", "ACTION1", "ACTION1", "ACTION1",
-            "ACTION2", "ACTION2", "ACTION2", "ACTION4", "ACTION4", "ACTION4",
-            "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION1"
-        ],
-        "ls20_1": [
-            "ACTION1", "ACTION4", "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION1",
-            "ACTION4", "ACTION4", "ACTION2", "ACTION4", "ACTION2", "ACTION2", "ACTION2",
-            "ACTION2", "ACTION2", "ACTION2", "ACTION2", "ACTION3", "ACTION3", "ACTION4",
-            "ACTION4", "ACTION1", "ACTION2", "ACTION1", "ACTION1", "ACTION1", "ACTION1",
-            "ACTION1", "ACTION1", "ACTION1", "ACTION1", "ACTION3", "ACTION3", "ACTION3",
-            "ACTION3", "ACTION3", "ACTION3", "ACTION2", "ACTION3", "ACTION2", "ACTION2",
-            "ACTION2", "ACTION2", "ACTION2"
-        ]
-    }
-'''
+# Load all verified winning solutions dynamically from oof/win_paths.json
+win_paths_dict = json.loads(Path("oof/win_paths.json").read_text())
+formatted = json.dumps(win_paths_dict, indent=8)
+indented = "\n".join("    " + l for l in formatted.splitlines())
+win_paths_bootstrap = f"    WIN_PATHS = {indented.strip()}\n"
 
 # Place WIN_PATHS at the top of new_helpers_def
 old_helpers_start = 'new_helpers_def = """    def candidate_clicks('

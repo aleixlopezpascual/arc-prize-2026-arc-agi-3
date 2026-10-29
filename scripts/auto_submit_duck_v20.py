@@ -41,7 +41,7 @@ try:
         message='{MESSAGE}',
         competition='{COMPETITION}',
         kernel='{kernel_slug}',
-        kernel_version=1
+        kernel_version=None
     )
     print('SUCCESS:', res)
 except Exception as e:
