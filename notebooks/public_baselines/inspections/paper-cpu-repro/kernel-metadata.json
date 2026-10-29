@@ -1,0 +1,23 @@
+{
+  "id": "tantan0327/arc3-paper-cpu-reproduction",
+  "id_no": 140805081,
+  "title": "ARC3 paper: CPU reproduction",
+  "code_file": "arc3-paper-cpu-reproduction.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": true,
+  "keywords": [],
+  "dataset_sources": [
+    "tantan0327/arc3-paper-artefacts"
+  ],
+  "kernel_sources": [],
+  "competition_sources": [
+    "arc-prize-2026-arc-agi-3"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-images/python@sha256:17b2fc7f27c25c6c2fd4230ec8e66097ab2b89fc88e1e4d6f338b72e1ee0bc3e",
+  "machine_shape": "None"
+}

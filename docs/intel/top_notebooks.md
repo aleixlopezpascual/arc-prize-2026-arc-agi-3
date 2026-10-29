@@ -1,13 +1,21 @@
 # Top Public Notebooks: arc-prize-2026-arc-agi-3
 
-*Last Updated: 2026-10-29*
+*Last Updated: 2026-10-30* (See detailed breakdown in `docs/intel/oct30_notebooks_intelligence.md`)
 
 ## Top Voted & Highest Scoring Public Notebooks
 
 | Title | Author | Votes | Ref / Kernel Slug | Score / Notes |
 | :--- | :--- | :--- | :--- | :--- |
+| **ARC-AGI-3 Stack S16** | ondrewsha | 0 | `ondrewsha/arc-agi-3-stack-s16` | 🚀 **Top Scaffolding Integration**. H3v2 inference audit (anti-stagnation probing on play area), H1 solved-level memory (KV-cache preserving), SCH priority flags (100/40k), K3 prompt deduplication, GW start retry. |
+| **Why #1 Is #1 — ARC-AGI-3 Gap Analysis** | cosmorin | 0 | `cosmorin/why-1-is-1-arc-agi-3-gap-analysis` | 🔬 **Key Study**. Analysis of 48-point gap: harness scaffolding discipline, depth truncation failure autopsy, fatal dynamic scheduler collapse (-35 pts), why in-run TTT fails. |
+| **ARC-AGI-3 Oracle Calibration: Completion vs Waste** | cosmorin | 0 | `cosmorin/arc-agi-3-oracle-calibration-completion-vs-waste` | 📊 **Score Decomposition**. 50.30 points completion loss vs 2.30 efficiency loss; 25.6% actions burned on dead levels; Pattern A & B action bugs. |
+| **"The agent starts like an agent..." CPU Reproduction** | red-down (tantan0327) | 1 | `tantan0327/arc3-paper-cpu-reproduction` | 🧠 **Paper Track**. Proves LB is a max-statistic (std dev 3.0), allocation simulator on 213 traces, "slow not stuck" finding. |
+| **ARC-AGI-3: Franzen M2 + cache-safe solved-level memory** | Yiming Fang | 81 | `vickyfym/arc-agi-3-lalalia-final` | 🏆 **31.46% LB**. Paper track writeup entry with cache-safe solved-level memory and 55m server wait. |
 | **大阪公立大学 Affectify ARC支部🐙｜31.54 in a Single Sub** | shiiin9 | 75 | `shiiin9/affectify-arc-31-54-in-a-single-sub` | 🏆 **31.54% LB**. Replaces Franzen's scheduler priority with the $D'$ formula ($A \cdot M \cdot C + B \cdot \phi$) and removes `fresh_floor`. |
-| **LB score 31.21** | Laimer Botrolenk | 3 | `laimerbotrolenk/lb-score-31-21` | 🚀 **31.21% LB**. "Adaptive Duck": Bounded memory, action batch early stopping, and verified execution. |
+| **LB score 31.21** | Laimer Botrolenk | 3 | `laimerbotrolenk/lb-score-31-21` | 🚀 **31.21% LB**. "Adaptive Duck": Bounded memory, action batch early stopping, and verified execution (A*, BFS, XOR toggle solver). |
+| **arc3-silver-exp015-memory-coldstart** | Bhuvnesh Richhariya | 8 | `bhuvneshrichhariya/arc3-silver-exp015-memory-coldstart` | 🛡️ **Coldstart Hold**. Warmup slot reset loop (every 8 min up to 50 min) to survive slow container starts. |
+| **ARCAID3 lexicon view on Daniel Franzen's M2** | Shehab Anwer | 37 | `habanwer/arcaid3-lexicon-view-dfranzen-m2` | 🧩 **Object Lexicon**. Multi-color symbol lexicon, scale lock, inductive grammar rule learning. |
+| **Priced Curiosity: EC** | Satyam | 2 | `samuraiiii/priced-curiosity-ec` | 📐 **RHAE Marginal Cost**. Closed-form mathematical action price threshold and edge status bar detector. |
 | **ARC-AGI-3 Milestone 2 Solution** | Daniel Franzen | 1,164 | `dfranzen/arc-agi-3-milestone-2-solution` | **27.89% LB (M2 Winner)**. Qwen3.8-Flash-Next W4A16, Albucino MTP draft, SGLang Pennyroyal, 93% KV cache hit rate, priority scheduler. Bedrock of all current top solutions. |
 | **ARC-AGI-3: 27.80 LB \| 100-Trajectory Audit** | skarin | 55 | `skarin/arc-agi-3-27-80-lb-100-trajectory-audit` | 🔬 **27.80% LB**. Full empirical audit of 100 Franzen runs: 33/100 games completely cleared (100% score) when scheduler gives them sufficient slots. |
 | **ARC3 franzen dprime** | red-down (tantan0327) | 80 | `tantan0327/arc3-franzen-dprime` | Franzen M2 with D' priority plugin (`priority_form.py`). |

@@ -1,0 +1,21 @@
+{
+  "id": "cosmorin/why-1-is-1-arc-agi-3-gap-analysis",
+  "id_no": 140789614,
+  "title": "Why #1 Is #1 \u2014 ARC-AGI-3 Gap Analysis",
+  "code_file": "why-1-is-1-arc-agi-3-gap-analysis.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": false,
+  "enable_gpu": false,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [],
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": [
+    "arc-prize-2026-arc-agi-3"
+  ],
+  "model_sources": [],
+  "docker_image": "gcr.io/kaggle-images/python@sha256:17b2fc7f27c25c6c2fd4230ec8e66097ab2b89fc88e1e4d6f338b72e1ee0bc3e",
+  "machine_shape": "None"
+}
