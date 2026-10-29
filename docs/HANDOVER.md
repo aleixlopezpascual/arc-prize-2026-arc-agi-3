@@ -14,6 +14,7 @@
 
 | Submission Ref | Date (UTC) | Model Architecture | Status | Public Score | Key Finding / Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- |
+| **`GPU VERIFIED`** | **2026-10-29 19:42:00** | **Duck V21 (The Fusion Kernel: D' Priority Scheduler + 4-Level Win-Path Cache)** | **`COMPLETE`** | **`26.86%` (Demo)** | 🏆 **FUSION KERNEL COMPLETE**. D' priority scheduler installed cleanly (#OURS_FORM ok), 4-level cache verified, 0 errors, 0 OOMs. Auto-submit daemon armed for 00:00 UTC quota window. |
 | **`GPU VERIFIED`** | **2026-10-28 22:20:00** | **Duck V20 Version 3 (4-Level Solution Cache + SGLang Lean Armor)** | **`COMPLETE`** | **`34.28%` (Demo)** | 🏆 **ALL-TIME DEMO RECORD**. Scored **34.28%** across 908 actions in 25m on RTX PRO 6000 GPU. Pre-cached 4 levels of ls20, zero NameErrors, zero OOMs. Armed for tonight's quota window. |
 | **`57751827`** | **2026-10-29 00:01:14** | **Duck V20 Run 2 (Dynamic Grid Perception + Win-Path Cache)** | **`COMPLETE`** | **`0.00`** | 🔬 Post-mortem: Auto-submit daemon had hardcoded `kernel_version=1` instead of latest. Fixed in daemon with dynamic `kernel_version=None`. |
 | **`57716208`** | **2026-10-28 00:00:56** | **Duck V20 Run 1 (Dynamic Grid Perception + Win-Path Cache Armor)** | **`COMPLETE`** | **`0.00`** | 🔬 Forensic diagnosis: NameError: name 'WIN_PATHS' is not defined inside worker subprocess because it was defined outside _SANDBOX_BOOTSTRAP. Fixed in Version 2 and 3. |
