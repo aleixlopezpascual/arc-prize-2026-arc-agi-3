@@ -74,7 +74,14 @@ class EvaluationRunner:
 
             while not agent.is_done(frames, frame):
                 action = agent.choose_action(frames, frame)
-                frame = env.step(action)
+                action_data = None
+                if hasattr(action, "action_data") and action.action_data:
+                    action_data = (
+                        action.action_data.model_dump()
+                        if hasattr(action.action_data, "model_dump")
+                        else dict(action.action_data)
+                    )
+                frame = env.step(action, data=action_data)
                 frames.append(frame)
                 action_count += 1
                 level_action_count += 1

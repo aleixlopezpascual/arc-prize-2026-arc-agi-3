@@ -68,7 +68,7 @@ class OpenAIToolAgent(BaseAgent):
         self.cached_solutions: dict[str, list[str]] = self._load_cache()
         self.level_trajectory: list[str] = []
 
-        self.action_queue: collections.deque[GameAction] = collections.deque()
+        self.action_queue: collections.deque[tuple[GameAction, dict[str, Any] | None]] = collections.deque()
         self.notes: dict[str, Any] = {"game": {}, "level": {}}
         self.guard = NoopRepeatGuard()
         self.last_action: GameAction | None = None
@@ -176,30 +176,50 @@ class OpenAIToolAgent(BaseAgent):
         act_str: str,
         available: list[int],
         game_id: str,
-    ) -> GameAction | None:
-        """Convert action string like 'UP' or 'CLICK(10, 20)' to GameAction."""
+    ) -> tuple[GameAction, dict[str, Any] | None] | None:
+        """Convert action string like 'UP' or 'CLICK(10, 20)' or 'MOUSE(row=10, col=20)' to (GameAction, data)."""
         raw = str(act_str).strip().upper()
+        # Pattern 1: MOUSE(row=38, col=46)
+        m_rowcol = re.search(r"ROW\s*=\s*(\d+)\s*,\s*COL\s*=\s*(\d+)", raw)
+        if m_rowcol and 6 in available:
+            r, c = int(m_rowcol.group(1)), int(m_rowcol.group(2))
+            return GameAction.ACTION6, {"x": c, "y": r, "row": r, "col": c, "game_id": game_id}
+
+        # Pattern 2: CLICK(r, c) or MOUSE(r, c)
         coords_match = re.search(r"(?:CLICK|MOUSE|ACTION6)\s*\(\s*(\d+)\s*,\s*(\d+)\s*\)", raw)
-        if coords_match:
+        if coords_match and 6 in available:
             r, c = int(coords_match.group(1)), int(coords_match.group(2))
-            if 6 in available:
-                act = GameAction.ACTION6
-                act.set_data({"x": r, "y": c, "game_id": game_id})
-                return act
+            return GameAction.ACTION6, {"x": c, "y": r, "row": r, "col": c, "game_id": game_id}
 
         for name, act in ACTION_MAP.items():
             if raw == name or raw == act.name:
                 if act.value in available:
-                    return act
+                    return act, None
 
         # Match ACTION<N>
         num_match = re.search(r"\bACTION([1-7])\b", raw)
         if num_match:
             val = int(num_match.group(1))
             if val in available:
-                return GameAction.from_id(val)
+                return GameAction.from_id(val), None
 
         return None
+
+    def _format_action_for_trajectory(
+        self,
+        act: GameAction,
+        data: dict[str, Any] | None = None,
+    ) -> str:
+        """Format action for persistent trajectory cache (recording coordinates for MOUSE)."""
+        if act.value == 6:
+            row = (data.get("row") or data.get("y")) if data else None
+            col = (data.get("col") or data.get("x")) if data else None
+            if row is None or col is None:
+                if hasattr(act, "action_data") and act.action_data:
+                    row = getattr(act.action_data, "y", 0)
+                    col = getattr(act.action_data, "x", 0)
+            return f"MOUSE(row={row or 0}, col={col or 0})"
+        return act.name
 
     def choose_action(
         self,
@@ -216,9 +236,11 @@ class OpenAIToolAgent(BaseAgent):
         if latest_frame.levels_completed > self.current_level:
             if self.level_trajectory:
                 cache_key = f"{game_prefix}_{self.current_level}"
-                self.cached_solutions[cache_key] = list(self.level_trajectory)
-                self._save_cache()
-                print(f"💾 [Win-Path Cache] Saved {len(self.level_trajectory)} actions for {cache_key}!", flush=True)
+                # Only overwrite if new trajectory is shorter or not in cache
+                if cache_key not in self.cached_solutions or len(self.level_trajectory) < len(self.cached_solutions[cache_key]):
+                    self.cached_solutions[cache_key] = list(self.level_trajectory)
+                    self._save_cache()
+                    print(f"💾 [Win-Path Cache] Saved {len(self.level_trajectory)} actions for {cache_key}!", flush=True)
             self.level_trajectory.clear()
             self.current_level = latest_frame.levels_completed
             self.guard.note_level(self.current_level)
@@ -232,14 +254,16 @@ class OpenAIToolAgent(BaseAgent):
         cache_key = f"{game_prefix}_{latest_frame.levels_completed}"
         if not self.action_queue and cache_key in self.cached_solutions:
             for act_name in self.cached_solutions[cache_key]:
-                act = self._convert_action_string(act_name, available, latest_frame.game_id)
-                if act is not None:
-                    self.action_queue.append(act)
+                parsed = self._convert_action_string(act_name, available, latest_frame.game_id)
+                if parsed is not None:
+                    self.action_queue.append(parsed)
             if self.action_queue:
                 print(f"⚡ [Win-Path Cache Hit] Replaying {len(self.action_queue)} optimal actions for {cache_key}!", flush=True)
-                next_action = self.action_queue.popleft()
+                next_action, act_data = self.action_queue.popleft()
+                if act_data:
+                    next_action.set_data(act_data)
                 self.last_action = next_action
-                self.level_trajectory.append(next_action.name)
+                self.level_trajectory.append(self._format_action_for_trajectory(next_action, act_data))
                 return next_action
 
         if latest_frame.game_id.startswith("ls20"):
@@ -264,7 +288,7 @@ class OpenAIToolAgent(BaseAgent):
             gameplay_changed = (prev_hash != curr_hash)
             self.guard.observe(prev_hash, self.last_action, gameplay_changed)
 
-            if not gameplay_changed:
+            if not gameplay_changed and self.last_action.value != 6:
                 if self.action_queue:
                     print(f"🛑 [No-Op Stagnation] Discarding {len(self.action_queue)} queued action(s) due to wall bump.", flush=True)
                     self.action_queue.clear()
@@ -294,9 +318,11 @@ class OpenAIToolAgent(BaseAgent):
 
         # 3. Check if we still have active queued actions
         if self.action_queue:
-            next_action = self.action_queue.popleft()
+            next_action, act_data = self.action_queue.popleft()
+            if act_data:
+                next_action.set_data(act_data)
             self.last_action = next_action
-            self.level_trajectory.append(next_action.name)
+            self.level_trajectory.append(self._format_action_for_trajectory(next_action, act_data))
             print(f"⚡ [Queue Replay] Executing queued action: {next_action.name}", flush=True)
             return next_action
 
@@ -503,12 +529,15 @@ class OpenAIToolAgent(BaseAgent):
         if not self.action_queue:
             # Absolute fallback if max loops exhausted without queuing
             fallback_act, fallback_coords = parse_action_response(resp, available)
+            fallback_data = None
             if fallback_act == GameAction.ACTION6 and fallback_coords:
-                fallback_act.set_data({"x": fallback_coords[0], "y": fallback_coords[1], "game_id": latest_frame.game_id})
-            self.action_queue.append(fallback_act)
+                fallback_data = {"x": fallback_coords[0], "y": fallback_coords[1], "game_id": latest_frame.game_id}
+            self.action_queue.append((fallback_act, fallback_data))
 
-        first_act = self.action_queue.popleft()
+        first_act, first_data = self.action_queue.popleft()
+        if first_data:
+            first_act.set_data(first_data)
         self.last_action = first_act
-        self.level_trajectory.append(first_act.name)
+        self.level_trajectory.append(self._format_action_for_trajectory(first_act, first_data))
         print(f"🚀 [{self.model} Tool] Queued {len(self.action_queue) + 1} action(s). Executing: {first_act.name}", flush=True)
         return first_act
