@@ -2,10 +2,10 @@
 
 **Date:** Friday, October 30, 2026  
 **Repository:** `aleixlopezpascual/arc-prize-2026-arc-agi-3` (Local: `/Users/aleix.lopez/arc-prize-2026-arc-agi-3`)  
-**Current Best Leaderboard Score:** **`30.19%`** (Rank #621 on Oct 26, Ref `56836213`, Oct 5). The field is ~4,500 teams (gold line = rank 19 = 10 + 0.2% of teams), so bronze is about the top 450 and silver about the top 225. Gold line on Oct 25: 38.22  
+**Current Best Leaderboard Score:** **`30.19%`** (Ref `56836213`, Oct 5; **rank #809 of 4,983 teams** on Oct 30). Medal lines: bronze = top 10% (~rank 498), silver = top 5% (~rank 249), gold ≈ top 20 (38.22 on Oct 25). **Final deadline: 2026-11-02 23:59 UTC** (submissions and final selections)  
 **Best Demo Benchmark (general):** **`58.42%`** (Duck V12: 44 / 64 levels cleared, 3 full 100% sweeps: `ft09`, `sb26`, `tr87`). The V20 v3 `34.28%` GPU demo score relies on hardcoded `ls20` replay and is not comparable.  
 **Latest Kernel:** S16 Final (`submissions/s16_final/`): public Stack S16 verbatim plus a commit-run gate. Not yet pushed. Duck V21 was **never submitted**: the auto-submit daemon did not fire on Oct 30.  
-**Endgame:** ≤3 submission days left. Every remaining slot goes to S16 Final. See "Endgame Plan" below.  
+**Endgame:** 4 submission days left (Oct 30, Oct 31, Nov 1, Nov 2). Submit Nov 2's run at 00:00 UTC so its ~9 h run finishes before the deadline. Every remaining slot goes to S16 Final. See "Endgame Plan" below.  
 **Kaggle User:** `aleixlopez`  
 **Submissions:** 4 of the last 7 leaderboard runs scored `0.00` from our own bugs (V18, V19 Run 1, V20 Run 1, V20 Run 2); see the ledger. Kaggle quota status not re-checked (limit is 1 per day).  
 
@@ -64,7 +64,7 @@
 
 ---
 
-## 🎯 Endgame Plan (as of Oct 30, ≤3 submissions left)
+## 🎯 Endgame Plan (as of Oct 30, 4 submissions left, deadline Nov 2 23:59 UTC)
 
 **Decision:** rebase on public **Stack S16** (`ondrewsha/arc-agi-3-stack-s16`, ~31.6 LB) and use every remaining slot on it. Reasons:
 - Our Duck lineage averages ~26 on the leaderboard: the three V12 runs average 26.43, and V13–V17 scored 23.9–24.8.
