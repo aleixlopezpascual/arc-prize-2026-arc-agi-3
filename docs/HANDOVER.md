@@ -15,6 +15,7 @@
 
 | Submission Ref | Date (UTC) | Model Architecture | Status | Public Score | Key Finding / Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- |
+| **`57802714`** | **2026-10-30 10:39:28** | **Duck V19 v2 (fixed: V12 core + 55m shield + MEMFRAC 0.93)** | `PENDING` | - | Oct 30 slot. GPU weekly quota exhausted until ~23:57 UTC, so S16 could not be pushed today; V19 v2 needs no GPU. Its run log shows no IndentationError/NameError/OOM. |
 | `NOT SUBMITTED` | 2026-10-30 00:00 | Duck V21 (Fusion Kernel) | `MISSED` | - | Auto-submit daemon did not submit; slot lost. Daemons retired. Submit manually from now on. |
 | **`GPU VERIFIED`** | **2026-10-29 19:42:00** | **Duck V21 (The Fusion Kernel: D' Priority Scheduler + 4-Level Win-Path Cache)** | **`COMPLETE`** | **`26.86%` (Demo)** | 🏆 **FUSION KERNEL COMPLETE**. D' priority scheduler installed cleanly (#OURS_FORM ok), 4-level cache verified, 0 errors, 0 OOMs. Auto-submit daemon armed for 00:00 UTC quota window. |
 | **`GPU VERIFIED`** | **2026-10-28 22:20:00** | **Duck V20 Version 3 (4-Level Solution Cache + SGLang Lean Armor)** | **`COMPLETE`** | **`34.28%` (Demo)** | 🏆 **ALL-TIME DEMO RECORD**. Scored **34.28%** across 908 actions in 25m on RTX PRO 6000 GPU. Pre-cached 4 levels of ls20, zero NameErrors, zero OOMs. Armed for tonight's quota window. |
