@@ -44,3 +44,17 @@ S16 Final (and its MEMFRAC 0.93 fallback) ships with `ARC3_PRIORITY_TOKEN_SCALE 
 - **Expected gain:** about +1 point, against run-to-run noise of SD ≈ 3–4.
 - **Supporting real-world evidence:** D' gains on the leaderboard come from patience; a hard 110k token cutoff measured −9 points on the forum; 60-minute traces show slow games clearing after 30–80k tokens per level.
 - **Caveat:** the hidden-game population in the simulator is modelled from the 25 public games.
+
+## Follow-up: other S16 scheduler knobs at 200k patience (no change)
+
+With patience fixed at 200k, I swept the remaining env-level knobs on seeds 500.. (default hazard) and 600.. (hard games never clear):
+- `ARC3_PRIORITY_HUMAN_ACTIONS` 25 / 50 / 200 / 400
+- `ARC3_PRIORITY_ACTION_SCALE` 300 / 1000
+- `ARC3_PRIORITY_ACTION_WEIGHT` 0 / 0.1
+- `ARC3_PRIORITY_TAIL_FADE_FRACTION` 0.1 / 0.3 / 0.4
+
+The adoption bar was a gain of at least +0.3 in every regime. Nothing passed.
+- Every variant stayed within ±0.3 of S16's values, and each one lost in at least one regime.
+- Human 25 and human 400 lost up to −1.25 and −1.0.
+
+S16's other settings stay as published.
