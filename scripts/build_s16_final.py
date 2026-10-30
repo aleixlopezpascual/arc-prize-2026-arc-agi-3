@@ -10,11 +10,14 @@ Public Stack S16 (ondrewsha/arc-agi-3-stack-s16) verbatim, plus one gate cell at
 """
 
 import json
+import sys
 from pathlib import Path
 
 S16_NOTEBOOK = Path("notebooks/public_baselines/inspections/stack-s16/arc-agi-3-stack-s16.ipynb")
 S16_METADATA = Path("notebooks/public_baselines/inspections/stack-s16/kernel-metadata.json")
 OUT_DIR = Path("submissions/s16_final")
+# Fallback for an SGLang OOM at S16's MEMFRAC=0.96 (what zeroed our Duck V18): same kernel id, one value changed.
+MF93_DIR = Path("submissions/s16_final_mf93")
 
 GATE_SOURCE = """\
 # S16 Final gate: a commit run skips the whole notebook; a competition rerun is untouched.
@@ -37,8 +40,9 @@ else:
 """
 
 
-def build() -> None:
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
+def build(memfrac93: bool = False) -> None:
+    out_dir = MF93_DIR if memfrac93 else OUT_DIR
+    out_dir.mkdir(parents=True, exist_ok=True)
 
     nb = json.loads(S16_NOTEBOOK.read_text())
     gate_cell = {
@@ -49,7 +53,12 @@ def build() -> None:
         "source": GATE_SOURCE.splitlines(keepends=True),
     }
     nb["cells"].insert(0, gate_cell)
-    (OUT_DIR / "notebook.ipynb").write_text(json.dumps(nb, indent=1))
+    if memfrac93:
+        # Kaggle stores each cell's source as one string, not a list of lines.
+        hits = [c for c in nb["cells"] if "MEMFRAC=0.96," in "".join(c["source"])]
+        assert len(hits) == 1, "expected exactly one MEMFRAC=0.96 setting"
+        hits[0]["source"] = "".join(hits[0]["source"]).replace("MEMFRAC=0.96,", "MEMFRAC=0.93,")
+    (out_dir / "notebook.ipynb").write_text(json.dumps(nb, indent=1))
 
     metadata = json.loads(S16_METADATA.read_text())
     for key in ("id_no",):
@@ -62,9 +71,9 @@ def build() -> None:
             "is_private": True,
         }
     )
-    (OUT_DIR / "kernel-metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
-    print(f"Wrote {OUT_DIR}/notebook.ipynb ({len(nb['cells'])} cells) and kernel-metadata.json")
+    (out_dir / "kernel-metadata.json").write_text(json.dumps(metadata, indent=2) + "\n")
+    print(f"Wrote {out_dir}/notebook.ipynb ({len(nb['cells'])} cells) and kernel-metadata.json")
 
 
 if __name__ == "__main__":
-    build()
+    build(memfrac93="--memfrac93" in sys.argv)
