@@ -8,7 +8,7 @@
   commit finishes in seconds instead of spending GPU quota on model loading and demo games.
 
 Variants (select with a flag; no flag builds S16 Final):
-- (default)     S16 Final: Stack S16 (ondrewsha/arc-agi-3-stack-s16), no edits.
+- (default)     S16 Final: Stack S16 (ondrewsha/arc-agi-3-stack-s16), token patience 40k -> 200k.
 - --memfrac93   S16 Final with MEMFRAC 0.96 -> 0.93, the fallback for an SGLang OOM (what zeroed
                 our Duck V18). Same kernel id, so pushing it becomes the next version.
 - --affectify   Affectify D' (shiiin9/affectify-arc-31-54-in-a-single-sub, 31.54 LB), the backup if
@@ -23,6 +23,11 @@ from pathlib import Path
 INSPECTIONS = Path("notebooks/public_baselines/inspections")
 S16_METADATA = INSPECTIONS / "stack-s16/kernel-metadata.json"
 
+# Token patience 40k -> 200k in S16's SCH cell: on tantan0327's calibrated scheduler simulator
+# (213 real Franzen traces, 5 regimes x 5 seed sets of 16) this gains +0.4..+1.9 over S16's 40k and
+# is neutral (-0.04) only when hard games can never clear. See docs/intel/oct30_scheduler_sim.md.
+PATIENCE_200K = ('"ARC3_PRIORITY_TOKEN_SCALE": "40000"', '"ARC3_PRIORITY_TOKEN_SCALE": "200000"')
+
 VARIANTS = {
     "s16": {
         "notebook": INSPECTIONS / "stack-s16/arc-agi-3-stack-s16.ipynb",
@@ -30,7 +35,7 @@ VARIANTS = {
         "id": "aleixlopez/arc3-s16-final",
         "title": "ARC3 S16 Final",
         "label": "Stack S16",
-        "edits": [],
+        "edits": [PATIENCE_200K],
     },
     "memfrac93": {
         "notebook": INSPECTIONS / "stack-s16/arc-agi-3-stack-s16.ipynb",
@@ -38,7 +43,7 @@ VARIANTS = {
         "id": "aleixlopez/arc3-s16-final",
         "title": "ARC3 S16 Final",
         "label": "Stack S16",
-        "edits": [("MEMFRAC=0.96,", "MEMFRAC=0.93,")],
+        "edits": [PATIENCE_200K, ("MEMFRAC=0.96,", "MEMFRAC=0.93,")],
     },
     "affectify": {
         "notebook": INSPECTIONS / "shiiin9/affectify-arc-31-54-in-a-single-sub.ipynb",

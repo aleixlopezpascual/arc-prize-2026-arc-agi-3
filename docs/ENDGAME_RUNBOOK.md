@@ -14,7 +14,7 @@ Self-contained: follow this if the Claude session that set it up is gone.
 
 ## The kernel: S16 Final
 
-- **Files:** `submissions/s16_final/`, built by `python3 scripts/build_s16_final.py`. It is all S16 cells, unchanged, plus a gate cell 0.
+- **Files:** `submissions/s16_final/`, built by `python3 scripts/build_s16_final.py`. It is all S16 cells plus a gate cell 0, with **one edit**: token patience `ARC3_PRIORITY_TOKEN_SCALE` 40000 → 200000. The scheduler simulation gives +0.4 to +1.9; see `docs/intel/oct30_scheduler_sim.md`.
   - **Commit run** (Save Version / `kaggle kernels push`): the gate writes a placeholder `submission.parquet` and turns every later cell into `pass`. The run finishes in seconds of GPU.
   - **Competition rerun:** the gate does nothing, and S16 runs exactly as published.
 - **Kaggle id:** `aleixlopez/arc3-s16-final`. Version 1 is the first push.
