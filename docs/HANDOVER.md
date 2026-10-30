@@ -1,5 +1,7 @@
 # ARC Prize 2026 (ARC-AGI-3) — Session Handover Document
 
+> **Endgame (Oct 30 – Nov 2):** follow [`docs/ENDGAME_RUNBOOK.md`](ENDGAME_RUNBOOK.md). It has the schedule, exact commands, decision rules and final selection.
+
 **Date:** Friday, October 30, 2026  
 **Repository:** `aleixlopezpascual/arc-prize-2026-arc-agi-3` (Local: `/Users/aleix.lopez/arc-prize-2026-arc-agi-3`)  
 **Current Best Leaderboard Score:** **`30.19%`** (Ref `56836213`, Oct 5; **rank #809 of 4,983 teams** on Oct 30). Medal lines: bronze = top 10% (~rank 498), silver = top 5% (~rank 249), gold ≈ top 20 (38.22 on Oct 25). **Final deadline: 2026-11-02 23:59 UTC** (submissions and final selections)  
