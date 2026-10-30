@@ -1,23 +1,54 @@
 #!/usr/bin/env python3
-"""Build the S16 Final submission package.
+"""Build the endgame submission packages: a public notebook verbatim plus one gate cell at the top.
 
-Public Stack S16 (ondrewsha/arc-agi-3-stack-s16) verbatim, plus one gate cell at the top:
-- Competition rerun (KAGGLE_IS_COMPETITION_RERUN set): the gate does nothing, so every S16
-  cell runs exactly as published.
-- Commit run ("Save Version"): the gate writes the placeholder submission.parquet that S16
-  itself writes after an offline run, then turns every later cell into `pass`. The commit
-  finishes in seconds instead of spending GPU quota on model loading and demo games.
+- Competition rerun (KAGGLE_IS_COMPETITION_RERUN set): the gate does nothing, so every published
+  cell runs as is (apart from the variant's listed edits).
+- Commit run ("Save Version"): the gate writes the placeholder submission.parquet that these
+  notebooks themselves write after an offline run, then turns every later cell into `pass`. The
+  commit finishes in seconds instead of spending GPU quota on model loading and demo games.
+
+Variants (select with a flag; no flag builds S16 Final):
+- (default)     S16 Final: Stack S16 (ondrewsha/arc-agi-3-stack-s16), no edits.
+- --memfrac93   S16 Final with MEMFRAC 0.96 -> 0.93, the fallback for an SGLang OOM (what zeroed
+                our Duck V18). Same kernel id, so pushing it becomes the next version.
+- --affectify   Affectify D' (shiiin9/affectify-arc-31-54-in-a-single-sub, 31.54 LB), the backup if
+                S16 Final scores between 0 and 27. One edit: the server start-up limit 12 -> 55 min,
+                since the 12-minute limit zeroed runs on slow machines (forum 753007).
 """
 
 import json
 import sys
 from pathlib import Path
 
-S16_NOTEBOOK = Path("notebooks/public_baselines/inspections/stack-s16/arc-agi-3-stack-s16.ipynb")
-S16_METADATA = Path("notebooks/public_baselines/inspections/stack-s16/kernel-metadata.json")
-OUT_DIR = Path("submissions/s16_final")
-# Fallback for an SGLang OOM at S16's MEMFRAC=0.96 (what zeroed our Duck V18): same kernel id, one value changed.
-MF93_DIR = Path("submissions/s16_final_mf93")
+INSPECTIONS = Path("notebooks/public_baselines/inspections")
+S16_METADATA = INSPECTIONS / "stack-s16/kernel-metadata.json"
+
+VARIANTS = {
+    "s16": {
+        "notebook": INSPECTIONS / "stack-s16/arc-agi-3-stack-s16.ipynb",
+        "out_dir": Path("submissions/s16_final"),
+        "id": "aleixlopez/arc3-s16-final",
+        "title": "ARC3 S16 Final",
+        "label": "Stack S16",
+        "edits": [],
+    },
+    "memfrac93": {
+        "notebook": INSPECTIONS / "stack-s16/arc-agi-3-stack-s16.ipynb",
+        "out_dir": Path("submissions/s16_final_mf93"),
+        "id": "aleixlopez/arc3-s16-final",
+        "title": "ARC3 S16 Final",
+        "label": "Stack S16",
+        "edits": [("MEMFRAC=0.96,", "MEMFRAC=0.93,")],
+    },
+    "affectify": {
+        "notebook": INSPECTIONS / "shiiin9/affectify-arc-31-54-in-a-single-sub.ipynb",
+        "out_dir": Path("submissions/affectify_backup"),
+        "id": "aleixlopez/arc3-affectify-backup",
+        "title": "ARC3 Affectify Backup",
+        "label": "Affectify D'",
+        "edits": [("SERVER_STARTUP_TIMEOUT = 12 * 60\n", "SERVER_STARTUP_TIMEOUT = 55 * 60\n")],
+    },
+}
 
 GATE_SOURCE = """\
 # S16 Final gate: a commit run skips the whole notebook; a competition rerun is untouched.
@@ -36,37 +67,38 @@ if os.environ.get("KAGGLE_IS_COMPETITION_RERUN", "").strip().lower() not in {"1"
     get_ipython().input_transformers_post.append(lambda lines: ["pass\\n"])
     print("[GATE] commit run: placeholder submission.parquet written, remaining cells skipped")
 else:
-    print("[GATE] competition rerun: running Stack S16 unchanged")
+    print("[GATE] competition rerun: running LABEL unchanged")
 """
 
 
-def build(memfrac93: bool = False) -> None:
-    out_dir = MF93_DIR if memfrac93 else OUT_DIR
+def build(variant: str = "s16") -> None:
+    spec = VARIANTS[variant]
+    out_dir = spec["out_dir"]
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    nb = json.loads(S16_NOTEBOOK.read_text())
+    nb = json.loads(spec["notebook"].read_text())
     gate_cell = {
         "cell_type": "code",
         "execution_count": None,
         "metadata": {},
         "outputs": [],
-        "source": GATE_SOURCE.splitlines(keepends=True),
+        "source": GATE_SOURCE.replace("LABEL", spec["label"]).splitlines(keepends=True),
     }
     nb["cells"].insert(0, gate_cell)
-    if memfrac93:
+    for old, new in spec["edits"]:
         # Kaggle stores each cell's source as one string, not a list of lines.
-        hits = [c for c in nb["cells"] if "MEMFRAC=0.96," in "".join(c["source"])]
-        assert len(hits) == 1, "expected exactly one MEMFRAC=0.96 setting"
-        hits[0]["source"] = "".join(hits[0]["source"]).replace("MEMFRAC=0.96,", "MEMFRAC=0.93,")
+        hits = [c for c in nb["cells"] if old in "".join(c["source"])]
+        assert len(hits) == 1, f"expected exactly one {old!r}"
+        hits[0]["source"] = "".join(hits[0]["source"]).replace(old, new)
     (out_dir / "notebook.ipynb").write_text(json.dumps(nb, indent=1))
 
+    # All variants load the same dfranzen datasets, models and machine as Stack S16.
     metadata = json.loads(S16_METADATA.read_text())
-    for key in ("id_no",):
-        metadata.pop(key, None)
+    metadata.pop("id_no", None)
     metadata.update(
         {
-            "id": "aleixlopez/arc3-s16-final",
-            "title": "ARC3 S16 Final",
+            "id": spec["id"],
+            "title": spec["title"],
             "code_file": "notebook.ipynb",
             "is_private": True,
         }
@@ -76,4 +108,5 @@ def build(memfrac93: bool = False) -> None:
 
 
 if __name__ == "__main__":
-    build(memfrac93="--memfrac93" in sys.argv)
+    flags = [arg.removeprefix("--") for arg in sys.argv[1:]]
+    build(flags[0] if flags else "s16")

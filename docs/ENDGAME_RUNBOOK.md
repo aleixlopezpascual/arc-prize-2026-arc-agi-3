@@ -18,6 +18,10 @@ Self-contained: follow this if the Claude session that set it up is gone.
   - **Commit run** (Save Version / `kaggle kernels push`): the gate writes a placeholder `submission.parquet` and turns every later cell into `pass`. The run finishes in seconds of GPU.
   - **Competition rerun:** the gate does nothing, and S16 runs exactly as published.
 - **Kaggle id:** `aleixlopez/arc3-s16-final`. Version 1 is the first push.
+- **Backup notebook:** `submissions/affectify_backup/`, built by `python3 scripts/build_s16_final.py --affectify`. Kaggle id `aleixlopez/arc3-affectify-backup`.
+  - It is Affectify D' (`shiiin9/affectify-arc-31-54-in-a-single-sub`), which scored 31.54 on the exact published notebook. It is a different scheduler from S16.
+  - It has the same gate. The only edit is the server start-up limit, `12 * 60` -> `55 * 60`.
+  - Push it only under the decision rule below.
 - **Fallback:** `submissions/s16_final_mf93/`, built by `python3 scripts/build_s16_final.py --memfrac93`. It has the same kernel id. The only change is `MEMFRAC 0.96 -> 0.93`. Push it **only** if an S16 Final run scores 0.00 and its log shows an SGLang CUDA out-of-memory error. It becomes the next version, so submit that version number.
 
 ## Schedule
@@ -54,6 +58,10 @@ kaggle competitions submissions -c arc-prize-2026-arc-agi-3 | head -8
 ## Decision rules
 
 - **S16 run scores ≥ 27:** resubmit the same version the next day.
+- **S16 run scores above 0 but below 27:** switch the remaining days to the Affectify backup. S16's ~31.6 comes from its earlier versions (S8/S9), so a weak first run is a reason to hedge. Push once (seconds of GPU), then submit version 1 on each remaining day:
+  ```bash
+  kaggle kernels push -p submissions/affectify_backup && until kaggle kernels status aleixlopez/arc3-affectify-backup 2>&1 | grep -qiE "complete|error"; do sleep 30; done && kaggle competitions submit -c arc-prize-2026-arc-agi-3 -k aleixlopez/arc3-affectify-backup -f submission.parquet -v 1 -m "Affectify backup draw 1"
+  ```
 - **S16 run scores 0.00:** download the log with `kaggle kernels output aleixlopez/arc3-s16-final -p /tmp/s16_out`.
   - If the log shows `CUDA out of memory`: `kaggle kernels push -p submissions/s16_final_mf93`, then submit that new version number the next day.
   - If the log shows any other error: change nothing big. Resubmitting v1 is still the best bet, because a slow machine or start-up timing is the usual cause.
@@ -64,7 +72,7 @@ kaggle competitions submissions -c arc-prize-2026-arc-agi-3 | head -8
 ## Final selection (by Nov 2 23:59 UTC)
 
 1. **Now:** tick Centroid V1 (`56836213`, 30.19) and V12 Run 2 (`57232788`, 29.46) as insurance.
-2. **On Nov 2:** swap in the two highest-scoring healthy runs among S16 Final draws 1–3 and V19 (`57802714`).
+2. **On Nov 2:** swap in the two highest-scoring healthy runs among the S16 Final draws, any Affectify backup draws, and V19 (`57802714`).
    - Keep Centroid V1 only if it still beats them.
    - Don't leave the choice to Kaggle's auto-pick.
 
