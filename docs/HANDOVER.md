@@ -1,10 +1,11 @@
 # ARC Prize 2026 (ARC-AGI-3) — Session Handover Document
 
-**Date:** Thursday, October 29, 2026  
+**Date:** Friday, October 30, 2026  
 **Repository:** `aleixlopezpascual/arc-prize-2026-arc-agi-3` (Local: `/Users/aleix.lopez/arc-prize-2026-arc-agi-3`)  
-**Current Best Leaderboard Score:** **`30.19%`** (Rank #621 of ~800+ teams, Ref `56836213`, Oct 5; rank last verified Oct 26, not re-checked)  
+**Current Best Leaderboard Score:** **`30.19%`** (Rank #621 on Oct 26, Ref `56836213`, Oct 5). The field is ~4,500 teams (gold line = rank 19 = 10 + 0.2% of teams), so bronze is about the top 450 and silver about the top 225. Gold line on Oct 25: 38.22  
 **Best Demo Benchmark (general):** **`58.42%`** (Duck V12: 44 / 64 levels cleared, 3 full 100% sweeps: `ft09`, `sb26`, `tr87`). The V20 v3 `34.28%` GPU demo score relies on hardcoded `ls20` replay and is not comparable.  
-**Latest Kernel:** Duck V21 (Fusion Kernel), GPU verified at `26.86%` demo, queued for the 00:00 UTC auto-submit; leaderboard score pending.  
+**Latest Kernel:** S16 Final (`submissions/s16_final/`): public Stack S16 verbatim plus a commit-run gate. Not yet pushed. Duck V21 was **never submitted**: the auto-submit daemon did not fire on Oct 30.  
+**Endgame:** ≤3 submission days left. Every remaining slot goes to S16 Final. See "Endgame Plan" below.  
 **Kaggle User:** `aleixlopez`  
 **Submissions:** 4 of the last 7 leaderboard runs scored `0.00` from our own bugs (V18, V19 Run 1, V20 Run 1, V20 Run 2); see the ledger. Kaggle quota status not re-checked (limit is 1 per day).  
 
@@ -14,6 +15,7 @@
 
 | Submission Ref | Date (UTC) | Model Architecture | Status | Public Score | Key Finding / Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- |
+| `NOT SUBMITTED` | 2026-10-30 00:00 | Duck V21 (Fusion Kernel) | `MISSED` | - | Auto-submit daemon did not submit; slot lost. Daemons retired. Submit manually from now on. |
 | **`GPU VERIFIED`** | **2026-10-29 19:42:00** | **Duck V21 (The Fusion Kernel: D' Priority Scheduler + 4-Level Win-Path Cache)** | **`COMPLETE`** | **`26.86%` (Demo)** | 🏆 **FUSION KERNEL COMPLETE**. D' priority scheduler installed cleanly (#OURS_FORM ok), 4-level cache verified, 0 errors, 0 OOMs. Auto-submit daemon armed for 00:00 UTC quota window. |
 | **`GPU VERIFIED`** | **2026-10-28 22:20:00** | **Duck V20 Version 3 (4-Level Solution Cache + SGLang Lean Armor)** | **`COMPLETE`** | **`34.28%` (Demo)** | 🏆 **ALL-TIME DEMO RECORD**. Scored **34.28%** across 908 actions in 25m on RTX PRO 6000 GPU. Pre-cached 4 levels of ls20, zero NameErrors, zero OOMs. Armed for tonight's quota window. |
 | **`57751827`** | **2026-10-29 00:01:14** | **Duck V20 Run 2 (Dynamic Grid Perception + Win-Path Cache)** | **`COMPLETE`** | **`0.00`** | 🔬 Post-mortem: Auto-submit daemon had hardcoded `kernel_version=1` instead of latest. Fixed in daemon with dynamic `kernel_version=None`. |
@@ -62,14 +64,22 @@
 
 ---
 
-## 🎯 Next Steps (as of Oct 29)
+## 🎯 Endgame Plan (as of Oct 30, ≤3 submissions left)
 
-1. **Read tonight's Duck V21 leaderboard score as the real test of the D' scheduler.** About 31% or higher supports D' (public D' notebook: 31.54%); below ~28% means D' is not the fix.
-2. **Verify V21's scheduler guarantees every game a first turn.** Duck V5's D' run (24.31%) starved unstarted games; the public D' notebook removes `fresh_floor`.
-3. **Stop investing in `ls20` replay.** `oof/win_paths.json` covers only `ls20_0`-`ls20_3` (a public game); it is unlikely to help on the 110 unseen games. Invest in general primitives (`candidate_clicks`, `route`, `solve_toggle`, action-budget guidance).
-4. **Gate every submission.** Four recent zero scores were packaging bugs. Run the packaged bootstrap end to end (subprocess tests) before arming the daemon.
-5. **Lint debt:** `ruff check .` reports 1,456 findings (433 auto-fixable); CLAUDE.md requires ruff-clean code.
-6. **Keep the Kaggle infra armor:** 55-minute startup shield (`SERVER_STARTUP_TIMEOUT = 55 * 60`, `ARC3_WARMUP_ACTION_GAMES = '1'`, `ARC3_HTTP_RETRY_INITIAL_SECONDS = '900'`) and Lean Armor (`MEMFRAC=0.93`, `expandable_segments:True`).
+**Decision:** rebase on public **Stack S16** (`ondrewsha/arc-agi-3-stack-s16`, ~31.6 LB) and use every remaining slot on it. Reasons:
+- Our Duck lineage averages ~26 on the leaderboard: the three V12 runs average 26.43, and V13–V17 scored 23.9–24.8.
+- S16 already has the pieces we were porting piece by piece: the H3v2 audit, H1 level memory, scheduler calibration and the keep-alive armor.
+- The `ls20` win-path cache doesn't transfer to unseen games.
+
+1. **Push and submit S16 Final manually.** Build with `python3 scripts/build_s16_final.py`. The S16 cells are unchanged. Cell 0 is a gate: in a commit run it writes the placeholder `submission.parquet` and skips the rest (seconds of GPU). In a competition rerun it does nothing.
+   ```bash
+   kaggle kernels push -p submissions/s16_final
+   kaggle competitions submit -c arc-prize-2026-arc-agi-3 -k aleixlopez/arc3-s16-final -f submission.parquet -v <N> -m "S16 Final draw 1"
+   ```
+   Confirm *Pending* in My Submissions. Don't use the `auto_submit_*` daemons.
+2. **Draws 2 and 3:** if draw 1 is healthy (≥27), resubmit the **same version**. Independent draws of the best-mean config raise the best private score of the 2 selections. If draw 1 scores 0.00, read the logs first. The first suspect is an SGLang OOM at S16's `MEMFRAC=0.96` (what killed our V18); change only that to 0.93 with `expandable_segments:True`.
+3. **Final selection (manual, before the deadline):** pick the 2 healthy S16 draws with the highest public scores. If only one S16 draw is healthy, pair it with Centroid V1 (`56836213`). Never pick an ls20-replay kernel or leave the choice to Kaggle's auto-pick.
+4. **Out of scope until the deadline:** new features, D' variants, ruff lint debt and the OpenAI playground. None of them can be validated with 3 noisy slots (σ ≈ 3 per run) and 1 GPU-hour a day.
 
 ---
 
@@ -97,7 +107,8 @@
 │   ├── duck_v17/                           # 55m Startup Shield + Adaptive Primitives (23.94% LB)
 │   ├── duck_v19/                           # Lean Armor (MEMFRAC=0.93, 28.60% Demo GPU Score)
 │   ├── duck_v20/                           # Dynamic Grid Perception + 4-Level Win-Path Cache (34.28% Demo GPU Score)
-│   └── duck_v21/                           # The Fusion Kernel: D' Priority Scheduler + 4-Level Win-Path Cache + Lean Armor
+│   ├── duck_v21/                           # The Fusion Kernel: D' Priority Scheduler + 4-Level Win-Path Cache + Lean Armor (never submitted)
+│   └── s16_final/                          # Endgame kernel: public Stack S16 verbatim + commit-run gate
 └── tests/                                  # 163/163 pytest unit & integration tests (100% GREEN)
 ```
 
