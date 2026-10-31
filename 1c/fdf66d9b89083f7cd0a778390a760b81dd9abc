@@ -1,0 +1,23 @@
+docs/ENDGAME_RUNBOOK.md
+  s_fbe3b3ad8e8fb1::t_375f43c993536a 32
+docs/HANDOVER.md
+  s_fbe3b3ad8e8fb1::t_c0b0cdaea81d54 20-21
+docs/experiments.md
+  s_fbe3b3ad8e8fb1::t_476e76917f701f 87
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "1cfdf66d9b89083f7cd0a778390a760b81dd9abc",
+  "prompts": {},
+  "sessions": {
+    "s_fbe3b3ad8e8fb1": {
+      "agent_id": {
+        "tool": "gemini",
+        "id": "8490758f-7dd7-4562-b692-6b2e2d863ab0",
+        "model": "gemini-3.8-flash"
+      },
+      "human_author": "Aleix López <aleix.lopez@glovoapp.com>"
+    }
+  }
+}
