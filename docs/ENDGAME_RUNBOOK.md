@@ -28,8 +28,8 @@ Self-contained: follow this if the Claude session that set it up is gone.
 
 | UTC day | Submission | Status |
 |---|---|---|
-| Oct 30 | Duck V19 v2 (`57802714`) | Submitted 10:39 UTC, pending |
-| Oct 31 | S16 Final v1, run 1 | Auto-loop in Terminal tab "s16 submit": pushes once the quota resets, holds the submit until after 00:00 UTC |
+| Oct 30 | Duck V19 v2 (`57802714`) | Completed, scored **16.43%** |
+| Oct 31 | S16 Final v1, run 1 | Pushed v1; Ref **`57819956`** submitted 00:00:53 UTC, currently **PENDING** |
 | Nov 1 | S16 Final, run 2 | Manual, any time that day, once run 1 has a sane score |
 | Nov 2 | S16 Final, run 3 | Manual, **right after 00:00 UTC** so the ~9 h run finishes before 23:59 |
 | Nov 2, before 23:59 | Tick the final 2 selections | Manual, on the Kaggle Submissions page |

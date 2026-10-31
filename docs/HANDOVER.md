@@ -2,12 +2,12 @@
 
 > **Endgame (Oct 30 – Nov 2):** follow [`docs/ENDGAME_RUNBOOK.md`](ENDGAME_RUNBOOK.md). It has the schedule, exact commands, decision rules and final selection.
 
-**Date:** Friday, October 30, 2026  
+**Date:** Saturday, October 31, 2026  
 **Repository:** `aleixlopezpascual/arc-prize-2026-arc-agi-3` (Local: `/Users/aleix.lopez/arc-prize-2026-arc-agi-3`)  
 **Current Best Leaderboard Score:** **`30.19%`** (Ref `56836213`, Oct 5; **rank #809 of 4,983 teams** on Oct 30). Medal lines: bronze = top 10% (~rank 498), silver = top 5% (~rank 249), gold ≈ top 20 (38.22 on Oct 25). **Final deadline: 2026-11-02 23:59 UTC** (submissions and final selections)  
 **Best Demo Benchmark (general):** **`58.42%`** (Duck V12: 44 / 64 levels cleared, 3 full 100% sweeps: `ft09`, `sb26`, `tr87`). The V20 v3 `34.28%` GPU demo score relies on hardcoded `ls20` replay and is not comparable.  
-**Latest Kernel:** S16 Final (`submissions/s16_final/`): public Stack S16 verbatim plus a commit-run gate. Not yet pushed. Duck V21 was **never submitted**: the auto-submit daemon did not fire on Oct 30.  
-**Endgame:** 4 submission days left (Oct 30, Oct 31, Nov 1, Nov 2). Submit Nov 2's run at 00:00 UTC so its ~9 h run finishes before the deadline. Every remaining slot goes to S16 Final. See "Endgame Plan" below.  
+**Latest Kernel:** S16 Final (`submissions/s16_final/`): public Stack S16 + token patience 200k + commit-run gate. Pushed to Kaggle as v1; Draw 1 submitted (Ref `57819956`, `PENDING`).  
+**Endgame:** 3 submission days remaining (Oct 31, Nov 1, Nov 2). Oct 31 slot submitted (`57819956`, S16 Final draw 1). Submit Nov 2's run right after 00:00 UTC so its ~9 h run finishes before the deadline. Every remaining slot goes to S16 Final. See "Endgame Plan" below.  
 **Kaggle User:** `aleixlopez`  
 **Submissions:** 4 of the last 7 leaderboard runs scored `0.00` from our own bugs (V18, V19 Run 1, V20 Run 1, V20 Run 2); see the ledger. Kaggle quota status not re-checked (limit is 1 per day).  
 
@@ -17,7 +17,8 @@
 
 | Submission Ref | Date (UTC) | Model Architecture | Status | Public Score | Key Finding / Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **`57802714`** | **2026-10-30 10:39:28** | **Duck V19 v2 (fixed: V12 core + 55m shield + MEMFRAC 0.93)** | `PENDING` | - | Oct 30 slot. GPU weekly quota exhausted until ~23:57 UTC, so S16 could not be pushed today; V19 v2 needs no GPU. Its run log shows no IndentationError/NameError/OOM. |
+| **`57819956`** | **2026-10-31 00:00:53** | **S16 Final draw 1 (Stack S16 + token patience 200k + commit gate + 55m/KA shield)** | `PENDING` | - | Oct 31 slot. Pushed clean as v1 right after GPU quota reset (00:00 UTC). Gate commit run completed in ~30s. Competition rerun active. |
+| **`57802714`** | **2026-10-30 10:39:28** | **Duck V19 v2 (fixed: V12 core + 55m shield + MEMFRAC 0.93)** | `COMPLETE` | `16.43%` | Oct 30 slot. Clean run with no crashes/OOMs, but confirmed Duck lineage depth ceiling (~16-26) compared to Stack S16. |
 | `NOT SUBMITTED` | 2026-10-30 00:00 | Duck V21 (Fusion Kernel) | `MISSED` | - | Auto-submit daemon did not submit; slot lost. Daemons retired. Submit manually from now on. |
 | **`GPU VERIFIED`** | **2026-10-29 19:42:00** | **Duck V21 (The Fusion Kernel: D' Priority Scheduler + 4-Level Win-Path Cache)** | **`COMPLETE`** | **`26.86%` (Demo)** | 🏆 **FUSION KERNEL COMPLETE**. D' priority scheduler installed cleanly (#OURS_FORM ok), 4-level cache verified, 0 errors, 0 OOMs. Auto-submit daemon armed for 00:00 UTC quota window. |
 | **`GPU VERIFIED`** | **2026-10-28 22:20:00** | **Duck V20 Version 3 (4-Level Solution Cache + SGLang Lean Armor)** | **`COMPLETE`** | **`34.28%` (Demo)** | 🏆 **ALL-TIME DEMO RECORD**. Scored **34.28%** across 908 actions in 25m on RTX PRO 6000 GPU. Pre-cached 4 levels of ls20, zero NameErrors, zero OOMs. Armed for tonight's quota window. |
