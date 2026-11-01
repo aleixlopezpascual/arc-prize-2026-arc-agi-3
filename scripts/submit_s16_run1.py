@@ -106,7 +106,9 @@ def wait_for_daily_reset() -> None:
 
 
 def submit_to_competition() -> None:
-    log(f"Submitting {KERNEL_ID} v{VERSION} to {COMPETITION}...")
+    log("Waiting 15s for Kaggle artifact storage to settle before submitting...")
+    time.sleep(15)
+    log(f"Submitting latest version of {KERNEL_ID} to {COMPETITION}...")
     cmd = [
         "kaggle",
         "competitions",
@@ -117,8 +119,6 @@ def submit_to_competition() -> None:
         KERNEL_ID,
         "-f",
         SUBMISSION_FILE,
-        "-v",
-        VERSION,
         "-m",
         MESSAGE,
     ]

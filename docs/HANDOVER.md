@@ -17,8 +17,9 @@
 
 | Submission Ref | Date (UTC) | Model Architecture | Status | Public Score | Key Finding / Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **`57843859`** | **2026-10-31 16:02:08** | **S16 Final draw 1 (Stack S16 + token patience 200k + commit gate + 55m/KA shield)** | `PENDING` | - | Oct 31 slot (Ref 57819956 hit Kaggle backend artifact race condition at 00:00:53 and was refunded; resubmitted cleanly as Ref 57843859). Evaluation active. |
-| `57819956` | 2026-10-31 00:00:53 | S16 Final draw 1 | `ERROR` | - | Kaggle system error right after kernel commit run (file sync race); submission slot was immediately refunded by Kaggle. |
+| **`57855048`** | **2026-11-01 00:21:43** | **S16 Final draw 1 v2 (Stack S16 + token patience 200k + commit gate + resilient mount resolvers + 55m timeout)** | `PENDING` | - | Oct 31 / Nov 1 slot. Active competition rerun. Version 2 embeds resilient mount resolvers (`ORIG_BUNDLE_DIR`, `WHEELHOUSE_DIR`, `MODEL_DIR`, `DRAFT_MODEL_DIR`) and dynamic wheelhouse discovery, resolving the early container crash seen in v1. |
+| `57843859` | 2026-10-31 16:02:08 | S16 Final draw 1 (v1) | `ERROR` | - | Hardcoded `/kaggle/input/datasets/dfranzen/...` path in v1 crashed in competition rerun container where CLI mounts datasets at `/kaggle/input/taaf-kaggle-source-bundle-copy`. Refunded. |
+| `57819956` | 2026-10-31 00:00:53 | S16 Final draw 1 (v1) | `ERROR` | - | Same v1 mount path failure. Refunded. |
 | **`57802714`** | **2026-10-30 10:39:28** | **Duck V19 v2 (fixed: V12 core + 55m shield + MEMFRAC 0.93)** | `COMPLETE` | `16.43%` | Oct 30 slot. Clean run with no crashes/OOMs, but confirmed Duck lineage depth ceiling (~16-26) compared to Stack S16. |
 | `NOT SUBMITTED` | 2026-10-30 00:00 | Duck V21 (Fusion Kernel) | `MISSED` | - | Auto-submit daemon did not submit; slot lost. Daemons retired. Submit manually from now on. |
 | **`GPU VERIFIED`** | **2026-10-29 19:42:00** | **Duck V21 (The Fusion Kernel: D' Priority Scheduler + 4-Level Win-Path Cache)** | **`COMPLETE`** | **`26.86%` (Demo)** | 🏆 **FUSION KERNEL COMPLETE**. D' priority scheduler installed cleanly (#OURS_FORM ok), 4-level cache verified, 0 errors, 0 OOMs. Auto-submit daemon armed for 00:00 UTC quota window. |
