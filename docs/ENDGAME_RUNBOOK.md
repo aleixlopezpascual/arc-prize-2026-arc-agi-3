@@ -29,10 +29,10 @@ Self-contained: follow this if the Claude session that set it up is gone.
 | UTC day | Submission | Status |
 |---|---|---|
 | Oct 30 | Duck V19 v2 (`57802714`) | Completed, scored **16.43%** |
-| Oct 31 | S16 Final v2, run 1 | Pushed v2 (resilient mount resolvers); Ref **`57855048`** submitted, currently **PENDING** |
-| Nov 1 | S16 Final, run 2 | Manual, any time that day, once run 1 has a sane score |
-| Nov 2 | S16 Final, run 3 | Manual, **right after 00:00 UTC** so the ~9 h run finishes before 23:59 |
-| Nov 2, before 23:59 | Tick the final 2 selections | Manual, on the Kaggle Submissions page |
+| Oct 31 | S16 Final v2, run 1 | **COMPLETE: 32.09%** 🚀🥉 (Ref `57855048`). Jumped to **Rank #375 / 5,037 (Top 7.4%)**, Bronze bracket! |
+| Nov 1 | Daily reset buffer | Handled via Draw 1 evaluation (~9h run time). |
+| Nov 2 (Final Day) | S16 Final v2, run 2 | **Submit right after 00:00 UTC** (in ~30 min) so the ~8.5 h run finishes before 23:59 UTC |
+| Nov 2, before 23:59 | Tick the final 2 selections | Manual, on Kaggle Submissions page (Select Ref `57855048` [32.09%] + Nov 2 draw) |
 
 ## Commands
 

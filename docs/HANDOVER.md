@@ -2,14 +2,14 @@
 
 > **Endgame (Oct 30 – Nov 2):** follow [`docs/ENDGAME_RUNBOOK.md`](ENDGAME_RUNBOOK.md). It has the schedule, exact commands, decision rules and final selection.
 
-**Date:** Saturday, October 31, 2026  
+**Date:** Sunday, November 1, 2026  
 **Repository:** `aleixlopezpascual/arc-prize-2026-arc-agi-3` (Local: `/Users/aleix.lopez/arc-prize-2026-arc-agi-3`)  
-**Current Best Leaderboard Score:** **`30.19%`** (Ref `56836213`, Oct 5; **rank #809 of 4,983 teams** on Oct 30). Medal lines: bronze = top 10% (~rank 498), silver = top 5% (~rank 249), gold ≈ top 20 (38.22 on Oct 25). **Final deadline: 2026-11-02 23:59 UTC** (submissions and final selections)  
+**Current Best Leaderboard Score:** **`32.09%`** (Ref `57855048`, Nov 1; **rank #375 of 5,037 teams — Top 7.4%, BRONZE MEDAL BRACKET** 🥉). Medal lines: bronze = top 10% (rank #503, cutoff 31.55%), silver = top 5% (rank #251, cutoff 32.79%), gold ≈ top 20 (cutoff 40.75%). **Final deadline: 2026-11-02 23:59 UTC** (submissions and final selections)  
 **Best Demo Benchmark (general):** **`58.42%`** (Duck V12: 44 / 64 levels cleared, 3 full 100% sweeps: `ft09`, `sb26`, `tr87`). The V20 v3 `34.28%` GPU demo score relies on hardcoded `ls20` replay and is not comparable.  
-**Latest Kernel:** S16 Final (`submissions/s16_final/`): public Stack S16 + token patience 200k + commit-run gate. Pushed to Kaggle as v1; Draw 1 submitted (Ref `57819956`, `PENDING`).  
-**Endgame:** 3 submission days remaining (Oct 31, Nov 1, Nov 2). Oct 31 slot submitted (`57819956`, S16 Final draw 1). Submit Nov 2's run right after 00:00 UTC so its ~9 h run finishes before the deadline. Every remaining slot goes to S16 Final. See "Endgame Plan" below.  
+**Latest Kernel:** S16 Final (`submissions/s16_final/`): public Stack S16 + token patience 200k + commit-run gate + resilient mount resolvers + 55m timeout. Version 2 scored **`32.09%`** on LB.  
+**Endgame:** Final submission day is tomorrow (Nov 2). Daily quota resets at 00:00 UTC (in ~30 min). We will submit S16 Final Draw 2 right after 00:00 UTC so its ~8.5 h run completes by ~08:30 UTC, leaving ~15 hours before the 23:59 UTC final deadline. Final selections will tick S16 Final Draw 1 (`32.09%`) + Draw 2 (or Centroid V1 `30.19%`). See "Endgame Plan" below.  
 **Kaggle User:** `aleixlopez`  
-**Submissions:** 4 of the last 7 leaderboard runs scored `0.00` from our own bugs (V18, V19 Run 1, V20 Run 1, V20 Run 2); see the ledger. Kaggle quota status not re-checked (limit is 1 per day).  
+**Submissions:** 4 of the last 7 leaderboard runs scored `0.00` from our own bugs (V18, V19 Run 1, V20 Run 1, V20 Run 2); see the ledger. S16 Final v2 resolved all container mount issues and achieved 32.09%.  
 
 ---
 
@@ -17,7 +17,7 @@
 
 | Submission Ref | Date (UTC) | Model Architecture | Status | Public Score | Key Finding / Notes |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **`57855048`** | **2026-11-01 00:21:43** | **S16 Final draw 1 v2 (Stack S16 + token patience 200k + commit gate + resilient mount resolvers + 55m timeout)** | `PENDING` | - | Oct 31 / Nov 1 slot. Active competition rerun. Version 2 embeds resilient mount resolvers (`ORIG_BUNDLE_DIR`, `WHEELHOUSE_DIR`, `MODEL_DIR`, `DRAFT_MODEL_DIR`) and dynamic wheelhouse discovery, resolving the early container crash seen in v1. |
+| **`57855048`** | **2026-11-01 00:21:43** | **S16 Final draw 1 v2 (Stack S16 + token patience 200k + commit gate + resilient mount resolvers + 55m timeout)** | **`COMPLETE`** | **`32.09%`** 🚀🥉 | 🏆 **ALL-TIME TEAM RECORD & BRONZE MEDAL POSITION (Rank #375 / Top 7.4%)**. Resilient mount resolvers fixed container crash. Clean 9h execution across 110 private test games. Beats Centroid V1 (+1.90%). Sits comfortably inside Bronze (cutoff 31.55%), 0.70% away from Silver (32.79%). |
 | `57843859` | 2026-10-31 16:02:08 | S16 Final draw 1 (v1) | `ERROR` | - | Hardcoded `/kaggle/input/datasets/dfranzen/...` path in v1 crashed in competition rerun container where CLI mounts datasets at `/kaggle/input/taaf-kaggle-source-bundle-copy`. Refunded. |
 | `57819956` | 2026-10-31 00:00:53 | S16 Final draw 1 (v1) | `ERROR` | - | Same v1 mount path failure. Refunded. |
 | **`57802714`** | **2026-10-30 10:39:28** | **Duck V19 v2 (fixed: V12 core + 55m shield + MEMFRAC 0.93)** | `COMPLETE` | `16.43%` | Oct 30 slot. Clean run with no crashes/OOMs, but confirmed Duck lineage depth ceiling (~16-26) compared to Stack S16. |
