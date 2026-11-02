@@ -31,8 +31,8 @@ Self-contained: follow this if the Claude session that set it up is gone.
 | Oct 30 | Duck V19 v2 (`57802714`) | Completed, scored **16.43%** |
 | Oct 31 | S16 Final v2, run 1 | **COMPLETE: 32.09%** 🚀🥉 (Ref `57855048`). Jumped to **Rank #375 / 5,037 (Top 7.4%)**, Bronze bracket! |
 | Nov 1 | Daily reset buffer | Handled via Draw 1 evaluation (~9h run time). |
-| Nov 2 (Final Day) | S16 Final v2, run 2 | **Submit right after 00:00 UTC** (in ~30 min) so the ~8.5 h run finishes before 23:59 UTC |
-| Nov 2, before 23:59 | Tick the final 2 selections | Manual, on Kaggle Submissions page (Select Ref `57855048` [32.09%] + Nov 2 draw) |
+| Nov 2 (Final Day) | S16 Final v2, run 2 | **COMPLETE: 31.44%** 🚀🥉 (Ref `57887146`). Replicates high performance cleanly. |
+| Nov 2, before 23:59 | Tick the final 2 selections | **MANUAL ACTION REQUIRED**: Tick **Ref `57855048` (`32.09%`)** and **Ref `57887146` (`31.44%`)** on Kaggle Submissions page. |
 
 ## Commands
 
