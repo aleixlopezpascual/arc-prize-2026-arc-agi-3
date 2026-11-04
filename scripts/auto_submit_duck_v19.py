@@ -16,7 +16,7 @@ V19_KERNEL = "aleixlopez/arc-agi-3-duck-v19"
 V19_DIR = str(Path(__file__).resolve().parent.parent / "submissions" / "duck_v19")
 OUTPUT_FILE = "submission.parquet"
 MESSAGE = "Duck V19 (Defragmented Lean Armor + MEMFRAC=0.93 + Expandable Segments)"
-UV_PYTHON = "/Users/aleix.lopez/.local/share/uv/tools/kaggle/bin/python"
+UV_PYTHON = sys.executable
 
 
 def parse_args():

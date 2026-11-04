@@ -16,7 +16,7 @@ V17_KERNEL = "aleixlopez/arc-agi-3-duck-v17"
 V17_DIR = str(Path(__file__).resolve().parent.parent / "submissions" / "duck_v17")
 OUTPUT_FILE = "submission.parquet"
 MESSAGE = "Duck V17 (Adaptive Armor + 55min Startup Shield + Bounded Memory + Exact Solvers)"
-UV_PYTHON = "/Users/aleix.lopez/.local/share/uv/tools/kaggle/bin/python"
+UV_PYTHON = sys.executable
 
 
 def parse_args():

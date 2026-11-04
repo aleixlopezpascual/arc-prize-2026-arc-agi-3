@@ -4,7 +4,7 @@
 > **Solution Writeup:** read [`docs/SOLUTION_WRITEUP.md`](SOLUTION_WRITEUP.md) for our complete Kaggle competition solution breakdown.
 
 **Date:** Monday, November 2, 2026 (FINAL COMPETITION DAY)  
-**Repository:** `aleixlopezpascual/arc-prize-2026-arc-agi-3` (Local: `/Users/aleix.lopez/arc-prize-2026-arc-agi-3`)  
+**Repository:** `aleixlopezpascual/arc-prize-2026-arc-agi-3`  
 **Current Best Leaderboard Score:** **`32.09%`** (Ref `57855048`; **rank #393 of 5,046 teams — Top 7.8%, BRONZE MEDAL BRACKET** 🥉). Medal lines: bronze = top 10% (rank #504, cutoff 31.61%), silver = top 5% (rank #252, cutoff 32.91%), gold ≈ top 20 (cutoff 41.73%). **Final deadline: TODAY, 2026-11-02 23:59 UTC** (both submission uploads and selection locks).  
 **Best Demo Benchmark (general):** **`58.42%`** (Duck V12: 44 / 64 levels cleared, 3 full 100% sweeps: `ft09`, `sb26`, `tr87`). The V20 v3 `34.28%` GPU demo score relies on hardcoded `ls20` replay and is not comparable.  
 **Latest Kernel:** S16 Final (`submissions/s16_final/`): public Stack S16 + token patience 200k + commit-run gate + resilient mount resolvers + 55m timeout. Both draws completed cleanly with 0 crashes: Draw 1 = **`32.09%`**, Draw 2 = **`31.44%`**.  
@@ -95,7 +95,7 @@
 ## 📁 Repository Directory Map
 
 ```text
-/Users/aleix.lopez/arc-prize-2026-arc-agi-3/
+./
 ├── docs/
 │   ├── HANDOVER.md                         # This session handover document
 │   ├── experiments.md                      # Complete experiment ledger

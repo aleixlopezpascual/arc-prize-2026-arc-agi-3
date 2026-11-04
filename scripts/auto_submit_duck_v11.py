@@ -6,7 +6,7 @@ from pathlib import Path
 
 competition = "arc-prize-2026-arc-agi-3"
 v11_kernel = "aleixlopez/arc-agi-3-duck-v11"
-v11_dir = "/Users/aleix.lopez/arc-prize-2026-arc-agi-3/submissions/duck_v11"
+v11_dir = str(Path(__file__).resolve().parent.parent / "submissions") + "/duck_v11"
 output_file = "submission.parquet"
 message = "Duck V11 (Refined Action-Budget Guidance + Fable 30k + Temp 0.6 + Unconstrained)"
 

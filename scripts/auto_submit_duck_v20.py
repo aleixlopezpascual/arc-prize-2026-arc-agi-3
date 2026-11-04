@@ -16,7 +16,7 @@ V20_KERNEL = "aleixlopez/arc-agi-3-duck-v20"
 V20_DIR = str(Path(__file__).resolve().parent.parent / "submissions" / "duck_v20")
 OUTPUT_FILE = "submission.parquet"
 MESSAGE = "Duck V20 (Dynamic Grid Perception + Win-Path Cache + MEMFRAC=0.93)"
-UV_PYTHON = "/Users/aleix.lopez/.local/share/uv/tools/kaggle/bin/python"
+UV_PYTHON = sys.executable
 
 
 def parse_args():

@@ -16,7 +16,7 @@ V21_KERNEL = "aleixlopez/arc-agi-3-duck-v21"
 V21_DIR = str(Path(__file__).resolve().parent.parent / "submissions" / "duck_v21")
 OUTPUT_FILE = "submission.parquet"
 MESSAGE = "Duck V21 (The Fusion Kernel: D-Prime Priority Scheduler + 4-Level Win-Path Cache + Lean Armor)"
-UV_PYTHON = "/Users/aleix.lopez/.local/share/uv/tools/kaggle/bin/python"
+UV_PYTHON = sys.executable
 
 
 def parse_args():

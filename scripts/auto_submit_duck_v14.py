@@ -6,7 +6,7 @@ from pathlib import Path
 
 competition = "arc-prize-2026-arc-agi-3"
 v14_kernel = "aleixlopez/arc-agi-3-duck-v14"
-v14_dir = "/Users/aleix.lopez/arc-prize-2026-arc-agi-3/submissions/duck_v14"
+v14_dir = str(Path(__file__).resolve().parent.parent / "submissions") + "/duck_v14"
 output_file = "submission.parquet"
 message = "Duck V14 (Pre-Explorer Action Semantics + Win-Path Pure Replay + No-Op Guard + Level Baseline)"
 
@@ -83,7 +83,7 @@ for attempt in range(480):  # Run for up to 24 hours
 
     # Submit to competition using Python API directly
     sub_cmd = [
-        "/Users/aleix.lopez/.local/share/uv/tools/kaggle/bin/python",
+        sys.executable,
         "-c",
         f"""from kaggle.api.kaggle_api_extended import KaggleApi
 api = KaggleApi()
