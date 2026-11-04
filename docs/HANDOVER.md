@@ -1,6 +1,7 @@
 # ARC Prize 2026 (ARC-AGI-3) — Session Handover Document
 
-> **Endgame (Oct 30 – Nov 2):** follow [`docs/ENDGAME_RUNBOOK.md`](ENDGAME_RUNBOOK.md). It has the schedule, exact commands, decision rules and final selection.
+> **Endgame (Oct 30 – Nov 2):** follow [`docs/ENDGAME_RUNBOOK.md`](ENDGAME_RUNBOOK.md). It has the schedule, exact commands, decision rules and final selection.  
+> **Solution Writeup:** read [`docs/SOLUTION_WRITEUP.md`](SOLUTION_WRITEUP.md) for our complete Kaggle competition solution breakdown.
 
 **Date:** Monday, November 2, 2026 (FINAL COMPETITION DAY)  
 **Repository:** `aleixlopezpascual/arc-prize-2026-arc-agi-3` (Local: `/Users/aleix.lopez/arc-prize-2026-arc-agi-3`)  

@@ -14,6 +14,8 @@ Official repository for team **Aleix López** in **[ARC Prize 2026 — ARC-AGI-3
   2. **Draw 2 (`Ref 57887146`)**: **`31.44%`** 🥉
 * **Competition Status**: Submissions locked on **November 2, 2026 at 23:59 UTC**. Final private test evaluations and official winner announcements occur on **December 4, 2026**.
 
+> 📝 **Detailed Writeup**: Read our complete Kaggle solution writeup in [**`docs/SOLUTION_WRITEUP.md`**](docs/SOLUTION_WRITEUP.md).
+
 ---
 
 ## 🧠 Core Architecture: S16 Final
