@@ -83,7 +83,7 @@ Audit of 100 game runs by the 27B Qwen model revealed:
 
 | Feature | Franzen M2 Original | Affectify 31.54 | Adaptive Duck 31.21 | **Our Duck V20** |
 | :--- | :---: | :---: | :---: | :---: |
-| **Base Model** | Qwen 27B INT4 + MTP | Qwen 27B INT4 + MTP | Qwen 27B INT4 + MTP | Qwen 27B INT4 + MTP |
+| **Base Model** | Qwen3.8-Flash-Next W4A16 + MTP | Qwen3.8-Flash-Next W4A16 + MTP | Unverified (notebook not in repo) | Qwen3.8-Flash-Next W4A16 + MTP |
 | **SGLang VRAM Headroom** | 5 MB (`MEMFRAC=0.96`) | 5 MB (`MEMFRAC=0.96`) | 5 MB (`MEMFRAC=0.96`) | **6,670 MB (`MEMFRAC=0.93`)** |
 | **CUDA OOM Shield** | ❌ Spikes on TileLang | ❌ Spikes on TileLang | ❌ Spikes on TileLang | **✅ `expandable_segments:True`** |
 | **55-Min Startup Shield** | ❌ Aborts at 12m | ❌ Aborts at 12m | ✅ 55m Shield | **✅ 55m Shield + Keepalive** |
