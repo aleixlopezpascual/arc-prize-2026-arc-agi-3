@@ -1,7 +1,6 @@
 import subprocess
 import sys
 import time
-from pathlib import Path
 from datetime import datetime, timezone
 
 competition = "arc-prize-2026-arc-agi-3"

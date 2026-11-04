@@ -1,7 +1,9 @@
 """Verified execution and world model verification against observed transitions."""
 from __future__ import annotations
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
+
 from src.search.bounded_search import freeze_state
 
 

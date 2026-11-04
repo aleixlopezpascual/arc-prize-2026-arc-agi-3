@@ -1,13 +1,15 @@
 import pytest
+
 from src.perception.fable_core import (
-    diff_cells,
-    components8,
-    small_far_changes,
-    detect_budget,
-    budget_alert,
     Ledger,
+    budget_alert,
     build_level_log,
+    components8,
+    detect_budget,
+    diff_cells,
+    small_far_changes,
 )
+
 
 def test_diff_cells_and_components8():
     grid_a = [[0] * 10 for _ in range(10)]

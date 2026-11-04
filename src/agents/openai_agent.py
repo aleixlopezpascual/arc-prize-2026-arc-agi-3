@@ -81,6 +81,7 @@ class OpenAIAgent(BaseAgent):
         timeout: float = 30.0,
     ) -> None:
         from dotenv import load_dotenv
+
         from src.config import ROOT
 
         load_dotenv(ROOT / ".env")
@@ -134,6 +135,7 @@ class OpenAIAgent(BaseAgent):
         ssl_context = None
         try:
             import ssl
+
             import certifi
 
             ssl_context = ssl.create_default_context(cafile=certifi.where())

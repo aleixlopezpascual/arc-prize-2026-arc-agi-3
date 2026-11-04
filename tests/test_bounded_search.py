@@ -1,5 +1,4 @@
-import pytest
-from src.search.bounded_search import freeze_state, bounded_search, route
+from src.search.bounded_search import bounded_search, freeze_state, route
 
 
 def test_freeze_state():

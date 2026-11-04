@@ -1,5 +1,5 @@
 from unittest.mock import patch
-import pytest
+
 from arcengine import FrameData, GameAction, GameState
 
 from src.agents.openai_tool_agent import OpenAIToolAgent, extract_python_snippet

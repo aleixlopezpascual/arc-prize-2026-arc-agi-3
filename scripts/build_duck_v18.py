@@ -9,7 +9,6 @@ Combines:
 5. Candidate goals & candidate clicks perception primitives
 """
 import json
-import shutil
 from pathlib import Path
 
 V12_DIR = Path("submissions/duck_v12")

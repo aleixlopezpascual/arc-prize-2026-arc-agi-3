@@ -6,9 +6,7 @@ before the main LLM run starts.
 """
 from __future__ import annotations
 
-import random
-import time
-from typing import Any, Callable, Iterable
+from typing import Any
 
 ARC_COLOR_CHARS = "WwgGcBMPRbSYOrNp"
 
@@ -180,16 +178,16 @@ def diff_summary(
 
 class _GameFacts:
     __slots__ = (
-        "probes",
-        "click_hits",
-        "click_tries",
-        "click_rows",
         "click_cols",
         "click_examples",
-        "walk_stats",
-        "walk_steps",
+        "click_hits",
+        "click_rows",
+        "click_tries",
         "level_path",
         "notes",
+        "probes",
+        "walk_stats",
+        "walk_steps",
     )
 
     def __init__(self) -> None:

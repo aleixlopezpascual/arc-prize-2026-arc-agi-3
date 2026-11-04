@@ -1,9 +1,8 @@
-import json
-from unittest.mock import MagicMock, patch
-import pytest
+from unittest.mock import patch
+
 from arcengine import FrameData, GameAction, GameState
 
-from src.agents.openai_agent import OpenAIAgent, parse_action_response, grid_to_ascii
+from src.agents.openai_agent import OpenAIAgent, grid_to_ascii, parse_action_response
 
 
 def test_grid_to_ascii():

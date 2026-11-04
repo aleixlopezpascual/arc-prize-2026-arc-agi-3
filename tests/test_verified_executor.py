@@ -1,5 +1,5 @@
-import pytest
 from types import SimpleNamespace
+
 from src.search.verified_executor import check_model, make_verified_executor
 
 

@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+
 def test_duck_v6_notebook_validity():
     nb_path = Path("submissions/duck_v6/notebook.ipynb")
     meta_path = Path("submissions/duck_v6/kernel-metadata.json")

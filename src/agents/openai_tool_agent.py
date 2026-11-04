@@ -54,6 +54,7 @@ class OpenAIToolAgent(BaseAgent):
         introspection_hint: bool = False,
     ) -> None:
         from dotenv import load_dotenv
+
         from src.config import ROOT
 
         load_dotenv(ROOT / ".env")
@@ -154,8 +155,9 @@ class OpenAIToolAgent(BaseAgent):
 
         ssl_context = None
         try:
-            import certifi
             import ssl
+
+            import certifi
 
             ssl_context = ssl.create_default_context(cafile=certifi.where())
         except Exception:
@@ -422,8 +424,8 @@ class OpenAIToolAgent(BaseAgent):
             code = extract_python_snippet(resp)
             queued_raw: list[str] = []
 
-            import io
             import contextlib
+            import io
 
             stdout_buf = io.StringIO()
 
@@ -522,7 +524,7 @@ class OpenAIToolAgent(BaseAgent):
             # If actions were queued, break the loop and execute them!
             if self.action_queue:
                 break
-            
+
             # If no actions were queued but we got stdout, loop around and feed it back!
             if self.last_sandbox_stdout:
                 self.wasted_loops += 1
@@ -535,7 +537,7 @@ class OpenAIToolAgent(BaseAgent):
                 fallback_act.set_data({"x": fallback_coords[0], "y": fallback_coords[1], "game_id": latest_frame.game_id})
             self.action_queue.append(fallback_act)
             break
-            
+
         if not self.action_queue:
             # Absolute fallback if max loops exhausted without queuing
             fallback_act, fallback_coords = parse_action_response(resp, available)

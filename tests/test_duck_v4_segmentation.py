@@ -1,5 +1,5 @@
-import pytest
 from src.perception.segmentation import segment_grid, segment_layer
+
 
 def test_is_border_detection_outer_strip():
     # 10x10 grid with top row filled with 2 (border/HUD bar) and center containing a 2x2 1 object

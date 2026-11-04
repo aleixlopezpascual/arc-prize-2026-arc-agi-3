@@ -12,8 +12,8 @@ append_code = f"""
 # ---------------------------------------------------------------------------
 # 6. Write pre_explorer.py and manual_injector.py
 # ---------------------------------------------------------------------------
-PRE_EXPLORER_SRC = {repr(pre_explorer_code)}
-MANUAL_INJECTOR_SRC = {repr(manual_injector_code)}
+PRE_EXPLORER_SRC = {pre_explorer_code!r}
+MANUAL_INJECTOR_SRC = {manual_injector_code!r}
 
 for out_dir in [src_root, Path('/kaggle'), Path('.')]:
     try:

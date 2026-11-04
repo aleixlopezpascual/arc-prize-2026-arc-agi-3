@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-import pytest
 
 
 def test_duck_v19_notebook_structure():

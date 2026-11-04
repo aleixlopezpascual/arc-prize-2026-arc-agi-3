@@ -1,6 +1,6 @@
 """Generator script for submissions/duck_v7/apply_enhancements_v7.py."""
-from pathlib import Path
 import json
+from pathlib import Path
 
 fable_core_src = Path("src/perception/fable_core.py").read_text(encoding="utf-8")
 v6_src = Path("submissions/duck_v6/apply_enhancements_v6.py").read_text(encoding="utf-8")
@@ -17,7 +17,7 @@ section_0 = f'''# --------------------------------------------------------------
 # 0. Write fable_layer_core.py
 # ---------------------------------------------------------------------------
 fable_core_file = src_root / "ARC3-Inference/inference/agent/fable_layer_core.py"
-FABLE_CORE_SRC = {repr(fable_core_src)}
+FABLE_CORE_SRC = {fable_core_src!r}
 fable_core_file.write_text(FABLE_CORE_SRC, encoding="utf-8")
 print("Successfully wrote fable_layer_core.py")
 
@@ -34,7 +34,7 @@ v7_src = v6_src[:idx_sec1] + section_0 + v6_src[idx_sec1:]
 # Now append Fable layer injection to tool_agent.py at the end of the script
 fable_tool_agent_injection = f'''
 # 5. Inject Fable layer hooks into tool_agent.py
-FABLE_METHODS = {repr(fable_methods)}
+FABLE_METHODS = {fable_methods!r}
 
 FABLE_EDITS = [
     (

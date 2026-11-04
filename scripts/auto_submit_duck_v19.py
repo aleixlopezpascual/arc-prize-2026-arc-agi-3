@@ -5,7 +5,6 @@ Usage:
     python3 scripts/auto_submit_duck_v19.py [--dry-run]
 """
 import argparse
-import os
 import subprocess
 import sys
 import time

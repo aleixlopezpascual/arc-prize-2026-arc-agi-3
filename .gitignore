@@ -10,17 +10,36 @@ submissions/**/*.log
 
 # Credentials & secrets
 kaggle.json
+*.kaggle.json
 .env
+.env.*
+*.pem
+*.key
+*.cert
+*.pfx
 
 # Python & notebooks
 __pycache__/
 *.py[cod]
+*$py.class
+*.so
 .ipynb_checkpoints/
 .venv/
 venv/
+ENV/
+env/
 .pytest_cache/
 .ruff_cache/
-.superpowers/
+.mypy_cache/
+.coverage
+htmlcov/
 
-# Claude Code local settings
-.claude/settings.local.json
+# Local agents, IDEs & OS
+.claude/
+.gemini/
+.superpowers/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+

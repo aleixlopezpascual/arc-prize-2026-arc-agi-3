@@ -6,7 +6,8 @@ session start (maintaining 100% RadixAttention prefix caching within each game s
 from __future__ import annotations
 
 import os
-from typing import Any, Callable, Mapping
+from collections.abc import Callable, Mapping
+from typing import Any
 
 DEFAULT_HEADER = (
     "\n\nPre-exploration report (generated before this session by a scripted explorer that "

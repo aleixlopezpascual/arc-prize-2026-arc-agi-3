@@ -1,10 +1,11 @@
-import pytest
-from pathlib import Path
-import tempfile
+import py_compile
 import shutil
 import subprocess
-import py_compile
+import tempfile
+from pathlib import Path
+
 from src.search.bfs_path import bfs_path
+
 
 def test_bfs_path_straight_and_obstacles():
     # Straight line

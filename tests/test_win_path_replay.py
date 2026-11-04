@@ -1,5 +1,5 @@
-import pytest
 from src.utils.win_path_replay import extract_winning_segments
+
 
 def test_extract_winning_segments_simple_win():
     # Recording: 3 actions on level 1, then level completed

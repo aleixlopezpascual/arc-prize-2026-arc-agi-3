@@ -1,8 +1,7 @@
-import pytest
 from src.perception.sandbox_primitives import solve_toggle
-from src.search.bounded_search import freeze_state, bounded_search, route
-from src.utils.adaptive_memory import normalize_notes, solved_evidence
-from src.search.verified_executor import check_model, make_verified_executor
+from src.search.bounded_search import bounded_search, route
+from src.search.verified_executor import make_verified_executor
+from src.utils.adaptive_memory import normalize_notes
 
 
 def test_v17_component_integration():

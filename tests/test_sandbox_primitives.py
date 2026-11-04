@@ -1,4 +1,3 @@
-import pytest
 from src.perception.sandbox_primitives import (
     candidate_clicks,
     candidate_goals,

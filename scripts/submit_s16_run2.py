@@ -8,7 +8,6 @@ Final Submission Orchestrator for S16 Final Draw 2 (Nov 2).
 
 import datetime
 import subprocess
-import sys
 import time
 
 KERNEL_ID = "aleixlopez/arc3-s16-final"

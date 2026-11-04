@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from collections import deque
-from typing import Collection, Sequence
+from collections.abc import Collection, Sequence
 
 
 def bfs_path(

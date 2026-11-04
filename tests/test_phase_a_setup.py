@@ -1,4 +1,5 @@
 import pytest
+
 from src.perception.phase_a_setup import _GATEWAY_HOST_ALLOWLIST, wait_for_gateway
 
 

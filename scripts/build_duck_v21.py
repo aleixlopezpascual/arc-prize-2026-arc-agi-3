@@ -19,7 +19,6 @@ Key Innovations:
 4. Strict Syntax & Compile Verification on all injected code blocks.
 """
 import json
-import re
 from pathlib import Path
 
 V20_DIR = Path("submissions/duck_v20")

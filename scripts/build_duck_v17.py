@@ -7,7 +7,6 @@ Combines:
 3. Duck V12/V15/V16 core: candidate_clicks, candidate_goals, in-sandbox early stopping, Fable 30k, temp 0.6
 """
 import json
-import shutil
 from pathlib import Path
 
 V16_DIR = Path("submissions/duck_v16")
@@ -278,7 +277,7 @@ adaptive_helpers_code = '''
 if "def solve_toggle" not in v17_script:
     # Inject helpers above candidate_goals
     v17_script = v17_script.replace("    def candidate_goals(", adaptive_helpers_code + "\n    def candidate_goals(", 1)
-    
+
     # Expose in runtime_globals in _refresh_state
     old_tail = '            runtime_globals["candidate_goals"] = candidate_goals'
     new_tail = ('            runtime_globals["candidate_goals"] = candidate_goals\n'

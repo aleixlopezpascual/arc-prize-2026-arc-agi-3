@@ -1,8 +1,8 @@
 import subprocess
 import sys
 import time
-from pathlib import Path
 from datetime import datetime, timezone
+from pathlib import Path
 
 competition = "arc-prize-2026-arc-agi-3"
 v5_kernel = "aleixlopez/arc-agi-3-duck-v5"
